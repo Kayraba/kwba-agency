@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Brief — KWBA Agency</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0e0c;--bg2:#1a1814;--bg3:#252219;--gold:#c9a84c;--gold-dim:rgba(201,168,76,0.1);--gold-border:rgba(201,168,76,0.35);--ink:#f0ece4;--ink2:#ddd8ce;--muted:#9a9488;--muted2:#6a6460;--border:rgba(201,168,76,0.15);--border2:rgba(201,168,76,0.07);--green:#4caf7d;--green-dim:rgba(76,175,125,0.12);--accent:#e8845a}
+html,body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;letter-spacing:.04em}
+.nav-logo span{color:var(--gold)}
+.nav-tag{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2)}
+
+/* Progress — accent orange tint for marketing */
+.prog-bar-wrap{position:sticky;top:68px;z-index:90;background:rgba(15,14,12,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border2);padding:13px 40px 11px}
+.prog-inner{max-width:760px;margin:0 auto}
+.prog-track{height:2px;background:var(--border2);margin-bottom:9px}
+.prog-fill{height:100%;background:var(--gold);width:0%;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.prog-steps{display:flex;justify-content:space-between}
+.ps{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);transition:color .3s}
+.ps.done{color:var(--gold);opacity:.55}
+.ps.active{color:var(--gold)}
+
+/* Wizard */
+.wizard{max-width:760px;margin:0 auto;padding:52px 40px 100px;overflow:hidden}
+
+/* Step slides */
+.step{display:none}
+.step.active{display:block;animation:sIn .4s cubic-bezier(.4,0,.2,1)}
+.step.exit-fwd{animation:sOut .28s cubic-bezier(.4,0,.2,1) forwards}
+.step.enter-back{animation:sInBack .4s cubic-bezier(.4,0,.2,1)}
+@keyframes sIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes sInBack{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes sOut{to{opacity:0;transform:translateX(-28px)}}
+
+/* Step header */
+.sh{margin-bottom:36px}
+.slbl{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.slbl::before{content:'';display:block;width:22px;height:1px;background:var(--gold);opacity:.6}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4.2vw,44px);font-weight:400;line-height:1.05;letter-spacing:-.02em;margin-bottom:10px}
+h1 em{font-style:italic;color:var(--gold)}
+.ssub{font-size:14px;color:var(--muted);line-height:1.8;font-weight:300;max-width:600px}
+.pkg-tag{display:inline-block;font-size:9px;letter-spacing:.22em;text-transform:uppercase;padding:5px 14px;border:1px solid var(--gold-border);color:var(--gold);margin-top:14px}
+
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);padding:36px;margin-bottom:2px}
+
+/* Fields */
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.fr.full{grid-template-columns:1fr}
+.fg{display:flex;flex-direction:column;gap:6px}
+label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.hint{font-size:10px;letter-spacing:0;text-transform:none;color:var(--muted2);font-style:italic;display:block;margin-top:2px}
+input,select,textarea{background:var(--bg3);border:1px solid var(--border);color:var(--ink);padding:12px 16px;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:300;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;border-radius:0;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--gold-border)}
+input::placeholder,textarea::placeholder{color:var(--muted2)}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239a9488'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
+select option{background:var(--bg3);color:var(--ink)}
+textarea{resize:vertical;min-height:90px;line-height:1.65}
+.cc{font-size:10px;color:var(--muted2);text-align:right;margin-top:3px}
+.rule{height:1px;background:var(--border2);margin:22px 0}
+
+/* Checkboxes */
+.cg{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.ci{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);padding:8px 12px;cursor:pointer;transition:all .2s;font-size:12px;color:var(--ink2);user-select:none}
+.ci:hover{border-color:var(--gold-border)}
+.ci.sel{border-color:var(--gold-border);background:var(--gold-dim);color:var(--gold)}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--muted2);flex-shrink:0;transition:background .15s}
+.ci.sel .cdot{background:var(--gold)}
+
+/* Uploads */
+.uz{border:1px dashed var(--gold-border);padding:22px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3);position:relative;margin-bottom:4px}
+.uz:hover,.uz.dv{border-color:var(--gold);background:var(--gold-dim)}
+.uz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.ui{font-size:20px;margin-bottom:6px;color:var(--gold)}
+.ut{font-size:13px;color:var(--ink2);margin-bottom:3px}
+.us{font-size:11px;color:var(--muted2)}
+.fl{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.fi{display:flex;align-items:center;background:var(--bg2);border:1px solid var(--border);padding:8px 12px;gap:10px;font-size:12px}
+.fn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2)}
+.fsz{color:var(--muted2);flex-shrink:0}
+.frm2{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:15px;line-height:1;padding:0 2px;flex-shrink:0;transition:color .15s}
+.frm2:hover{color:#e05c5c}
+.un{font-size:11px;color:var(--muted2);margin-top:5px;font-style:italic}
+
+/* Nav */
+.snav{display:flex;align-items:center;justify-content:space-between;margin-top:32px;padding-top:22px;border-top:1px solid var(--border2)}
+.btn-b{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:transparent;border:1px solid var(--border);padding:13px 26px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:8px}
+.btn-b:hover{border-color:var(--gold-border);color:var(--ink2)}
+.btn-n{font-size:10px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:13px 34px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity .2s;display:flex;align-items:center;gap:8px}
+.btn-n:hover{opacity:.88}
+.btn-n:disabled{opacity:.4;cursor:not-allowed}
+.sctr{font-size:11px;color:var(--muted2);letter-spacing:.06em}
+.errmsg{color:#e05c5c;font-size:12px;margin-top:10px;text-align:center}
+
+/* Success */
+.succ-wrap{display:none;max-width:560px;margin:100px auto;text-align:center;padding:0 40px}
+.succ-icon{width:62px;height:62px;border-radius:50%;background:var(--green-dim);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 26px;font-size:24px}
+.succ-wrap h2{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:400;margin-bottom:12px}
+.succ-wrap h2 em{font-style:italic;color:var(--gold)}
+.succ-wrap p{font-size:14px;color:var(--muted);line-height:1.85;max-width:400px;margin:0 auto 28px}
+.back-btn{display:inline-block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--gold-border);color:var(--gold);padding:12px 28px;transition:all .2s}
+.back-btn:hover{border-color:var(--gold);background:var(--gold-dim)}
+
+@media(max-width:680px){
+  .fr{grid-template-columns:1fr}
+  .wizard{padding:36px 20px 80px}
+  .prog-bar-wrap{padding:12px 20px 10px}
+  nav{padding:0 20px}
+  .snav{flex-wrap:wrap;gap:12px}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">KW<span>B</span>A</a>
+  <span class="nav-tag">Marketing Brief</span>
+</nav>
+
+<div class="prog-bar-wrap">
+  <div class="prog-inner">
+    <div class="prog-track"><div class="prog-fill" id="pf"></div></div>
+    <div class="prog-steps">
+      <span class="ps active" id="ps0">Business</span>
+      <span class="ps" id="ps1">Audience</span>
+      <span class="ps" id="ps2">Goals</span>
+      <span class="ps" id="ps3">Channels</span>
+      <span class="ps" id="ps4">Assets</span>
+      <span class="ps" id="ps5">Messaging</span>
+      <span class="ps" id="ps6">Sales</span>
+      <span class="ps" id="ps7">Contact</span>
+    </div>
+  </div>
+</div>
+
+<div class="wizard" id="fw">
+
+<!-- ====== STEP 1: BUSINESS OVERVIEW ====== -->
+<div class="step active" id="s0">
+  <div class="sh">
+    <div class="slbl">Step 1 of 8</div>
+    <h1>Tell us about your <em>business</em></h1>
+    <p class="ssub">Our campaigns are built around your specific story. Understanding what you sell, who buys it, and what you've tried before lets us build on what works — and avoid repeating past mistakes.</p>
+    <div id="pkg-tag" class="pkg-tag" style="display:none"></div>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Business Name *</label><input id="bn" placeholder="Your Business Ltd" maxlength="100"></div>
+      <div class="fg"><label>Industry / Sector *</label><input id="bi" placeholder="e.g. B2B SaaS, Plumbing, Legal, Recruitment" maxlength="100"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Primary Location *</label><input id="bl" placeholder="e.g. Milton Keynes, MK1" maxlength="150"></div>
+      <div class="fg"><label>Geographic Target Area</label><input id="bc" placeholder="e.g. UK-wide, or MK / Northamptonshire" maxlength="200"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Company Size</label>
+        <select id="bs"><option value="">— Select</option><option>Solo / freelancer</option><option>2–5 employees</option><option>6–20 employees</option><option>21–50 employees</option><option>51–200 employees</option><option>200+ employees</option></select>
+      </div>
+      <div class="fg"><label>Monthly Revenue Range</label>
+        <select id="rr"><option value="">— Select (optional)</option><option>Pre-revenue</option><option>Under £5k/month</option><option>£5k–£20k/month</option><option>£20k–£50k/month</option><option>£50k–£100k/month</option><option>£100k+/month</option></select>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>What Does Your Business Sell? *<span class="hint">Products/services, who you sell to, what makes you different — be thorough</span></label>
+        <textarea id="bd" rows="4" placeholder="E.g. 'We're a B2B SaaS company offering construction project management software to UK contractors with 10–200 employees. Average contract value is £4,800/year. We have 120 customers mostly via referrals. Differentiators: 30-minute onboarding, no per-seat pricing, dedicated account manager…'" maxlength="3000" oninput="cci(this,'bdc',3000)"></textarea>
+        <div class="cc"><span id="bdc">0</span>/3000</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Your Competitive Advantages / USPs *<span class="hint">What genuinely makes you better than alternatives?</span></label>
+        <textarea id="bu" rows="3" placeholder="E.g. 'Lowest price per lead in market. Under-2-hour response. 90-day money-back guarantee. Only ISO-certified provider in our niche. 400+ 5-star reviews. 15 years in business…'" maxlength="2000" oninput="cci(this,'buc',2000)"></textarea>
+        <div class="cc"><span id="buc">0</span>/2000</div>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Average Customer / Deal Value</label><input id="dv" placeholder="e.g. £500 one-off, or £1,200/year retainer" maxlength="150"></div>
+      <div class="fg"><label>Average Sales Cycle</label>
+        <select id="sc"><option value="">— Select</option><option>Instant / same day</option><option>1–7 days</option><option>1–4 weeks</option><option>1–3 months</option><option>3–6 months</option><option>6+ months</option></select>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Current Website URL</label><input id="curl" type="url" placeholder="https://yoursite.com"></div>
+    </div>
+  </div>
+  <div class="snav">
+    <span class="sctr">1 / 8</span>
+    <button class="btn-n" onclick="goN(0)">Audience <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 2: TARGET AUDIENCE ====== -->
+<div class="step" id="s1">
+  <div class="sh">
+    <div class="slbl">Step 2 of 8</div>
+    <h1>Who are you <em>targeting?</em></h1>
+    <p class="ssub">Precise audience definition is what separates a campaign that converts from one that burns budget. The clearer the picture, the sharper the targeting.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Customer Type *</label>
+        <select id="ct"><option value="">— Select</option><option>Consumers (B2C)</option><option>Small businesses (B2B)</option><option>Mid-market businesses (B2B)</option><option>Enterprise (B2B)</option><option>Both B2B and B2C</option><option>Public sector / councils</option><option>Non-profits / charities</option></select>
+      </div>
+      <div class="fg"><label>Decision Maker Job Title<span class="hint">B2B: who signs off the purchase?</span></label><input id="dm" placeholder="e.g. Operations Director, Founder, Head of IT" maxlength="200"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Target Company Size<span class="hint">For B2B</span></label>
+        <select id="tcs"><option value="">— Select</option><option>Sole traders</option><option>Micro (2–9)</option><option>Small (10–49)</option><option>Medium (50–249)</option><option>Large (250+)</option><option>Any size</option><option>N/A — B2C</option></select>
+      </div>
+      <div class="fg"><label>Target Industries<span class="hint">B2B: sectors you're going after</span></label><input id="ti" placeholder="e.g. Construction, Legal, Healthcare, Hospitality" maxlength="300"></div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Describe Your Ideal Customer in Detail *<span class="hint">Demographics, role, budget, behaviour, where they spend time online</span></label>
+        <textarea id="cd" rows="4" placeholder="B2B example: 'Operations Director at a UK construction firm, 20–100 employees, frustrated with spreadsheet project tracking, software budget £3k–£10k/year, active on LinkedIn, needs ROI justification for the board…'&#10;B2C example: 'Homeowners aged 30–55, dual income £70k+, value quality over price, research online, active on Facebook and NextDoor…'" maxlength="3000" oninput="cci(this,'cdc',3000)"></textarea>
+        <div class="cc"><span id="cdc">0</span>/3000</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Customer Pain Points<span class="hint">Problems they have that you solve</span></label>
+        <textarea id="cp" rows="3" placeholder="E.g. 'They waste hours chasing subcontractor updates. Project overruns cost money and reputation. Current software is too complex — nobody uses it. Can't see real-time progress across multiple sites…'" maxlength="2000" oninput="cci(this,'cpc',2000)"></textarea>
+        <div class="cc"><span id="cpc">0</span>/2000</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Common Sales Objections<span class="hint">What do prospects say before deciding NOT to buy?</span></label>
+        <textarea id="ob" rows="2" placeholder="E.g. 'Too expensive vs competitor. We already have a solution. Need IT sign-off. Need a case study first. Had a bad agency experience before. MD needs to approve it…'" maxlength="1500" oninput="cci(this,'obc',1500)"></textarea>
+        <div class="cc"><span id="obc">0</span>/1500</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>What Triggers a Purchase?<span class="hint">What makes someone ready to buy RIGHT NOW?</span></label>
+        <textarea id="tr" rows="2" placeholder="E.g. 'A project just overran and cost them money', 'New ops director wants to modernise', 'Existing contract just expired', 'They just lost a big client due to disorganisation'…" maxlength="1000"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(1)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Business</button>
+    <span class="sctr">2 / 8</span>
+    <button class="btn-n" onclick="goN(1)">Goals <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 3: GOALS & KPIs ====== -->
+<div class="step" id="s2">
+  <div class="sh">
+    <div class="slbl">Step 3 of 8</div>
+    <h1>What does <em>success</em> look like?</h1>
+    <p class="ssub">We need concrete, measurable targets to build campaigns toward. These become the benchmarks we're held to every single month.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Primary Marketing Goal *</label>
+        <select id="mg"><option value="">— Select</option><option>Generate booked sales calls / demos</option><option>Generate inbound enquiries / leads</option><option>Drive website traffic</option><option>Build email subscriber list</option><option>Grow LinkedIn / social following</option><option>Increase online sales (e-commerce)</option><option>Build brand awareness in new market</option><option>Recruit talent / employer branding</option><option>Re-engage lapsed customers</option></select>
+      </div>
+      <div class="fg"><label>Target Leads / Month</label><input id="lt" placeholder="e.g. 20 qualified leads/month, 5 booked demos" maxlength="150"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Max Acceptable Cost Per Lead</label><input id="cpl" placeholder="e.g. £50/lead, or £200/booked call" maxlength="100"></div>
+      <div class="fg"><label>Monthly Ad Spend Budget</label>
+        <select id="mb"><option value="">— Select (separate from KWBA fee)</option><option>Under £500/month</option><option>£500–£1,000/month</option><option>£1,000–£2,000/month</option><option>£2,000–£5,000/month</option><option>£5,000–£10,000/month</option><option>£10,000+/month</option><option>No paid ads — organic only</option></select>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>12-Month Revenue / Growth Target<span class="hint">What growth are you aiming for with this investment?</span></label>
+        <textarea id="rt" rows="2" placeholder="E.g. 'Go from £30k to £60k/month in 12 months', 'Add 50 new B2B customers this year', 'Hit £1m ARR by Q4', 'Grow email list from 500 to 5,000'…" maxlength="800"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>How Do You Currently Generate Business?<span class="hint">What's working, what's not?</span></label>
+        <textarea id="cgb" rows="3" placeholder="E.g. 'Mostly referrals — about 70% of new business. Tried Google Ads twice but wasted money. We have a LinkedIn page but never post. Attend 2 trade shows/year. Word of mouth drives the rest but it's unpredictable and can't scale…'" maxlength="2000" oninput="cci(this,'cgbc',2000)"></textarea>
+        <div class="cc"><span id="cgbc">0</span>/2000</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Previous Marketing That Failed — and Why<span class="hint">Help us avoid the same mistakes</span></label>
+        <textarea id="fm" rows="3" placeholder="E.g. 'Paid an agency £2k/month for 6 months, got 3 leads total. Google Ads burned £800 with no enquiries — landing page was wrong. Cold email got spam-filtered. FB Ads drove clicks but zero conversions…'" maxlength="2000" oninput="cci(this,'fmc',2000)"></textarea>
+        <div class="cc"><span id="fmc">0</span>/2000</div>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Audience</button>
+    <span class="sctr">3 / 8</span>
+    <button class="btn-n" onclick="goN(2)">Channels <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 4: CHANNELS & STRATEGY ====== -->
+<div class="step" id="s3">
+  <div class="sh">
+    <div class="slbl">Step 4 of 8</div>
+    <h1>Which channels should we <em>activate?</em></h1>
+    <p class="ssub">Tell us where you want to show up and share any existing accounts. Not sure? Tick "Advise Me" and we'll recommend based on your audience and goals.</p>
+  </div>
+  <div class="card">
+    <div class="fr full">
+      <div class="fg">
+        <label>Channels to Activate — tick all you want</label>
+        <div class="cg" id="chans">
+          <div class="ci" data-v="Cold email outreach" onclick="tc2(this)"><span class="cdot"></span>Cold Email Outreach</div>
+          <div class="ci" data-v="LinkedIn outreach (DMs)" onclick="tc2(this)"><span class="cdot"></span>LinkedIn DM Outreach</div>
+          <div class="ci" data-v="LinkedIn organic content" onclick="tc2(this)"><span class="cdot"></span>LinkedIn Content</div>
+          <div class="ci" data-v="Google Ads (PPC)" onclick="tc2(this)"><span class="cdot"></span>Google Ads (PPC)</div>
+          <div class="ci" data-v="Meta Ads (Facebook / Instagram)" onclick="tc2(this)"><span class="cdot"></span>Meta Ads (FB/IG)</div>
+          <div class="ci" data-v="SEO / content marketing" onclick="tc2(this)"><span class="cdot"></span>SEO / Content</div>
+          <div class="ci" data-v="Email newsletter / nurture" onclick="tc2(this)"><span class="cdot"></span>Email Nurture</div>
+          <div class="ci" data-v="Retargeting ads" onclick="tc2(this)"><span class="cdot"></span>Retargeting</div>
+          <div class="ci" data-v="YouTube / video content" onclick="tc2(this)"><span class="cdot"></span>YouTube / Video</div>
+          <div class="ci" data-v="TikTok" onclick="tc2(this)"><span class="cdot"></span>TikTok</div>
+          <div class="ci" data-v="PR / press outreach" onclick="tc2(this)"><span class="cdot"></span>PR / Press</div>
+          <div class="ci" data-v="SMS campaigns" onclick="tc2(this)"><span class="cdot"></span>SMS Campaigns</div>
+          <div class="ci" data-v="Affiliate / referral programme" onclick="tc2(this)"><span class="cdot"></span>Affiliate / Referral</div>
+          <div class="ci" data-v="Not sure — advise me" onclick="tc2(this)"><span class="cdot"></span>Not Sure — Advise Me</div>
+        </div>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="fr">
+      <div class="fg"><label>LinkedIn Profile / Company URL</label><input id="li" placeholder="https://linkedin.com/in/yourprofile" maxlength="300"></div>
+      <div class="fg"><label>LinkedIn Connections / Followers</label><input id="lis" placeholder="e.g. 1,200 connections, 500 company followers" maxlength="150"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Email List Size &amp; Platform</label><input id="el" placeholder="e.g. 2,500 subscribers in Mailchimp" maxlength="200"></div>
+      <div class="fg"><label>CRM / Sales Tool</label>
+        <select id="crm"><option value="">— Select</option><option>HubSpot (free)</option><option>HubSpot (paid)</option><option>Salesforce</option><option>Pipedrive</option><option>Zoho</option><option>ActiveCampaign</option><option>Spreadsheet only</option><option>None</option><option>Other</option></select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Google Ads Account?</label>
+        <select id="ga"><option value="">— Select</option><option>Yes — will share access</option><option>No — please create one</option><option>Had one but closed it</option></select>
+      </div>
+      <div class="fg"><label>Meta (Facebook) Ads Account?</label>
+        <select id="ma"><option value="">— Select</option><option>Yes — will share access</option><option>No — please create one</option><option>Had one but closed it</option></select>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Main Competitors<span class="hint">We'll analyse their marketing to differentiate yours</span></label>
+        <textarea id="comp" rows="2" placeholder="E.g. 'Competitor1.com — UK market leader, heavy Google Ads spend. Competitor2.com — similar to us but cheaper. We need to out-position on quality and service…'" maxlength="1000"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Target Keywords / Search Terms</label>
+        <textarea id="kw" rows="2" placeholder="E.g. 'construction project management software UK', 'best project management tool for contractors', 'site management app'…" maxlength="800"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Geographic Targeting<span class="hint">Locations to focus on or avoid</span></label>
+        <textarea id="geo" rows="2" placeholder="E.g. 'Focus on London, Manchester, Birmingham first. Avoid Scotland for now. For LinkedIn, UK-registered companies only…'" maxlength="500"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Goals</button>
+    <span class="sctr">4 / 8</span>
+    <button class="btn-n" onclick="goN(3)">Assets <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 5: BRAND ASSETS ====== -->
+<div class="step" id="s4">
+  <div class="sh">
+    <div class="slbl">Step 5 of 8</div>
+    <h1>Upload your <em>campaign assets</em></h1>
+    <p class="ssub">Our creative team builds on-brand campaigns from day one. Case studies, testimonials, and existing ad creative are the most valuable assets you can share.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Logo / Brand Files</label>
+        <select id="ls"><option value="Yes — uploading below">Yes — uploading below</option><option value="No — please create">No — please build brand identity</option><option value="Needs refresh">Have one but needs refreshing</option></select>
+      </div>
+      <div class="fg"><label>Brand Guidelines</label>
+        <select id="bg"><option value="None">No formal guidelines</option><option value="Will upload">Yes — uploading below</option><option value="Basic notes">I'll describe below</option></select>
+      </div>
+    </div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Upload Logo &amp; Brand Files<span class="hint">All versions: colour, white/reversed, icon-only. SVG/AI/EPS preferred</span></label>
+      <div class="uz" id="z-logo">
+        <input type="file" id="f-logo" accept=".svg,.ai,.eps,.png,.pdf,.zip,.jpg" multiple onchange="hu(this,'logo')">
+        <div class="ui">🎨</div><div class="ut">Drop logo &amp; brand files here or click to browse</div>
+        <div class="us">SVG · AI · EPS · PNG · PDF · ZIP</div>
+      </div>
+      <div id="ll" class="fl"></div>
+      <div class="un">Include all variations: colour, reversed/white, landscape &amp; square, icon-only</div>
+    </div>
+    <div class="rule"></div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Upload Photography &amp; Video<span class="hint">Team/headshots, product shots, existing ad creative, video content</span></label>
+      <div class="uz" id="z-photos">
+        <input type="file" id="f-photos" accept=".jpg,.jpeg,.png,.webp,.gif,.heic,.mp4,.mov" multiple onchange="hu(this,'photos')">
+        <div class="ui">📷</div><div class="ut">Drop photos &amp; videos here or click to browse</div>
+        <div class="us">JPG · PNG · WebP · MP4 · MOV · GIF</div>
+      </div>
+      <div id="lp" class="fl"></div>
+      <div class="un">Ideal: founder/team headshots, office/premises, product/service shots, any existing ad creative</div>
+    </div>
+    <div class="rule"></div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Upload Existing Marketing Materials<span class="hint">Previous ads, pitch decks, brochures, case studies, sales scripts, one-pagers</span></label>
+      <div class="uz" id="z-docs">
+        <input type="file" id="f-docs" accept=".pdf,.docx,.pptx,.zip,.jpg,.png,.xlsx,.csv" multiple onchange="hu(this,'docs')">
+        <div class="ui">📁</div><div class="ut">Drop existing marketing materials here or click to browse</div>
+        <div class="us">PDF · DOCX · PPTX · ZIP — creative, decks, data, or content</div>
+      </div>
+      <div id="ld" class="fl"></div>
+      <div class="un">Anything useful: old ads, pitch decks, product brochures, customer case studies, pricing sheets</div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Brand Colours &amp; Fonts<span class="hint">If no formal guidelines, describe your visual identity</span></label>
+        <textarea id="brd" rows="2" placeholder="E.g. 'Primary: Navy #1A3A6B. Secondary: Gold #C9A84C. Font: Montserrat headings + Open Sans body. Always caps for headlines. Never use gradients…'" maxlength="500"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Customer Case Studies / Success Stories<span class="hint">Specific results you've achieved — these become the strongest campaign proof points</span></label>
+        <textarea id="cs" rows="3" placeholder="E.g. 'Helped Smith Construction reduce admin time by 40% in 3 months. Before: 8hrs/week on reports. After: 2hrs. Project overruns dropped from 30% to 8%.'&#10;Any before/after numbers, time saved, revenue growth, or ROI figures." maxlength="3000" oninput="cci(this,'csc',3000)"></textarea>
+        <div class="cc"><span id="csc">0</span>/3000</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Customer Testimonials / Reviews<span class="hint">Real quotes from real customers — essential for ad copy that converts</span></label>
+        <textarea id="tes" rows="3" placeholder="Paste 3–6 strong customer quotes with name, company, source. E.g:&#10;'⭐⭐⭐⭐⭐ Finally software our foremen actually use. Saves me 2 hours every day. — Mark Davies, MD, Davies Building Contracts (Google, Jan 2025)'&#10;&#10;Or give us the URL to your Google / Trustpilot reviews." maxlength="3000" oninput="cci(this,'tesc',3000)"></textarea>
+        <div class="cc"><span id="tesc">0</span>/3000</div>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(4)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Channels</button>
+    <span class="sctr">5 / 8</span>
+    <button class="btn-n" onclick="goN(4)">Messaging <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 6: MESSAGING & TONE ====== -->
+<div class="step" id="s5">
+  <div class="sh">
+    <div class="slbl">Step 6 of 8</div>
+    <h1>How should your campaigns <em>sound?</em></h1>
+    <p class="ssub">Our copywriters craft every email, ad, and post in your voice. This section tells us exactly how you want to come across — and what lines we must never cross.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Brand Tone of Voice</label>
+        <select id="ton"><option value="">— Select</option><option>Professional and authoritative</option><option>Friendly and conversational</option><option>Provocative and challenging</option><option>Data-driven and analytical</option><option>Bold and direct</option><option>Warm and empathetic</option><option>Technical / expert-led</option><option>Casual and accessible</option></select>
+      </div>
+      <div class="fg"><label>Writing Style References</label><input id="sr" placeholder="e.g. 'Like Alex Hormozi but British', or 'Think The Economist but approachable'" maxlength="200"></div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Key Messages — Non-Negotiable Positioning Statements<span class="hint">3–5 things every campaign must communicate</span></label>
+        <textarea id="km" rows="3" placeholder="E.g. '1. We guarantee results or you don't pay. 2. We only work with 10 clients at a time. 3. Every campaign built around your specific ICP. 4. You own all assets — no lock-in. 5. Dedicated strategist reachable within 4 hours…'" maxlength="1500"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>What We Must NEVER Say or Promise<span class="hint">Claims, phrases, or topics that are off-limits</span></label>
+        <textarea id="nv" rows="2" placeholder="E.g. 'Don't promise specific ROI figures. Don't mention our refund policy publicly. Don't directly compare prices with [competitor]. Avoid the word cheap. Nothing political…'" maxlength="1000"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Regulatory / Compliance Restrictions<span class="hint">Industry rules affecting how you can market (FCA, GDPR, MHRA, SRA, etc.)</span></label>
+        <textarea id="comp2" rows="2" placeholder="E.g. 'FCA regulated — all financial claims need standard disclaimer. GDPR: opted-in contacts only. Cannot make comparative claims. Legal services: SRA rules apply to client testimonials…'" maxlength="1000"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Lead Magnet / Campaign Hook<span class="hint">What do you offer to get someone to take the first step?</span></label>
+        <textarea id="hk" rows="2" placeholder="E.g. 'Free 30-min audit call', 'Download our free ROI calculator', '3 months free on annual plan', 'Free site survey (£250 value)', '14-day trial no credit card'…" maxlength="600"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(5)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Assets</button>
+    <span class="sctr">6 / 8</span>
+    <button class="btn-n" onclick="goN(5)">Sales Process <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 7: LEAD HANDLING ====== -->
+<div class="step" id="s6">
+  <div class="sh">
+    <div class="slbl">Step 7 of 8</div>
+    <h1>How do you <em>handle leads?</em></h1>
+    <p class="ssub">We generate the leads — your team closes them. Understanding your sales process lets us optimise for the right kind of lead, going to the right person, at the right temperature.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>How Are Leads Currently Handled?</label>
+        <select id="lh"><option value="">— Select</option><option>I handle all enquiries personally</option><option>Dedicated sales team / SDR</option><option>Part-time sales resource</option><option>Automated CRM + follow-up</option><option>No consistent process yet</option></select>
+      </div>
+      <div class="fg"><label>Target Response Time to New Leads</label>
+        <select id="rt2"><option value="">— Select</option><option>Within 30 minutes</option><option>Within 2 hours</option><option>Same business day</option><option>Within 24–48 hours</option><option>Still working on this</option></select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Where Should Leads Land?</label>
+        <select id="ld2"><option value="">— Select</option><option>Book a call (Calendly / calendar)</option><option>Fill in a form on the website</option><option>Send a direct email</option><option>Call a phone number</option><option>WhatsApp / chat</option><option>CRM intake form</option></select>
+      </div>
+      <div class="fg"><label>Sales Meeting / Demo Format</label>
+        <select id="sf"><option value="">— Select</option><option>Video call (Zoom / Teams)</option><option>In-person meeting</option><option>Phone call</option><option>Fully online / self-serve</option></select>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Walk Us Through Your Sales Process<span class="hint">What happens step-by-step after a lead comes in?</span></label>
+        <textarea id="sp" rows="3" placeholder="E.g. 'Lead books 30-min discovery call via Calendly. We send confirmation + pre-call questionnaire. On call: qualify pain points and present solution. If interested: proposal within 48 hours. Second call to answer questions. Contract on DocuSign. 50% invoice upfront, 50% on delivery…'" maxlength="2000" oninput="cci(this,'spc',2000)"></textarea>
+        <div class="cc"><span id="spc">0</span>/2000</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Existing Follow-Up Sequences / Email Templates<span class="hint">Paste any scripts you currently use — we'll improve them</span></label>
+        <textarea id="es" rows="2" placeholder="Paste any existing email templates, DM scripts, or follow-up sequences. We'll integrate and improve them for the campaign workflow…" maxlength="3000" oninput="cci(this,'esc',3000)"></textarea>
+        <div class="cc"><span id="esc">0</span>/3000</div>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(6)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Messaging</button>
+    <span class="sctr">7 / 8</span>
+    <button class="btn-n" onclick="goN(6)">Contact <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 8: CONTACT ====== -->
+<div class="step" id="s7">
+  <div class="sh">
+    <div class="slbl">Step 8 of 8</div>
+    <h1>Almost <em>done.</em></h1>
+    <p class="ssub">Your dedicated strategist will contact you within 48 hours to review the brief and book your onboarding call.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Your Full Name *</label><input id="cn" placeholder="Jane Smith" maxlength="100"></div>
+      <div class="fg"><label>Job Title / Role</label><input id="crole" placeholder="e.g. Founder, Sales Director, Head of Marketing" maxlength="100"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Email Address *</label><input id="ce" type="email" placeholder="jane@yourbusiness.com" maxlength="255"></div>
+      <div class="fg"><label>Phone / WhatsApp *</label><input id="cp2" type="tel" placeholder="07700 000 000" maxlength="20"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Reporting Preference</label>
+        <select id="rp"><option value="">— Select</option><option>Weekly email + monthly strategy call</option><option>Bi-weekly update</option><option>Monthly report + call only</option><option>Real-time dashboard access</option></select>
+      </div>
+      <div class="fg"><label>Package</label><input id="pkg-display" readonly style="opacity:.6;cursor:default"></div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Upcoming Events / Deadlines to Build Campaigns Around</label>
+        <textarea id="ev" rows="2" placeholder="E.g. 'Exhibiting at [trade show] on 15 June — need pre-show campaign live by 1 June', 'New product launch in March', 'Black Friday is our biggest period'…" maxlength="600"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Anything Else — Additional Context, Restrictions, Special Requests</label>
+        <textarea id="ex" rows="3" placeholder="E.g. 'Regulated industry — all copy must be approved by compliance before going live', 'Just taken on investment and need to scale fast', 'We have 3 product lines — focus on enterprise tier first'…" maxlength="2000" oninput="cci(this,'exc',2000)"></textarea>
+        <div class="cc"><span id="exc">0</span>/2000</div>
+      </div>
+    </div>
+  </div>
+  <div id="fe" class="errmsg" style="display:none"></div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(7)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Sales</button>
+    <span class="sctr">8 / 8</span>
+    <button class="btn-n" id="sb" onclick="sub()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Submit Brief
+    </button>
+  </div>
+  <p style="font-size:11px;color:var(--muted2);margin-top:16px;text-align:center">Your strategist will review within 48 hours and book your onboarding call. All files stored securely.</p>
+</div>
+
+</div><!-- /wizard -->
+
+<!-- SUCCESS -->
+<div class="succ-wrap" id="sw">
+  <div class="succ-icon">✓</div>
+  <h2>Brief <em>received</em></h2>
+  <p>Your marketing brief has been submitted. Your dedicated strategist will review everything and contact you within 48 hours to book your onboarding call.</p>
+  <a href="/" class="back-btn">Back to Home</a>
+</div>
+
+<script>
+const FSP='https://formspree.io/f/xpwzgkdl';
+const JBN='69b043756a0858658be24fdf';
+const JAK='$2a$10$36fMbyFWdJhH7w0K.eb8kuyFcc.USY3NIEpBjX5OusE2.sri2UDEe';
+const PKG={starter:'Starter — £800',growth:'Growth — £1,499',premium:'Premium — £2,299','digital-marketing':'Digital Marketing — £850'};
+const up=new URLSearchParams(window.location.search);
+const pk=up.get('pkg')||'digital-marketing';
+const pn=PKG[pk]||'Digital Marketing — £850';
+document.getElementById('pkg-display').value=pn;
+const tg=document.getElementById('pkg-tag');tg.textContent=pn;tg.style.display='inline-block';
+
+const TOTAL=8;
+
+function goN(from){
+  const c=document.getElementById('s'+from);
+  const n=document.getElementById('s'+(from+1));
+  if(!n)return;
+  c.classList.add('exit-fwd');
+  setTimeout(()=>{
+    c.classList.remove('active','exit-fwd');
+    n.classList.add('active');
+    n.classList.remove('enter-back');
+    upP(from+1);
+    window.scrollTo({top:0,behavior:'smooth'});
+  },260);
+}
+function goB(from){
+  const c=document.getElementById('s'+from);
+  const p=document.getElementById('s'+(from-1));
+  if(!p)return;
+  c.classList.remove('active');
+  setTimeout(()=>{
+    p.classList.add('active','enter-back');
+    upP(from-1);
+    window.scrollTo({top:0,behavior:'smooth'});
+  },20);
+}
+function upP(n){
+  document.getElementById('pf').style.width=Math.round(n/TOTAL*100)+'%';
+  for(let i=0;i<TOTAL;i++){
+    const s=document.getElementById('ps'+i);
+    if(!s)continue;
+    s.classList.remove('active','done');
+    if(i===n)s.classList.add('active');
+    else if(i<n)s.classList.add('done');
+  }
+}
+
+const files={logo:[],photos:[],docs:[]};
+function hu(inp,cat){Array.from(inp.files).forEach(f=>{if(!files[cat].find(x=>x.name===f.name&&x.size===f.size))files[cat].push(f);});rl(cat);}
+function rl(cat){
+  const ids={logo:'ll',photos:'lp',docs:'ld'};
+  const el=document.getElementById(ids[cat]);
+  if(!el)return;
+  el.innerHTML=files[cat].map((f,i)=>`<div class="fi"><span class="fn">${esc(f.name)}</span><span class="fsz">${fmt(f.size)}</span><button class="frm2" onclick="rf('${cat}',${i})">×</button></div>`).join('');
+}
+function rf(cat,i){files[cat].splice(i,1);rl(cat);}
+function fmt(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
+['z-logo','z-photos','z-docs'].forEach(id=>{
+  const z=document.getElementById(id);
+  if(!z)return;
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('dv');});
+  z.addEventListener('dragleave',()=>z.classList.remove('dv'));
+  z.addEventListener('drop',e=>{
+    e.preventDefault();z.classList.remove('dv');
+    const cat=id.replace('z-','');
+    Array.from(e.dataTransfer.files).forEach(f=>{if(!files[cat].find(x=>x.name===f.name))files[cat].push(f);});
+    rl(cat);
+  });
+});
+function tc2(el){el.classList.toggle('sel');}
+function gc(id){return Array.from(document.querySelectorAll('#'+id+' .ci.sel')).map(e=>e.dataset.v||e.dataset.val).join(', ');}
+function cci(el,id,max){document.getElementById(id).textContent=el.value.length;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function gv(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+
+async function saveCloud(b){
+  try{
+    const r=await fetch(`https://api.jsonbin.io/v3/b/${JBN}/latest`,{headers:{'X-Master-Key':JAK}});
+    const j=await r.json();
+    const ex=Array.isArray(j.record)?j.record:[];
+    ex.push(b);
+    await fetch(`https://api.jsonbin.io/v3/b/${JBN}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JAK},body:JSON.stringify(ex)});
+  }catch(e){console.error(e);}
+}
+
+async function sub(){
+  const bizName=gv('bn'),cName=gv('cn'),cEmail=gv('ce'),cPhone=gv('cp2');
+  const err=document.getElementById('fe');
+  if(!bizName||!cName||!cEmail||!cPhone){err.textContent='Please complete: Business Name, Your Name, Email, and Phone.';err.style.display='block';return;}
+  const btn=document.getElementById('sb');
+  btn.disabled=true;
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Submitting…';
+  err.style.display='none';
+  const lu=files.logo.map(f=>f.name+' ('+fmt(f.size)+')').join(', ')||'None';
+  const pu=files.photos.map(f=>f.name+' ('+fmt(f.size)+')').join(', ')||'None';
+  const du=files.docs.map(f=>f.name+' ('+fmt(f.size)+')').join(', ')||'None';
+  const b={id:Date.now().toString(),briefType:'marketing',timestamp:new Date().toISOString(),pkg:pk,pkgName:pn,
+    bizName,industry:gv('bi'),location:gv('bl'),coverage:gv('bc'),companySize:gv('bs'),revenue:gv('rr'),
+    bizDesc:gv('bd'),bizUSP:gv('bu'),dealValue:gv('dv'),salesCycle:gv('sc'),currentURL:gv('curl'),
+    custType:gv('ct'),decisionMaker:gv('dm'),targetCompSize:gv('tcs'),targetIndustries:gv('ti'),
+    custDesc:gv('cd'),custPain:gv('cp'),objections:gv('ob'),triggers:gv('tr'),
+    primaryGoal:gv('mg'),leadsTarget:gv('lt'),costPerLead:gv('cpl'),adBudget:gv('mb'),growthTarget:gv('rt'),
+    currentLeadGen:gv('cgb'),failedMarketing:gv('fm'),
+    channels:gc('chans'),linkedIn:gv('li'),linkedInSize:gv('lis'),emailList:gv('el'),crm:gv('crm'),
+    googleAds:gv('ga'),metaAds:gv('ma'),competitors:gv('comp'),keywords:gv('kw'),geoTargeting:gv('geo'),
+    logoStatus:gv('ls'),brandGuide:gv('bg'),logoUploaded:lu,photosUploaded:pu,docsUploaded:du,
+    brandColours:gv('brd'),caseStudies:gv('cs'),testimonials:gv('tes'),
+    tone:gv('ton'),styleRef:gv('sr'),keyMessages:gv('km'),neverSay:gv('nv'),compliance:gv('comp2'),leadMagnet:gv('hk'),
+    leadHandling:gv('lh'),responseTime:gv('rt2'),leadDest:gv('ld2'),meetingFormat:gv('sf'),salesProcess:gv('sp'),emailTemplates:gv('es'),
+    contactName:cName,contactRole:gv('crole'),contactEmail:cEmail,contactPhone:cPhone,reporting:gv('rp'),events:gv('ev'),extra:gv('ex')};
+  try{
+    const res=await fetch(FSP,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},
+      body:JSON.stringify({_subject:`New Marketing Brief — ${bizName} (${pn})`,...Object.fromEntries(Object.entries(b).map(([k,v])=>[k,v||'—']))})});
+    if(!res.ok)throw new Error('fail');
+    await saveCloud(b);
+    document.getElementById('fw').style.display='none';
+    document.getElementById('sw').style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(e){
+    err.textContent='Something went wrong. Please try again or email hello@kwba-agency.com';
+    err.style.display='block';
+    btn.disabled=false;
+    btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Submit Brief';
+  }
+}
+</script>
+</body>
+</html>
