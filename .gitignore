@@ -1,5 +1,9 @@
-node_modules
-database.db
-uploads
-server.log
 .env
+database.db
+database.db-journal
+uploads/
+node_modules/
+npm-debug.log*
+.DS_Store
+kwba-v6-fixed.zip
+kwba-v5-complete*.zip

@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- API: auto-detects local vs Render backend -->
+  <script>
+    window.API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ? ""
+      : "https://YOUR-APP-NAME.onrender.com"; // ← replace with your Render URL
+  </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login — KWBA Agency</title>
@@ -31,7 +37,7 @@ button{width:100%;background:var(--gold);color:black;border:none;padding:14px;fo
 async function login() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('pass').value;
-    const res = await fetch("/login", {
+    const res = await fetch(window.API_BASE + '/login', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })

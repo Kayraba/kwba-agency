@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- API: auto-detects local vs Render backend -->
+  <script>
+    window.API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ? ""
+      : "https://YOUR-APP-NAME.onrender.com"; // ← replace with your Render URL
+  </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — KWBA Agency OS</title>
@@ -349,7 +355,7 @@ const AGENTS = {
 async function doLogin() {
   const email = document.getElementById('email-input').value;
   const password = document.getElementById('pw-input').value;
-  const res = await fetch("/login", {
+  const res = await fetch(window.API_BASE + '/login', {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
@@ -408,7 +414,7 @@ async function loadBriefs() {
   const list = document.getElementById('briefs-list');
   const loading = document.getElementById('loading-briefs');
   loading.style.display = 'block';
-  const res = await authFetch("/briefs");
+  const res = await authFetch(window.API_BASE + '/briefs');
   allBriefs = await res.json();
   loading.style.display = 'none';
   updateStats();
@@ -489,7 +495,7 @@ function toggleCard(idx) {
 }
 
 async function updateStatus(id, status) {
-  await authFetch(`/brief/${id}/status`, {
+  await authFetch(window.API_BASE + `/brief/${id}/status`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status })
@@ -543,7 +549,7 @@ async function runAgent() {
   btn.innerHTML = '⏳ Processing...';
   
   const prompt = AGENTS[currentAgent].prompt(JSON.stringify(currentBriefContext, null, 2));
-  const res = await authFetch("/stream-agent", {
+  const res = await authFetch(window.API_BASE + '/stream-agent', {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt })
@@ -587,7 +593,7 @@ async function runAgent() {
   btn.innerHTML = '▶ Run Agent';
   
   // Save output
-  await authFetch("/output", {
+  await authFetch(window.API_BASE + '/output', {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ briefId: currentBriefContext.id, agent: currentAgent, output: fullText })
@@ -621,7 +627,7 @@ function exportPDF() {
 
 // --- ACTIVITY & ANALYTICS ---
 async function loadActivity() {
-  const res = await authFetch("/activity");
+  const res = await authFetch(window.API_BASE + '/activity');
   const data = await res.json();
   const list = document.getElementById('activity-list');
   list.innerHTML = data.map(a => `
@@ -635,7 +641,7 @@ async function loadActivity() {
 }
 
 async function loadAnalytics() {
-  const res = await authFetch("/analytics");
+  const res = await authFetch(window.API_BASE + '/analytics');
   const data = await res.json();
   document.getElementById('s-revenue').textContent = '£' + data.revenue.toLocaleString();
   document.getElementById('chart-agents').innerHTML = data.agents.map(a => `<div>${a.agent}: ${a.count}</div>`).join('');

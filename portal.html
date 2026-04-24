@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- API: auto-detects local vs Render backend -->
+  <script>
+    window.API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ? ""
+      : "https://YOUR-APP-NAME.onrender.com"; // ← replace with your Render URL
+  </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Portal — KWBA Agency</title>
@@ -57,7 +63,7 @@
         async function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const res = await fetch("/login", {
+            const res = await fetch(window.API_BASE + '/login', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
@@ -74,7 +80,7 @@
 
         async function loadPortal() {
             if (!token) return;
-            const res = await fetch("/client-portal/data", {
+            const res = await fetch(window.API_BASE + '/client-portal/data', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!res.ok) return logout();

@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- API: auto-detects local vs Render backend -->
+  <script>
+    window.API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ? ""
+      : "https://YOUR-APP-NAME.onrender.com"; // ← replace with your Render URL
+  </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Start Your Project — KWBA Agency</title>
@@ -87,7 +93,7 @@
             addMsg("Thank you! I'm saving your brief and preparing your project dashboard...", 'ai');
             
             try {
-                const res = await fetch("/public-brief", {
+                const res = await fetch(window.API_BASE + '/public-brief', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(briefData)

@@ -13,7 +13,15 @@ const nodemailer = require("nodemailer");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+// CORS: open locally, locked to your Netlify URL in production
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowed = [process.env.FRONTEND_URL, "http://localhost:3000", "http://127.0.0.1:3000"].filter(Boolean);
+    if (!origin || allowed.includes(origin)) return callback(null, true);
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true
+}));
 
 const JWT_SECRET = process.env.JWT_SECRET || "agency-super-secret-key";
 
@@ -137,9 +145,9 @@ const transporter = nodemailer.createTransport({
 
 // --- CLOUDINARY SETUP ---
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "YOUR_CLOUD_NAME",
-  api_key: process.env.CLOUDINARY_API_KEY || "YOUR_API_KEY",
-  api_secret: process.env.CLOUDINARY_API_SECRET || "YOUR_API_SECRET"
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 const upload = multer({ dest: "uploads/" });
@@ -338,9 +346,37 @@ app.post("/create-client", authenticate, async (req, res) => {
     } else {
         await db.query("INSERT OR REPLACE INTO users (email, password, role, briefId) VALUES ($1, $2, 'client', $3)", [email, hash, briefId]);
     }
+    // Send portal invite email if SMTP configured
+    if (process.env.SMTP_USER) {
+      await transporter.sendMail({
+        from: process.env.SMTP_USER,
+        to: email,
+        subject: "Your KWBA Client Portal Access",
+        html: `<p>Your client portal is ready.</p><p><strong>Email:</strong> ${email}<br><strong>Password:</strong> ${password}</p><p><a href="${process.env.FRONTEND_URL || "http://localhost:3000"}/portal.html">Log in here</a></p>`
+      });
+    }
     res.send({ success: true });
   } catch(e) { res.status(500).send(e.message); }
 });
 
+// File upload — Cloudinary in production, local /uploads in dev
+app.post("/upload", authenticate, upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).send("No file uploaded");
+    let url = `/uploads/${req.file.filename}`;
+    if (process.env.CLOUDINARY_CLOUD_NAME) {
+      const result = await cloudinary.uploader.upload(req.file.path, { folder: "kwba-agency" });
+      url = result.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
+    const { briefId, tag } = req.body;
+    await db.query("INSERT INTO files (briefId, name, url, tag) VALUES ($1, $2, $3, $4)", [briefId, req.file.originalname, url, tag || "general"]);
+    res.send({ success: true, url });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+app.use("/uploads", express.static("uploads"));
 app.use(express.static("."));
-app.listen(3000, () => console.log("KWBA Pro OS running on 3000"));
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`KWBA Pro OS running on port ${PORT}`));
