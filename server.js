@@ -1,6 +1,7 @@
 const express = require("express");
 const { Pool } = require("pg");
-const sqlite3 = require("sqlite3").verbose();
+// sqlite3 only loaded in local dev — Render uses PostgreSQL
+const sqlite3 = process.env.DATABASE_URL ? null : require("sqlite3").verbose();
 const cors = require("cors");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
