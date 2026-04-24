@@ -702,6 +702,14 @@ async function sub(){
     const res=await fetch(FSP,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},
       body:JSON.stringify({_subject:`New Marketing Brief — ${bizName} (${pn})`,...Object.fromEntries(Object.entries(b).map(([k,v])=>[k,v||'—']))})});
     if(!res.ok)throw new Error('fail');
+    // ALSO SAVE TO LOCAL SERVER
+    try {
+      await fetch("/public-brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(b)
+      });
+    } catch(e) { console.log("Local server sync failed, cloud saved."); }
     await saveCloud(b);
     document.getElementById('fw').style.display='none';
     document.getElementById('sw').style.display='block';

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — KWBA Agency</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+:root{--bg:#0f0e0c;--bg2:#1a1814;--gold:#c9a84c;--ink:#f0ece4;--muted:#9a9488;--border:rgba(201,168,76,0.15)}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+.box{width:100%;max-width:360px;padding:40px;background:var(--bg2);border:1px solid var(--border);text-align:center}
+h1{font-family:'Cormorant Garamond',serif;font-weight:400;margin-bottom:10px;font-size:32px}
+p{font-size:14px;color:var(--muted);margin-bottom:30px}
+input{width:100%;background:var(--bg);border:1px solid var(--border);color:white;padding:14px;margin-bottom:12px;box-sizing:border-box;font-family:inherit;outline:none}
+input:focus{border-color:var(--gold)}
+button{width:100%;background:var(--gold);color:black;border:none;padding:14px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;font-size:11px}
+.error{color:#e05c5c;font-size:13px;margin-bottom:15px;display:none}
+</style>
+</head>
+<body>
+<div class="box">
+    <h1>Agency <em>Access</em></h1>
+    <p>Client Portal & AI Hub Login</p>
+    <div id="err" class="error">Invalid email or password</div>
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="password" id="pass" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()">Enter Agency OS</button>
+</div>
+
+<script>
+async function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('pass').value;
+    const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+    });
+    if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('agency_token', data.token);
+        if(data.role === 'admin') location.href = '/admin.html';
+        else location.href = '/portal.html';
+    } else {
+        document.getElementById('err').style.display = 'block';
+    }
+}
+</script>
+</body>
+</html>

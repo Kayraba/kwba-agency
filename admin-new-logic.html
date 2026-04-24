@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — KWBA Agency OS</title>
+<title>Admin — KWBA Agency</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -133,6 +133,7 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 .ai-run-btn:disabled{opacity:.4;cursor:not-allowed}
 .ai-copy-btn{font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border);padding:9px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
 .ai-copy-btn:hover{border-color:var(--gold-border);color:var(--gold)}
+.ai-pdf-btn{font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:var(--green);color:white;border:none;padding:10px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s; display:none;}
 .ai-clear-btn{font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:transparent;color:var(--muted2);border:1px solid var(--border2);padding:9px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;margin-left:auto}
 .ai-clear-btn:hover{color:var(--muted);border-color:var(--border)}
 .ai-output{flex:1;padding:24px;overflow-y:auto;min-height:300px}
@@ -148,16 +149,6 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 .ai-streaming{display:inline-block;width:8px;height:14px;background:var(--gold);animation:blink .7s step-end infinite;margin-left:2px;vertical-align:text-bottom}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .ai-status{font-size:11px;color:var(--muted2);margin-left:8px}
-
-/* ACTIVITY FEED */
-.activity-list{display:flex;flex-direction:column;gap:12px}
-.activity-item{background:var(--bg2);border:1px solid var(--border);padding:16px;display:flex;gap:16px;align-items:flex-start}
-.activity-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);margin-top:6px}
-.activity-content{flex:1}
-.activity-meta{font-size:10px;color:var(--muted2);margin-bottom:4px}
-.activity-text{font-size:13px;color:var(--ink2)}
-.activity-text strong{color:var(--gold);font-weight:400}
-
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--gold-border);color:var(--ink);padding:12px 20px;font-size:12px;z-index:999;display:none;animation:slideup .25s ease}
 .toast.show{display:block}
@@ -172,8 +163,8 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 <div id="login-screen" class="login-wrap">
   <div class="login-box">
     <div class="login-icon">🔒</div>
-    <h1 class="login-title">Agency OS Access</h1>
-    <p class="login-sub">KWBA internal dashboard — authorised users only</p>
+    <h1 class="login-title">KWBA Agency Access</h1>
+    <p class="login-sub">Internal dashboard — authorised users only</p>
     <div id="login-error" class="login-error" style="display:none">Incorrect credentials. Try again.</div>
     <input type="email" id="email-input" class="login-input" placeholder="Admin email" value="admin@kwba-agency.com">
     <input type="password" id="pw-input" class="login-input" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()">
@@ -184,18 +175,16 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 <!-- DASHBOARD -->
 <div id="dashboard" style="display:none">
   <nav>
-    <span class="nav-logo">KWBA AGENCY OS</span>
+    <span class="nav-logo">KWBA Agency</span>
     <div class="nav-right">
-      <span class="nav-tag">System Admin</span>
+      <span class="nav-tag">Admin Dashboard</span>
       <button class="sign-out" onclick="signOut()">Sign Out</button>
     </div>
   </nav>
 
   <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('briefs',this)">📋 Briefs <span class="tab-badge" id="brief-count-badge">0</span></button>
-    <button class="tab" onclick="switchTab('aihub',this)">🤖 AI Specialists</button>
-    <button class="tab" onclick="switchTab('activity',this)">🕒 Activity</button>
-    <button class="tab" onclick="switchTab('analytics',this)">📊 Analytics</button>
+    <button class="tab active" onclick="switchTab('briefs',this)">📋 Client Briefs <span class="tab-badge" id="brief-count-badge">0</span></button>
+    <button class="tab" onclick="switchTab('aihub',this)">🤖 AI Hub</button>
     <button class="tab" onclick="switchTab('settings',this)">⚙ Settings</button>
   </div>
 
@@ -203,9 +192,9 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
   <div class="panel active" id="panel-briefs">
     <div class="stats-row" id="stats-row">
       <div class="stat-card"><div class="stat-num" id="s-total">0</div><div class="stat-label">Total Briefs</div></div>
-      <div class="stat-card"><div class="stat-num" id="s-new">0</div><div class="stat-label">New Submissions</div></div>
-      <div class="stat-card"><div class="stat-num" id="s-active">0</div><div class="stat-label">In Progress</div></div>
-      <div class="stat-card"><div class="stat-num" id="s-revenue">£0</div><div class="stat-label">Project Value</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-website">0</div><div class="stat-label">Website Briefs</div><div class="stat-sub">kwba-agency.com</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-marketing">0</div><div class="stat-label">Marketing Briefs</div><div class="stat-sub">SaaS Clients</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-today">0</div><div class="stat-label">Received Today</div></div>
     </div>
 
     <div class="dash-header">
@@ -214,20 +203,19 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
         <p id="brief-count-text" style="font-size:12px;color:var(--muted);margin-top:4px">Loading from database…</p>
       </div>
       <div class="dash-actions">
-        <button class="abtn abtn-gold" onclick="loadBriefs()">↻ Refresh Feed</button>
+        <button class="abtn abtn-outline" onclick="exportBriefs()">⬇ Export JSON</button>
+        <button class="abtn abtn-gold" onclick="loadBriefs()">↻ Refresh</button>
       </div>
     </div>
 
     <div class="filter-bar">
       <button class="fchip on" onclick="setFilter('all',this)">All</button>
-      <button class="fchip" onclick="setFilter('new',this)">New</button>
-      <button class="fchip" onclick="setFilter('discovery',this)">Discovery</button>
-      <button class="fchip" onclick="setFilter('in_progress',this)">Active</button>
-      <button class="fchip" onclick="setFilter('delivered',this)">Completed</button>
+      <button class="fchip" onclick="setFilter('website',this)">Website</button>
+      <button class="fchip" onclick="setFilter('marketing',this)">Marketing</button>
     </div>
 
-    <div id="loading-briefs" class="loading">Syncing with KWBA Cloud...</div>
-    <div id="empty-briefs" class="empty" style="display:none">No briefs found.</div>
+    <div id="loading" class="loading">Syncing with KWBA secure server…</div>
+    <div id="empty" class="empty" style="display:none">No briefs yet. Submissions will appear here automatically.</div>
     <div id="briefs-list" class="briefs-list"></div>
   </div>
 
@@ -235,88 +223,85 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
   <div class="panel" id="panel-aihub">
     <div class="dash-header">
       <div>
-        <h1 class="dash-title">AI <em>Specialists</em></h1>
-        <p style="font-size:12px;color:var(--muted);margin-top:4px">26 expert agents trained on agency-grade frameworks.</p>
-      </div>
-      <div class="dash-actions">
-         <button class="abtn abtn-gold" style="background:var(--blue); border-color:var(--blue); color:white;" onclick="runAutomationChain()">🚀 Full Agency Run</button>
+        <h1 class="dash-title">AI <em>Hub</em></h1>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px">AI specialists to help turn client briefs into agency-grade work — powered by Gemini 1.5</p>
       </div>
     </div>
 
     <div class="ai-hub">
+      <!-- Sidebar: agent list -->
       <div class="ai-sidebar">
-        <div class="ai-sidebar-head">Select Specialist</div>
-        <div class="agent-list" id="agent-list-ui"></div>
+        <div class="ai-sidebar-head">Select a Specialist</div>
+        <div class="agent-list" id="agent-list-ui">
+          <!-- Populated by JS -->
+        </div>
       </div>
 
+      <!-- Main AI workspace -->
       <div class="ai-main">
         <div class="ai-main-head">
           <div>
-            <div class="ai-main-title" id="agent-title">Brief Summariser</div>
-            <div class="ai-main-sub" id="agent-sub">Sharp 1-page overview</div>
+            <div class="ai-main-title" id="agent-title">Brief <em>Summariser</em></div>
+            <div class="ai-main-sub" id="agent-sub">Condense any client brief into a sharp 1-page project overview</div>
           </div>
         </div>
 
         <div class="ai-context">
-          <div class="ai-context-label">Context Brief</div>
-          <select class="ai-context-select" id="brief-context-select" onchange="loadBriefContext()"></select>
+          <div class="ai-context-label">Load Client Brief as Context (optional)</div>
+          <select class="ai-context-select" id="brief-context-select" onchange="loadBriefContext()">
+            <option value="">— Select a brief to use as context</option>
+          </select>
         </div>
 
-        <div class="ai-inputs" id="agent-inputs"></div>
+        <div class="ai-inputs" id="agent-inputs">
+          <!-- Dynamically populated per agent -->
+        </div>
 
         <div class="ai-run-bar">
-          <button class="ai-run-btn" id="run-btn" onclick="runAgent()">▶ Run Agent</button>
+          <button class="ai-run-btn" id="run-btn" onclick="runAgentLogic(currentAgent)">▶ Run Agent</button>
+          <button class="ai-run-btn" style="background:var(--blue); color:white;" onclick="runAutomationChain()">🚀 Full Agency Run</button>
           <button class="ai-copy-btn" onclick="copyOutput()">⎘ Copy</button>
-          <button class="ai-copy-btn" id="pdf-btn" style="display:none; background:var(--green); color:white; border:none;" onclick="exportPDF()">📄 Save PDF</button>
+          <button class="ai-pdf-btn" id="pdf-btn" onclick="exportToPDF()">📄 PDF Report</button>
           <span class="ai-status" id="ai-status"></span>
           <button class="ai-clear-btn" onclick="clearOutput()">✕ Clear</button>
         </div>
 
         <div class="ai-output" id="ai-output">
-          <div class="ai-output-empty">Select a specialist and click <strong>Run Agent</strong>.</div>
+          <div class="ai-output-empty">
+            Select a specialist from the left, optionally load a client brief as context, then click <strong>Run Agent</strong>.
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ACTIVITY PANEL -->
-  <div class="panel" id="panel-activity">
-    <div class="dash-header"><div><h1 class="dash-title">System <em>Log</em></h1><p style="font-size:12px;color:var(--muted);margin-top:4px">Audit trail of all agency operations</p></div></div>
-    <div id="activity-list" class="activity-list"></div>
-  </div>
-
-  <!-- ANALYTICS PANEL -->
-  <div class="panel" id="panel-analytics">
-    <div class="dash-header"><div><h1 class="dash-title">Performance <em>Metrics</em></h1><p style="font-size:12px;color:var(--muted);margin-top:4px">Conversion rates and agent utilization</p></div></div>
-    <div id="analytics-content" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-       <div class="stat-card" style="height:300px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-          <div class="stat-label">Agent Usage Distribution</div>
-          <div id="chart-agents" style="margin-top:20px; font-size:12px; color:var(--muted);">[Data Loading...]</div>
-       </div>
-       <div class="stat-card" style="height:300px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-          <div class="stat-label">Brief Funnel Conversion</div>
-          <div id="chart-funnel" style="margin-top:20px; font-size:12px; color:var(--muted);">[Data Loading...]</div>
-       </div>
-    </div>
-  </div>
-
-  <!-- SETTINGS PANEL -->
   <div class="panel" id="panel-settings">
-    <div class="dash-header"><div><h1 class="dash-title">Agency <em>Settings</em></h1><p style="font-size:12px;color:var(--muted);margin-top:4px">Global system configuration</p></div></div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-        <div style="background:var(--bg2); border:1px solid var(--border); padding:32px;">
-            <div style="font-size:10px; text-transform:uppercase; color:var(--muted); margin-bottom:20px;">Infrastructure</div>
-            <label style="font-size:10px; color:var(--muted2); display:block; margin-bottom:6px;">Gemini API Key</label>
-            <input type="password" id="gemini-key" class="login-input" placeholder="AI Key">
-            <button onclick="saveSettings()" class="login-btn" style="width:fit-content; padding:12px 30px;">Update Config</button>
+    <div class="dash-header"><div><h1 class="dash-title">Agency <em>Settings</em></h1><p style="font-size:12px;color:var(--muted);margin-top:4px">Global configuration</p></div></div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div style="background:var(--bg2);border:1px solid var(--border);padding:32px;">
+        <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">API & Notifications</div>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:6px">Gemini API Key</label>
+            <input type="password" id="gemini-key" class="login-input" style="margin-bottom:0" placeholder="Paste your Gemini API key">
+          </div>
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:6px">Slack Webhook URL</label>
+            <input type="text" id="slack-webhook" class="login-input" style="margin-bottom:0" placeholder="https://hooks.slack.com/services/...">
+          </div>
+          <button onclick="saveSettings()" class="login-btn" style="width:fit-content;padding:12px 30px">Update Agency Config</button>
         </div>
-        <div style="background:var(--bg2); border:1px solid var(--border); padding:32px;">
-            <div style="font-size:10px; text-transform:uppercase; color:var(--muted); margin-bottom:20px;">Client Management</div>
-            <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">Create a secure portal account for the client.</p>
-            <input type="email" id="client-email" class="login-input" placeholder="Client Email">
-            <input type="password" id="client-pass" class="login-input" placeholder="Portal Password">
-            <button onclick="createClient()" class="login-btn" style="width:fit-content; padding:12px 30px; background:var(--blue); color:white;">Invite Client</button>
+      </div>
+      
+      <div style="background:var(--bg2);border:1px solid var(--border);padding:32px;">
+        <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">Client Management</div>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <p style="font-size:12px; color:var(--muted);">Create a portal account for the selected brief.</p>
+          <input type="email" id="client-email" class="login-input" style="margin-bottom:0" placeholder="Client Email">
+          <input type="password" id="client-password" class="login-input" style="margin-bottom:0" placeholder="Temporary Password">
+          <button onclick="createClientAccount()" class="login-btn" style="width:fit-content;padding:12px 30px; background:var(--blue); color:white;">Create Client Login</button>
         </div>
+      </div>
     </div>
   </div>
 </div>
@@ -329,38 +314,25 @@ let currentAgent = 'summary';
 let currentBriefContext = null;
 let apiToken = localStorage.getItem('agency_token');
 
-// --- AGENTS DEFINITION ---
-const AGENTS = {
-  summary: { icon: '📋', name: 'Summariser', desc: 'Project overview', prompt: (ctx) => `Summarise this brief for KWBA:\n\n${ctx}` },
-  strategy: { icon: '🎯', name: 'Strategist', desc: '90-day growth plan', prompt: (ctx) => `Create a 90-day strategy for:\n\n${ctx}` },
-  copy: { icon: '✍️', name: 'Copywriter', desc: 'High-conversion copy', prompt: (ctx) => `Write website copy for:\n\n${ctx}` },
-  seo: { icon: '🔍', name: 'SEO Lead', desc: 'Page-one rankings', prompt: (ctx) => `SEO strategy for:\n\n${ctx}` },
-  ads: { icon: '📢', name: 'Ads Specialist', desc: 'Meta & Google variants', prompt: (ctx) => `Ad copy for:\n\n${ctx}` },
-  email: { icon: '📧', name: 'Email Writer', desc: 'Cold & Nurture flows', prompt: (ctx) => `Email sequence for:\n\n${ctx}` },
-  social: { icon: '💼', name: 'LinkedIn Ghost', desc: 'Authority building', prompt: (ctx) => `LinkedIn content for:\n\n${ctx}` },
-  proposal: { icon: '📄', name: 'Deal Maker', desc: 'Closed-won proposals', prompt: (ctx) => `Draft proposal for:\n\n${ctx}` },
-  onboarding: { icon: '🚀', name: 'Ops Manager', desc: 'Project kick-off', prompt: (ctx) => `Onboarding plan for:\n\n${ctx}` },
-  faq: { icon: '❓', name: 'Help Desk', desc: 'Objection handling', prompt: (ctx) => `FAQ set for:\n\n${ctx}` },
-  branding: { icon: '🎨', name: 'Brand Guide', desc: 'Visual identity', prompt: (ctx) => `Branding guidelines for:\n\n${ctx}` },
-  tiktok: { icon: '🎥', name: 'Viral Editor', desc: 'Short-form scripts', prompt: (ctx) => `TikTok scripts for:\n\n${ctx}` }
-};
-
-// --- AUTH ---
+// ─── AUTH ──────────────────────────────────────────────────────────────────
 async function doLogin() {
   const email = document.getElementById('email-input').value;
   const password = document.getElementById('pw-input').value;
+  const error = document.getElementById('login-error');
+
   const res = await fetch("/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
   });
+
   if (res.ok) {
     const data = await res.json();
     apiToken = data.token;
     localStorage.setItem("agency_token", apiToken);
     initApp();
   } else {
-    document.getElementById('login-error').style.display = 'block';
+    error.style.display = "block";
   }
 }
 
@@ -374,28 +346,28 @@ function initApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
   loadBriefs();
-  loadActivity();
-  loadAnalytics();
+  loadSettings();
   renderAgentSidebar();
 }
 
-const authFetch = (url, opts = {}) => {
-  opts.headers = { ...opts.headers, 'Authorization': `Bearer ${apiToken}` };
-  return fetch(url, opts).then(res => { if (res.status===403) signOut(); return res; });
+const authFetch = (url, options = {}) => {
+  options.headers = { ...options.headers, 'Authorization': `Bearer ${apiToken}` };
+  return fetch(url, options).then(res => {
+    if (res.status === 403) signOut();
+    return res;
+  });
 };
 
-// --- TABS ---
+// ─── TABS ──────────────────────────────────────────────────────────────────
 function switchTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('panel-' + name).classList.add('active');
   if (name === 'aihub') populateBriefContextSelect();
-  if (name === 'activity') loadActivity();
-  if (name === 'analytics') loadAnalytics();
 }
 
-// --- BRIEFS ---
+// ─── BRIEFS ────────────────────────────────────────────────────────────────
 let activeFilter = 'all';
 function setFilter(f, el) {
   activeFilter = f;
@@ -405,48 +377,57 @@ function setFilter(f, el) {
 }
 
 async function loadBriefs() {
-  const list = document.getElementById('briefs-list');
-  const loading = document.getElementById('loading-briefs');
-  loading.style.display = 'block';
-  const res = await authFetch("/briefs");
-  allBriefs = await res.json();
-  loading.style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  try {
+    const res = await authFetch("/briefs");
+    allBriefs = await res.json();
+    allBriefs.sort((a, b) => b.id - a.id);
+  } catch(e) { console.error(e); }
+  document.getElementById('loading').style.display = 'none';
   updateStats();
   renderBriefs();
   populateBriefContextSelect();
 }
 
 function updateStats() {
-  document.getElementById('s-total').textContent = allBriefs.length;
-  document.getElementById('s-new').textContent = allBriefs.filter(b => b.status === 'new').length;
-  document.getElementById('s-active').textContent = allBriefs.filter(b => b.status === 'in_progress').length;
-  document.getElementById('brief-count-badge').textContent = allBriefs.length;
-  document.getElementById('brief-count-text').textContent = `${allBriefs.length} briefs in database`;
+  const total = allBriefs.length;
+  const web = allBriefs.filter(b => b.briefType === 'website' || !b.briefType).length;
+  const mkt = allBriefs.filter(b => b.briefType === 'marketing').length;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-website').textContent = web;
+  document.getElementById('s-marketing').textContent = mkt;
+  document.getElementById('brief-count-badge').textContent = total;
+  document.getElementById('brief-count-text').textContent = `${total} total briefs synced`;
 }
 
 function renderBriefs() {
-  const filtered = activeFilter === 'all' ? allBriefs : allBriefs.filter(b => b.status === activeFilter);
+  const filtered = activeFilter === 'all' ? allBriefs :
+    activeFilter === 'website' ? allBriefs.filter(b => b.briefType === 'website' || !b.briefType) :
+    allBriefs.filter(b => b.briefType === 'marketing');
   const list = document.getElementById('briefs-list');
   if (!filtered.length) {
-    document.getElementById('empty-briefs').style.display = 'block';
+    document.getElementById('empty').style.display = 'block';
     list.innerHTML = '';
     return;
   }
-  document.getElementById('empty-briefs').style.display = 'none';
+  document.getElementById('empty').style.display = 'none';
   list.innerHTML = filtered.map((b, i) => {
     const idx = allBriefs.indexOf(b);
     const meta = [b.contactName, b.contactEmail, b.location].filter(Boolean).join(' · ');
-    const pkg = b.pkgName || 'No Package';
+    const pkg = b.pkgName || '';
+    const typeBadge = (b.briefType === 'marketing') 
+      ? `<span class="badge badge-blue">Marketing</span>` 
+      : `<span class="badge badge-gold">Website</span>`;
     return `
     <div class="brief-card" id="card-${idx}">
       <div class="brief-header" onclick="toggleCard(${idx})">
         <div>
-          <div class="brief-biz">${esc(b.bizName || 'Unnamed')}</div>
+          <div class="brief-biz">${esc(b.bizName || 'Unnamed Project')}</div>
           <div class="brief-meta">${esc(meta)}</div>
         </div>
         <div class="brief-right">
-          <span class="badge ${b.status==='new'?'badge-gold':b.status==='delivered'?'badge-green':'badge-blue'}">${b.status}</span>
-          <span class="badge badge-gold">${esc(pkg)}</span>
+          ${typeBadge}
+          ${pkg ? `<span class="badge badge-gold">${esc(pkg)}</span>` : ''}
           <span class="brief-chevron" id="chev-${idx}">▾</span>
         </div>
       </div>
@@ -459,46 +440,49 @@ function renderBriefs() {
 
 function renderBriefBody(b, idx) {
   const g = (v) => esc(v || '—');
-  return `
-    <div class="brief-grid">
-      <div class="brief-field"><label>Status</label>
-        <select class="ai-input-field" style="min-height:30px; padding:2px 10px;" onchange="updateStatus(${b.id}, this.value)">
-           <option value="new" ${b.status==='new'?'selected':''}>New</option>
-           <option value="discovery" ${b.status==='discovery'?'selected':''}>Discovery</option>
-           <option value="in_progress" ${b.status==='in_progress'?'selected':''}>Active</option>
-           <option value="review" ${b.status==='review'?'selected':''}>Review</option>
-           <option value="delivered" ${b.status==='delivered'?'selected':''}>Delivered</option>
-        </select>
-      </div>
-      <div class="brief-field"><label>Business</label><p>${g(b.bizName)}</p></div>
-      <div class="brief-field"><label>Location</label><p>${g(b.location)}</p></div>
-      <div class="brief-field"><label>Email</label><p>${g(b.contactEmail)}</p></div>
-    </div>
-    <div class="brief-full"><label>Description</label><p>${g(b.bizDesc)}</p></div>
-    <div class="brief-actions">
-      <button class="bBtn bBtn-ai" onclick="loadBriefIntoHub(${idx})">🤖 AI Workspace</button>
-      <button class="bBtn bBtn-wa" onclick="window.open('mailto:${b.contactEmail}')">✉ Email Client</button>
-    </div>`;
+  let html = `<div class="brief-grid">
+    <div class="brief-field"><label>Business</label><p>${g(b.bizName)}</p></div>
+    <div class="brief-field"><label>Industry</label><p>${g(b.bizIndustry || b.bizType)}</p></div>
+    <div class="brief-field"><label>Location</label><p>${g(b.location)}</p></div>
+    <div class="brief-field"><label>Package</label><p>${g(b.pkgName)}</p></div>
+  </div>`;
+  if (b.bizDesc) html += `<div class="brief-full"><label>Description</label><p>${g(b.bizDesc)}</p></div>`;
+  
+  html += `<div class="brief-actions">
+    <button class="bBtn bBtn-ai" onclick="loadBriefIntoHub(${idx})">🤖 AI Specialist</button>
+    <button class="bBtn bBtn-del" onclick="deleteBrief(${b.id})">✕ Remove</button>
+  </div>`;
+  return html;
 }
 
 function toggleCard(idx) {
   const body = document.getElementById('body-' + idx);
   const chev = document.getElementById('chev-' + idx);
-  body.classList.toggle('open');
-  chev.classList.toggle('open');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
 }
 
-async function updateStatus(id, status) {
-  await authFetch(`/brief/${id}/status`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status })
-  });
-  showToast(`Status updated to ${status}`);
-  loadBriefs();
+async function deleteBrief(id) {
+  if (!confirm('Delete brief from database?')) return;
+  // Note: We'd need a DELETE endpoint in server.js, for now just hide it or add the endpoint
+  showToast('Functionality coming in next update');
 }
 
-// --- AI HUB ---
+// ─── AI HUB ────────────────────────────────────────────────────────────────
+const AGENTS = {
+  summary: { icon: '📋', name: 'Brief Summariser', desc: 'Sharp 1-page overview', prompt: (ctx) => `Summarise this brief for KWBA Agency:\n\n${ctx}` },
+  'website-copy': { icon: '✍️', name: 'Website Copywriter', desc: 'Hero & Service page copy', prompt: (ctx) => `Write conversion-focused website copy for:\n\n${ctx}` },
+  'seo-pages': { icon: '🔍', name: 'SEO Page Builder', desc: 'Keyword-optimised landing pages', prompt: (ctx) => `Build an SEO landing page strategy for:\n\n${ctx}` },
+  strategy: { icon: '🎯', name: 'Marketing Strategist', desc: '90-day growth roadmap', prompt: (ctx) => `Create a 90-day marketing strategy for:\n\n${ctx}` },
+  'email-seq': { icon: '📧', name: 'Email Sequence', desc: 'Cold & Nurture emails', prompt: (ctx) => `Write a 5-email sequence for:\n\n${ctx}` },
+  linkedin: { icon: '💼', name: 'LinkedIn Content', desc: 'Ghostwriting service', prompt: (ctx) => `Generate 14 LinkedIn posts for:\n\n${ctx}` },
+  ads: { icon: '📢', name: 'Ad Copy Gen', desc: 'Meta & Google Ads', prompt: (ctx) => `Write ad copy variants for:\n\n${ctx}` },
+  proposal: { icon: '📄', name: 'Proposal Writer', desc: 'Full agency proposals', prompt: (ctx) => `Draft a professional proposal for:\n\n${ctx}` },
+  onboarding: { icon: '🚀', name: 'Onboarding Pack', desc: 'Checklists & Timelines', prompt: (ctx) => `Create an onboarding checklist for:\n\n${ctx}` },
+  faq: { icon: '❓', name: 'FAQ Generator', desc: 'Objection handling', prompt: (ctx) => `Generate a site FAQ based on:\n\n${ctx}` }
+};
+
 function renderAgentSidebar() {
   const list = document.getElementById('agent-list-ui');
   list.innerHTML = Object.entries(AGENTS).map(([id, a]) => `
@@ -513,20 +497,132 @@ function selectAgent(id, el) {
   currentAgent = id;
   document.querySelectorAll('.agent-item').forEach(a => a.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('agent-title').textContent = AGENTS[id].name;
-  document.getElementById('agent-sub').textContent = AGENTS[id].desc;
+  const agent = AGENTS[id];
+  document.getElementById('agent-title').innerHTML = agent.name;
+  document.getElementById('agent-sub').textContent = agent.desc;
   clearOutput();
 }
 
 function populateBriefContextSelect() {
   const sel = document.getElementById('brief-context-select');
-  sel.innerHTML = '<option value="">— No Context</option>';
-  allBriefs.forEach((b, i) => sel.appendChild(new Option(b.bizName || 'Unnamed', i)));
+  sel.innerHTML = '<option value="">— Select a brief to use as context</option>';
+  allBriefs.forEach((b, i) => {
+    sel.appendChild(new Option(`${b.bizName} (${b.briefType || 'Web'})`, i));
+  });
 }
 
 function loadBriefContext() {
   const idx = document.getElementById('brief-context-select').value;
-  currentBriefContext = idx === '' ? null : allBriefs[parseInt(idx)];
+  currentBriefContext = (idx === '') ? null : allBriefs[parseInt(idx)];
+}
+
+async function createClientAccount() {
+  if (!currentBriefContext) return alert("Select a brief first");
+  const email = document.getElementById('client-email').value;
+  const password = document.getElementById('client-password').value;
+  if (!email || !password) return alert("Email and Password required");
+
+  const res = await authFetch("/create-client", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ 
+      email, 
+      password, 
+      briefId: currentBriefContext.id,
+      bizName: currentBriefContext.bizName
+    })
+  });
+  if (res.ok) {
+    showToast("Client account created & Email sent!");
+    document.getElementById('client-email').value = '';
+    document.getElementById('client-password').value = '';
+  } else {
+    alert("Error creating account");
+  }
+}
+
+async function runAutomationChain() {
+  if (!currentBriefContext) return alert("Select a brief first");
+  const chain = ['summary', 'strategy', 'website-copy', 'ads', 'onboarding'];
+  
+  const btn = document.getElementById('run-btn'); // reusing run-btn UI for status
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Running Chain...';
+  
+  clearOutput();
+  let context = "";
+  
+  for (const agentId of chain) {
+    document.getElementById('ai-status').textContent = `Running ${AGENTS[agentId].name}...`;
+    const result = await runAgentLogic(agentId, context);
+    context += `\n[${AGENTS[agentId].name} Output]:\n${result}\n`;
+    showToast(`${AGENTS[agentId].name} completed`);
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = '▶ Run Agent';
+  document.getElementById('ai-status').textContent = 'Automation Chain Complete';
+}
+
+async function runAgentLogic(agentId, chainContext = "") {
+  const geminiKey = document.getElementById('gemini-key').value || localStorage.getItem('GEMINI_API_KEY');
+  const ctx = JSON.stringify(currentBriefContext, null, 2);
+  const prompt = AGENTS[agentId].prompt(ctx) + (chainContext ? "\n\nContext from previous steps:\n" + chainContext : "");
+
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  });
+  const data = await res.json();
+  const result = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error";
+  
+  // Append to UI
+  const outputEl = document.getElementById('ai-output');
+  const div = document.createElement('div');
+  div.innerHTML = `<h2>${AGENTS[agentId].name}</h2>` + formatOutput(result);
+  outputEl.appendChild(div);
+  
+  // Save to DB
+  await authFetch("/output", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ briefId: currentBriefContext.id, agent: agentId, output: result })
+  });
+  
+  return result;
+}
+
+function formatOutput(text) {
+  return text
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function exportToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const title = currentBriefContext ? currentBriefContext.bizName : "Agency Deliverable";
+  doc.setFontSize(20); doc.text(title, 20, 20);
+  doc.setFontSize(12);
+  const text = document.getElementById('ai-output').innerText;
+  const splitText = doc.splitTextToSize(text, 170);
+  doc.text(splitText, 20, 30);
+  doc.save(`Deliverable_${title}.pdf`);
+}
+
+function copyOutput() {
+  navigator.clipboard.writeText(document.getElementById('ai-output').innerText);
+  showToast('Output copied to clipboard');
+}
+
+function clearOutput() {
+  document.getElementById('ai-output').innerHTML = '<div class="ai-output-empty">Ready. Select a specialist and run.</div>';
+  document.getElementById('pdf-btn').style.display = 'none';
+  document.getElementById('ai-status').textContent = '';
 }
 
 function loadBriefIntoHub(idx) {
@@ -536,133 +632,35 @@ function loadBriefIntoHub(idx) {
   document.getElementById('brief-context-select').value = idx;
 }
 
-async function runAgent() {
-  if (!currentBriefContext) return alert("Select a context brief.");
-  const btn = document.getElementById('run-btn');
-  btn.disabled = true;
-  btn.innerHTML = '⏳ Processing...';
-  
-  const prompt = AGENTS[currentAgent].prompt(JSON.stringify(currentBriefContext, null, 2));
-  const res = await authFetch("/stream-agent", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt })
-  });
-
-  const outputEl = document.getElementById('ai-output');
-  outputEl.innerHTML = '<div class="ai-output-content" id="stream-out"></div><span class="ai-streaming"></span>';
-  
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let fullText = "";
-  const streamOut = document.getElementById('stream-out');
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    const chunk = decoder.decode(value);
-    // Gemini streaming format is slightly different than Anthropic, handling it simply:
-    try {
-        const parts = chunk.split('data: ');
-        for(let p of parts) {
-            if(!p.trim()) continue;
-            const data = JSON.parse(p);
-            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-            if(text) {
-                fullText += text;
-                streamOut.innerHTML = formatOutput(fullText);
-                outputEl.scrollTop = outputEl.scrollHeight;
-            }
-        }
-    } catch(e) {
-        // Fallback for non-JSON chunks or single parts
-        fullText += chunk;
-        streamOut.innerHTML = formatOutput(fullText);
-    }
-  }
-
-  document.querySelector('.ai-streaming')?.remove();
-  document.getElementById('pdf-btn').style.display = 'block';
-  btn.disabled = false;
-  btn.innerHTML = '▶ Run Agent';
-  
-  // Save output
-  await authFetch("/output", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ briefId: currentBriefContext.id, agent: currentAgent, output: fullText })
-  });
-}
-
-async function runAutomationChain() {
-  if (!currentBriefContext) return alert("Select a brief first.");
-  const chain = ['summary', 'strategy', 'copy', 'ads', 'onboarding'];
-  clearOutput();
-  for (const id of chain) {
-     currentAgent = id;
-     await runAgent();
-     showToast(`${AGENTS[id].name} Complete`);
-  }
-}
-
-function formatOutput(t) {
-  return t.replace(/^# (.+)$/gm, '<h1>$1</h1>').replace(/^## (.+)$/gm, '<h2>$1</h2>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-}
-
-function exportPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFontSize(18); doc.text(currentBriefContext.bizName, 20, 20);
-  doc.setFontSize(10);
-  const text = doc.splitTextToSize(document.getElementById('ai-output').innerText, 170);
-  doc.text(text, 20, 30);
-  doc.save(`${currentBriefContext.bizName}_Deliverable.pdf`);
-}
-
-// --- ACTIVITY & ANALYTICS ---
-async function loadActivity() {
-  const res = await authFetch("/activity");
+// ─── SETTINGS ──────────────────────────────────────────────────────────────
+async function loadSettings() {
+  const res = await authFetch("/settings");
   const data = await res.json();
-  const list = document.getElementById('activity-list');
-  list.innerHTML = data.map(a => `
-    <div class="activity-item">
-      <div class="activity-dot"></div>
-      <div class="activity-content">
-        <div class="activity-meta">${new Date(a.createdAt).toLocaleString()} · ${a.userEmail}</div>
-        <div class="activity-text"><strong>${a.action}</strong> on ${a.entityType} #${a.entityId} ${a.details?` — ${a.details}`:''}</div>
-      </div>
-    </div>`).join('');
+  document.getElementById('slack-webhook').value = data.slack_webhook || '';
+  document.getElementById('gemini-key').value = localStorage.getItem('GEMINI_API_KEY') || '';
 }
 
-async function loadAnalytics() {
-  const res = await authFetch("/analytics");
-  const data = await res.json();
-  document.getElementById('s-revenue').textContent = '£' + data.revenue.toLocaleString();
-  document.getElementById('chart-agents').innerHTML = data.agents.map(a => `<div>${a.agent}: ${a.count}</div>`).join('');
-  document.getElementById('chart-funnel').innerHTML = data.briefs.map(b => `<div>${b.status}: ${b.count}</div>`).join('');
-}
-
-// --- SETTINGS ---
 async function saveSettings() {
-  const key = document.getElementById('gemini-key').value;
-  if(key) localStorage.setItem('GEMINI_API_KEY', key);
-  showToast('Settings saved to local storage');
+  const slack = document.getElementById('slack-webhook').value;
+  const gemini = document.getElementById('gemini-key').value;
+  localStorage.setItem('GEMINI_API_KEY', gemini);
+  await authFetch("/settings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key: 'slack_webhook', value: slack })
+  });
+  showToast('Settings Saved');
 }
 
-async function createClient() {
-  const email = document.getElementById('client-email').value;
-  const pass = document.getElementById('client-pass').value;
-  if(!currentBriefContext) return alert("Select a brief in context first.");
-  // Mock call for now
-  showToast(`Account created for ${email}`);
-}
-
-// --- UTILS ---
+// ─── UTILS ─────────────────────────────────────────────────────────────────
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-function copyOutput() { navigator.clipboard.writeText(document.getElementById('ai-output').innerText); showToast('Copied'); }
-function clearOutput() { document.getElementById('ai-output').innerHTML = '<div class="ai-output-empty">Ready.</div>'; document.getElementById('pdf-btn').style.display='none'; }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 
+// Init check
 if (apiToken) initApp();
 </script>
 </body>
