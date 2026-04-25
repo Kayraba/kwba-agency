@@ -1,3 +1,9 @@
+# Netlify serves files from the "publish" folder as the site root.
+# Your deploy showed paths like kwba-agency-clone\admin.html → index.html is NOT at /.
+# Fix (pick one):
+#   1) Netlify UI: Site configuration → Build & deploy → Build settings →
+#      "Publish directory" = kwba-agency-clone   (then redeploy)
+#   2) Or upload a flat zip where index.html sits at the root of the zip (not inside a folder).
 [build]
   publish = "."
 
