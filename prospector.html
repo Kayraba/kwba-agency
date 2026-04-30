@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KWBA Prospector — Real Lead Discovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070706;--bg2:#0f0f0e;--bg3:#171714;--bg4:#1e1e1b;
+  --gold:#c9a84c;--gold2:#e8c96a;--gold-dim:rgba(201,168,76,0.07);--gold-border:rgba(201,168,76,0.25);
+  --ink:#ede9e0;--ink2:#c4bfb4;--muted:#7a7568;--muted2:#3e3c36;
+  --border:rgba(255,255,255,0.055);--border2:rgba(255,255,255,0.025);
+  --red:#d9534f;--green:#4fa878;--blue:#4a7fd4;--purple:#8b6fd4;--orange:#d4834a;
+}
+html,body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(201,168,76,.05),transparent 60%);pointer-events:none;z-index:0}
+*:focus{outline:1px solid var(--gold-border)}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+input,select,textarea{font-family:'DM Sans',sans-serif}
+a{color:inherit;text-decoration:none}
+
+/* ─── TOPBAR ─── */
+.topbar{position:sticky;top:0;z-index:200;background:rgba(7,7,6,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;letter-spacing:.06em;color:var(--gold);display:flex;align-items:center;gap:10px}
+.brand-sep{opacity:.3}
+.brand-sub{font-style:italic;color:var(--ink2);font-size:13px;letter-spacing:.14em}
+.topright{display:flex;gap:8px;align-items:center}
+.tpill{font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--border);color:var(--muted);background:none;transition:.2s}
+.tpill:hover{border-color:var(--gold-border);color:var(--gold)}
+.tpill.gold{background:var(--gold);color:#0a0906;border-color:var(--gold);font-weight:500}
+.tpill.gold:hover{background:var(--gold2)}
+.tauthinfo{font-size:10px;color:var(--muted2);letter-spacing:.05em}
+
+/* ─── APP SHELL ─── */
+.app{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 58px);position:relative;z-index:1}
+
+/* ─── LEFT PANEL ─── */
+.left{background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+
+/* Search form */
+.searchbox{padding:22px 20px;border-bottom:1px solid var(--border)}
+.sb-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;margin-bottom:4px;line-height:1.1}
+.sb-title em{font-style:italic;color:var(--gold)}
+.sb-sub{font-size:10.5px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+.sf-lbl{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:5px;margin-top:10px;font-weight:500}
+.sf-lbl:first-of-type{margin-top:0}
+.sf-in{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--ink);padding:10px 12px;font-size:12.5px;font-weight:300;outline:none;transition:.2s}
+.sf-in:focus{border-color:var(--gold-border);background:var(--bg3)}
+.sf-in::placeholder{color:var(--muted2)}
+select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path fill='%237a7568' d='M3 4.5L6 8l3-3.5z'/></svg>");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;cursor:pointer}
+.sfrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sb-run{width:100%;margin-top:14px;padding:13px;background:var(--gold);color:#0a0906;border:1px solid var(--gold);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;transition:.2s}
+.sb-run:hover{background:var(--gold2)}
+.sb-run:disabled{opacity:.4;cursor:not-allowed}
+.sb-status{font-size:10px;color:var(--muted);text-align:center;padding-top:8px;height:20px;letter-spacing:.04em}
+.sb-status.live{color:var(--gold)}
+.sb-status.err{color:var(--red)}
+
+/* Results list */
+.rlist{flex:1;overflow-y:auto;padding-bottom:20px}
+.rlist::-webkit-scrollbar{width:4px}
+.rlist::-webkit-scrollbar-thumb{background:var(--muted2)}
+.rlist-head{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 6px;border-bottom:1px solid var(--border)}
+.rlist-ct{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2)}
+.rlist-ct strong{color:var(--gold);font-family:'Syne',sans-serif}
+.bulk-btn{font-size:9px;letter-spacing:.13em;text-transform:uppercase;padding:5px 10px;border:1px solid var(--border);color:var(--muted);background:none;transition:.15s}
+.bulk-btn:hover{border-color:var(--gold-border);color:var(--gold)}
+.bulk-btn.gold{background:var(--gold);color:#0a0906;border-color:var(--gold)}
+.ritem{display:flex;align-items:flex-start;gap:10px;padding:12px 20px;border-bottom:1px solid var(--border2);cursor:pointer;transition:.15s;position:relative}
+.ritem:hover{background:rgba(255,255,255,.025)}
+.ritem.active{background:var(--gold-dim);border-left:2px solid var(--gold)}
+.ritem-cb input{accent-color:var(--gold);margin-top:3px}
+.ritem-body{flex:1;min-width:0}
+.ri-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ri-meta{font-size:10px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ri-meta .star{color:var(--gold);font-size:9.5px}
+.ri-meta .low{color:var(--orange)}
+.ri-score{text-align:right;flex-shrink:0}
+.ri-scorenum{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;line-height:1}
+.ri-scorenum.hot{color:var(--red)}
+.ri-scorenum.med{color:var(--orange)}
+.ri-scorenum.cool{color:var(--muted)}
+.ri-scorelbl{font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted2)}
+.ri-badge{font-size:8px;letter-spacing:.13em;text-transform:uppercase;padding:2px 6px;border:1px solid;display:inline-block;margin-top:3px}
+.rb-audited{color:var(--gold);border-color:var(--gold-border);background:var(--gold-dim)}
+.rb-contacted{color:var(--blue);border-color:rgba(74,127,212,.3);background:rgba(74,127,212,.07)}
+.rb-queued{color:var(--green);border-color:rgba(79,168,120,.3);background:rgba(79,168,120,.07)}
+.ritem-empty{padding:30px 20px;text-align:center;color:var(--muted);font-size:11px;font-style:italic;line-height:1.7}
+
+/* Sidebar nav tabs */
+.lnav{display:flex;border-bottom:1px solid var(--border)}
+.ln{flex:1;padding:10px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;transition:.18s}
+.ln:hover{color:var(--ink2)}
+.ln.on{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* Outreach queue list */
+.qlist{flex:1;overflow-y:auto;padding-bottom:20px}
+.qitem{padding:14px 20px;border-bottom:1px solid var(--border2);cursor:pointer;transition:.15s}
+.qitem:hover{background:rgba(255,255,255,.02)}
+.qi-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.qi-status{font-size:9.5px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.qi-day{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;padding:2px 6px;border:1px solid var(--green);color:var(--green);background:rgba(79,168,120,.07)}
+.qi-done{border-color:var(--muted2);color:var(--muted2);background:none}
+
+/* ─── RIGHT PANEL ─── */
+.right{display:flex;flex-direction:column;overflow:hidden}
+.splash{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;text-align:center}
+.splash-ico{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;font-weight:500}
+.splash-ico::before,.splash-ico::after{content:"";display:inline-block;width:24px;height:1px;background:var(--gold-border);vertical-align:middle;margin:0 10px}
+.splash-h{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4.5vw,56px);font-weight:300;line-height:1.05;letter-spacing:-.015em;max-width:700px;margin:0 auto 16px}
+.splash-h em{font-style:italic;color:var(--gold)}
+.splash-p{font-size:13px;color:var(--ink2);max-width:520px;margin:0 auto;line-height:1.7;font-weight:300}
+
+/* Lead detail right panel */
+.detail{display:none;flex-direction:column;height:calc(100vh - 58px)}
+.detail.on{display:flex}
+.dhead{padding:22px 28px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-shrink:0}
+.dh-left{flex:1;min-width:0}
+.dh-name{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;line-height:1.05;letter-spacing:-.01em}
+.dh-name em{font-style:italic;color:var(--gold)}
+.dh-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:8px;line-height:1.7}
+.dh-meta strong{color:var(--ink2);font-weight:400}
+.dh-meta a{color:var(--blue);font-size:10px}
+.dh-meta a:hover{color:var(--gold)}
+.dh-gap{text-align:right;flex-shrink:0}
+.dh-gapnum{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1;letter-spacing:-.02em}
+.dh-gapnum.hot{color:var(--red)}
+.dh-gapnum.med{color:var(--orange)}
+.dh-gapnum.cool{color:var(--muted)}
+.dh-gaplbl{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted2)}
+
+/* Detail tabs */
+.dtabs{display:flex;gap:1px;background:var(--border);border-bottom:1px solid var(--border);flex-shrink:0}
+.dtab{flex:1;padding:13px 16px;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);background:var(--bg2);border:none;border-bottom:2px solid transparent;transition:.18s;font-family:'DM Sans',sans-serif}
+.dtab:hover{color:var(--ink2)}
+.dtab.on{color:var(--gold);border-bottom-color:var(--gold);background:var(--bg3)}
+.dbody{flex:1;overflow-y:auto;padding:24px 28px}
+.dbody::-webkit-scrollbar{width:5px}
+.dbody::-webkit-scrollbar-thumb{background:var(--muted2)}
+.dpane{display:none}
+.dpane.on{display:block}
+
+/* Detail content styles */
+.dc-h2{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--gold);margin:18px 0 10px;letter-spacing:-.005em}
+.dc-h2:first-child{margin-top:0}
+.dc-h3{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);margin:14px 0 7px;font-weight:500;font-family:'Syne',sans-serif}
+.dc-p{font-size:13px;color:var(--ink2);line-height:1.75;margin-bottom:10px;font-weight:300}
+.dc-p strong{color:var(--ink);font-weight:500}
+.dc-ul{list-style:none;padding:0;margin:0 0 12px}
+.dc-ul li{font-size:12.5px;color:var(--ink2);padding:6px 0;border-bottom:1px solid var(--border2);font-weight:300;line-height:1.5}
+.dc-ul li:last-child{border:none}
+.dc-ul li::before{content:"⬩ ";color:var(--gold);font-size:10px}
+
+/* Gap signals */
+.gap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px;margin:10px 0 18px}
+.gsig{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--border);background:var(--bg);font-size:11.5px;transition:.15s}
+.gsig.hit{border-color:rgba(217,83,79,.3);background:rgba(217,83,79,.05)}
+.gsig .g-ico{font-size:13px;flex-shrink:0}
+.gsig.hit .g-ico{color:var(--red)}
+.gsig:not(.hit) .g-ico{color:var(--muted2)}
+.gsig .g-lbl{flex:1;color:var(--ink2)}
+.gsig:not(.hit) .g-lbl{color:var(--muted)}
+.gsig .g-pts{font-family:'Syne',sans-serif;font-size:10px;font-weight:500}
+.gsig.hit .g-pts{color:var(--red)}
+.gsig:not(.hit) .g-pts{color:var(--muted2)}
+
+/* Audit stream */
+.audit-wrap{font-size:13px;line-height:1.75;color:var(--ink2);font-weight:300}
+.audit-wrap h2{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold);margin:20px 0 10px;letter-spacing:-.005em;font-weight:400}
+.audit-wrap h2:first-child{margin-top:0}
+.audit-wrap h3{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin:14px 0 7px;font-weight:500;font-family:'Syne',sans-serif}
+.audit-wrap strong{color:var(--ink);font-weight:500}
+.audit-wrap ul,.audit-wrap ol{margin:7px 0 12px 20px;padding:0}
+.audit-wrap li{margin-bottom:5px}
+.audit-wrap p{margin-bottom:10px}
+.aud-empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:12px;font-style:italic;line-height:1.7}
+.aud-status{font-size:10px;color:var(--muted);letter-spacing:.04em;height:18px;margin-bottom:10px}
+.aud-status.live{color:var(--gold)}
+
+/* Agent cards */
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--border);margin:10px 0 18px}
+.agcard{background:var(--bg);padding:14px 16px}
+.agcard.primary{border-left:2px solid var(--gold)}
+.ag-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--gold);margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.ag-why{font-size:11px;color:var(--ink2);line-height:1.6;font-weight:300}
+
+/* Package card */
+.pkg-main{background:var(--gold-dim);border:1px solid var(--gold-border);padding:22px 26px;margin-bottom:18px}
+.pkg-main .pm-eye{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;font-weight:500}
+.pkg-main .pm-name{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;line-height:1.05;margin-bottom:4px}
+.pkg-main .pm-name em{font-style:italic;color:var(--gold)}
+.pkg-main .pm-price{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold);margin-bottom:12px;font-weight:300}
+.pkg-main .pm-why{font-size:12.5px;color:var(--ink2);line-height:1.7;margin-bottom:12px;font-weight:300}
+.pkg-main .pm-why strong{color:var(--ink);font-weight:500}
+.pkg-main .pm-inc ul{list-style:none;padding:0;margin:7px 0 0}
+.pkg-main .pm-inc li{font-size:11.5px;color:var(--ink2);padding:4px 0;border-bottom:1px solid var(--gold-border);font-weight:300}
+.pkg-main .pm-inc li:last-child{border:none}
+.pkg-main .pm-inc li::before{content:"⬩ ";color:var(--gold);font-size:10px}
+.pkg-alts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:18px}
+.pkg-alt{background:var(--bg);padding:14px 16px}
+.pa-lbl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;font-weight:500}
+.pa-name{font-family:'Syne',sans-serif;font-size:12px;color:var(--ink2);font-weight:500;margin-bottom:2px}
+.pa-price{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--muted);font-weight:300}
+.pa-note{font-size:10px;color:var(--muted2);margin-top:5px;line-height:1.5}
+
+/* Outreach sequence preview */
+.seq-card{background:var(--bg);border:1px solid var(--border);padding:16px 20px;margin-bottom:10px;position:relative}
+.seq-badge{position:absolute;top:-1px;left:-1px;background:var(--gold);color:#0a0906;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;padding:3px 10px;font-family:'Syne',sans-serif;font-weight:600}
+.seq-subj{font-family:'Syne',sans-serif;font-size:12px;color:var(--ink);font-weight:500;margin:14px 0 7px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.seq-body{font-size:12px;color:var(--ink2);line-height:1.7;white-space:pre-wrap;font-weight:300}
+.seq-status{font-size:9px;letter-spacing:.13em;text-transform:uppercase;padding:2px 7px;border:1px solid;display:inline-block;margin-top:8px}
+.ss-pending{color:var(--muted);border-color:var(--border)}
+.ss-sent{color:var(--green);border-color:rgba(79,168,120,.3)}
+.ss-skipped{color:var(--muted2);border-color:var(--border)}
+
+/* Action bar */
+.dactions{padding:14px 28px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex-shrink:0;background:var(--bg2)}
+.btn{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;padding:10px 18px;border:1px solid;font-weight:400;transition:.2s;display:inline-flex;align-items:center;gap:6px;line-height:1}
+.btn-g{background:var(--gold);color:#0a0906;border-color:var(--gold)}
+.btn-g:hover{background:var(--gold2);border-color:var(--gold2)}
+.btn-o{background:transparent;color:var(--muted);border-color:var(--border)}
+.btn-o:hover{border-color:var(--gold-border);color:var(--gold)}
+.btn-r{background:transparent;color:var(--red);border-color:rgba(217,83,79,.25)}
+.btn-r:hover{background:rgba(217,83,79,.08)}
+.btn-sm{padding:7px 13px;font-size:9px}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* Outreach queue detail */
+.qd-head{padding:22px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.qd-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400}
+.qd-title em{font-style:italic;color:var(--gold)}
+.qd-meta{font-size:10.5px;color:var(--muted);margin-top:5px}
+.send-ctrl{display:flex;gap:8px;align-items:center}
+.day-select select{background:var(--bg);border:1px solid var(--border);color:var(--ink);padding:8px 12px;font-size:11px;outline:none;font-family:'DM Sans',sans-serif}
+.day-select select:focus{border-color:var(--gold-border)}
+
+/* Bulk bar */
+.bulkbar{display:none;align-items:center;justify-content:space-between;padding:10px 24px;background:var(--gold-dim);border-bottom:1px solid var(--gold-border);font-size:11px;color:var(--gold);flex-shrink:0}
+.bulkbar.on{display:flex}
+.bulkbar strong{font-family:'Syne',sans-serif;font-weight:600}
+
+/* Loading state */
+.loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center}
+.loader{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{font-size:11px;color:var(--muted);letter-spacing:.08em}
+
+/* Toast */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--bg3);border:1px solid var(--gold-border);padding:13px 20px;font-size:12px;color:var(--gold);z-index:1000;letter-spacing:.04em;transform:translateY(80px);opacity:0;transition:.3s;max-width:320px;line-height:1.5}
+.toast.on{transform:translateY(0);opacity:1}
+.toast.err{border-color:rgba(217,83,79,.35);color:var(--red)}
+.toast.ok{border-color:rgba(79,168,120,.35);color:var(--green)}
+
+/* Responsive */
+@media(max-width:880px){
+  .app{grid-template-columns:1fr}
+  .left{max-height:45vh}
+  .detail{height:auto}
+  .dbody{max-height:55vh}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">KWBA <span class="brand-sep">/</span> Prospector <em class="brand-sub">real-time lead engine</em></div>
+  <div class="topright">
+    <span class="tauthinfo" id="auth-info">Not connected</span>
+    <button class="tpill" onclick="openLoginModal()">Log In</button>
+    <button class="tpill gold" id="bulk-send-all-btn" onclick="bulkSendAll()" style="display:none">⚡ Send All Queued</button>
+  </div>
+</header>
+
+<div class="app">
+  <!-- ═══ LEFT PANEL ═══ -->
+  <aside class="left">
+    <div class="lnav">
+      <button class="ln on" onclick="setLeftTab('search',this)">🔍 Search</button>
+      <button class="ln" onclick="setLeftTab('queue',this)">✉ Outreach Queue</button>
+    </div>
+
+    <!-- SEARCH TAB -->
+    <div id="ltab-search">
+      <div class="searchbox">
+        <h2 class="sb-title">Find <em>Real</em> Leads</h2>
+        <p class="sb-sub">Google Maps data via Places API. Real businesses, real gaps, real opportunity.</p>
+
+        <label class="sf-lbl">Niche</label>
+        <select id="sf-niche" class="sf-in">
+          <option value="electrician">Electrician</option>
+          <option value="plumber">Plumber</option>
+          <option value="builder">Builder</option>
+          <option value="roofer">Roofer</option>
+          <option value="dentist">Dentist</option>
+          <option value="dental clinic">Dental Clinic</option>
+          <option value="car garage">Car Garage / MOT</option>
+          <option value="estate agent">Estate Agent</option>
+          <option value="restaurant">Restaurant</option>
+          <option value="hair salon">Hair Salon</option>
+          <option value="beauty salon">Beauty / Aesthetics</option>
+          <option value="gym">Gym / Fitness Studio</option>
+          <option value="solicitor">Solicitor</option>
+          <option value="accountant">Accountant</option>
+          <option value="cleaning company">Cleaning Company</option>
+          <option value="driving school">Driving School</option>
+          <option value="letting agent">Letting Agent</option>
+          <option value="physiotherapist">Physiotherapist</option>
+          <option value="optician">Optician</option>
+        </select>
+
+        <label class="sf-lbl">Custom niche (overrides above)</label>
+        <input type="text" id="sf-custom" class="sf-in" placeholder="e.g. pest control, window cleaner…">
+
+        <label class="sf-lbl">UK City / Town</label>
+        <input type="text" id="sf-city" class="sf-in" placeholder="e.g. Milton Keynes, Bedford…">
+
+        <div class="sfrow">
+          <div>
+            <label class="sf-lbl">Min Gap Score</label>
+            <select id="sf-mingap" class="sf-in">
+              <option value="0">Any</option>
+              <option value="30" selected>30+ (warm)</option>
+              <option value="50">50+ (hot)</option>
+              <option value="65">65+ (very hot)</option>
+            </select>
+          </div>
+          <div>
+            <label class="sf-lbl">Max results</label>
+            <select id="sf-max" class="sf-in">
+              <option value="20">20</option>
+              <option value="40" selected>40</option>
+              <option value="60">60</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="sb-run" id="search-btn" onclick="runSearch()">⚡ Find Leads</button>
+        <div class="sb-status" id="search-status"></div>
+      </div>
+
+      <!-- Bulk bar -->
+      <div class="bulkbar" id="bulkbar">
+        <span><strong id="sel-count">0</strong> selected</span>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-o btn-sm" onclick="bulkAuditSelected()">Audit Selected</button>
+          <button class="btn btn-g btn-sm" onclick="bulkQueueSelected()">Queue Outreach</button>
+          <button class="btn btn-r btn-sm" onclick="clearSelection()">Clear</button>
+        </div>
+      </div>
+
+      <!-- Results list -->
+      <div class="rlist" id="rlist">
+        <div class="ritem-empty">Search for a niche + city to see real businesses from Google Maps.</div>
+      </div>
+    </div>
+
+    <!-- QUEUE TAB -->
+    <div id="ltab-queue" style="display:none">
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;margin-bottom:3px">Outreach <em style="font-style:italic;color:var(--gold)">Queue</em></div>
+        <div style="font-size:10.5px;color:var(--muted)">Day 1 / Day 3 / Day 5 sequences waiting to send</div>
+      </div>
+      <div class="qlist" id="qlist">
+        <div class="ritem-empty">No outreach sequences yet. Generate an audit then queue the outreach.</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ RIGHT PANEL ═══ -->
+  <main class="right">
+    <!-- SPLASH -->
+    <div class="splash" id="splash">
+      <div>
+        <div class="splash-ico">KWBA Prospector</div>
+        <h1 class="splash-h">Find local businesses. <em>Audit their gaps.</em> Close them.</h1>
+        <p class="splash-p">Type a niche and a UK city on the left. Real Google Maps data comes back in seconds, scored by opportunity gap. Click any business to run the AI audit, get agent recommendations, match a niche package, and generate the outreach sequence.</p>
+      </div>
+    </div>
+
+    <!-- LEAD DETAIL -->
+    <div class="detail" id="detail">
+      <div class="dhead">
+        <div class="dh-left">
+          <div class="dh-name" id="dh-name"></div>
+          <div class="dh-meta" id="dh-meta"></div>
+        </div>
+        <div class="dh-gap">
+          <div class="dh-gapnum" id="dh-gapnum">—</div>
+          <div class="dh-gaplbl">Gap Score</div>
+        </div>
+      </div>
+
+      <div class="dtabs">
+        <button class="dtab on" onclick="setDTab('overview',this)">Overview</button>
+        <button class="dtab" onclick="setDTab('audit',this)">AI Audit</button>
+        <button class="dtab" onclick="setDTab('agents',this)">Agents</button>
+        <button class="dtab" onclick="setDTab('package',this)">Package</button>
+        <button class="dtab" onclick="setDTab('outreach',this)">Outreach</button>
+      </div>
+
+      <div class="dbody">
+        <div class="dpane on" id="dp-overview"></div>
+        <div class="dpane" id="dp-audit"></div>
+        <div class="dpane" id="dp-agents"></div>
+        <div class="dpane" id="dp-package"></div>
+        <div class="dpane" id="dp-outreach"></div>
+      </div>
+
+      <div class="dactions">
+        <button class="btn btn-o btn-sm" onclick="copyCurrentPane()">⎘ Copy tab</button>
+        <button class="btn btn-o btn-sm" id="run-audit-btn" onclick="runAuditForCurrent()">⚡ Run AI Audit</button>
+        <button class="btn btn-o btn-sm" onclick="markContacted()">✓ Mark Contacted</button>
+        <button class="btn btn-g btn-sm" onclick="queueOutreachForCurrent()">→ Queue Outreach</button>
+        <span style="margin-left:auto;font-size:9.5px;color:var(--muted2);letter-spacing:.04em" id="d-status"></span>
+      </div>
+    </div>
+
+    <!-- QUEUE DETAIL -->
+    <div id="qdetail" style="display:none;flex-direction:column;height:calc(100vh - 58px)">
+      <div class="qd-head">
+        <div>
+          <div class="qd-title" id="qd-name"></div>
+          <div class="qd-meta" id="qd-meta"></div>
+        </div>
+        <div class="send-ctrl">
+          <div class="day-select">
+            <select id="qd-day-sel">
+              <option value="1">Day 1</option>
+              <option value="3">Day 3</option>
+              <option value="5">Day 5</option>
+            </select>
+          </div>
+          <button class="btn btn-g btn-sm" onclick="sendSelectedDay()">⚡ Approve + Send</button>
+          <button class="btn btn-o btn-sm" onclick="skipSelectedDay()">Skip</button>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:22px 28px" id="qd-body"></div>
+      <div class="dactions">
+        <button class="btn btn-o btn-sm" onclick="copyOutreachDay()">⎘ Copy message</button>
+        <button class="btn btn-r btn-sm" onclick="deleteQueueItem()">Delete sequence</button>
+        <span style="margin-left:auto;font-size:9.5px;color:var(--muted2)" id="qd-status"></span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="login-modal" style="display:none;position:fixed;inset:0;background:rgba(7,7,6,.9);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:30px">
+  <div style="background:var(--bg2);border:1px solid var(--gold-border);padding:34px 38px;max-width:440px;width:100%">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;margin-bottom:5px">Connect to <em style="font-style:italic;color:var(--gold)">KWBA Admin</em></div>
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:22px;line-height:1.6">Enter your admin credentials to enable live Google Places search and audit generation.</div>
+    <div style="margin-bottom:12px"><label class="sf-lbl">Email</label><input type="email" id="login-email" class="sf-in" placeholder="admin@kwba.co.uk"></div>
+    <div style="margin-bottom:18px"><label class="sf-lbl">Password</label><input type="password" id="login-pass" class="sf-in" placeholder="—"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-o btn-sm" onclick="closeLoginModal()">Cancel</button>
+      <button class="btn btn-g btn-sm" onclick="doLogin()">Connect →</button>
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-top:14px;line-height:1.6" id="login-err"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIG — set your Render URL here
+// ═══════════════════════════════════════════════════════
+const API = 'https://kwba-agency.onrender.com';
+
+// ═══════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════
+let TOKEN = localStorage.getItem('kwba_token') || '';
+let USER_EMAIL = localStorage.getItem('kwba_email') || '';
+
+function authHeaders(extra = {}) {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}`, ...extra };
+}
+
+function updateAuthUI() {
+  const info = document.getElementById('auth-info');
+  const loginBtn = document.querySelector('.tpill:not(.gold):not(#bulk-send-all-btn)');
+  if (TOKEN && USER_EMAIL) {
+    info.textContent = USER_EMAIL;
+    info.style.color = 'var(--green)';
+    if (loginBtn) loginBtn.textContent = 'Sign Out';
+    if (loginBtn) loginBtn.onclick = doLogout;
+  } else {
+    info.textContent = 'Not connected';
+    info.style.color = 'var(--muted2)';
+    if (loginBtn) loginBtn.textContent = 'Log In';
+    if (loginBtn) loginBtn.onclick = openLoginModal;
+  }
+}
+
+function openLoginModal() {
+  document.getElementById('login-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('login-email').focus(), 100);
+}
+function closeLoginModal() { document.getElementById('login-modal').style.display = 'none'; }
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-err');
+  if (!email || !pass) { err.textContent = 'Email and password required'; return; }
+  try {
+    const r = await fetch(API + '/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
+    if (!r.ok) { err.textContent = 'Login failed — check credentials'; return; }
+    const data = await r.json();
+    TOKEN = data.token;
+    USER_EMAIL = email;
+    localStorage.setItem('kwba_token', TOKEN);
+    localStorage.setItem('kwba_email', USER_EMAIL);
+    closeLoginModal();
+    updateAuthUI();
+    loadQueue();
+    toast('Connected to KWBA admin', 'ok');
+  } catch (e) { err.textContent = 'Cannot reach server — check API config'; }
+}
+
+function doLogout() {
+  TOKEN = ''; USER_EMAIL = '';
+  localStorage.removeItem('kwba_token');
+  localStorage.removeItem('kwba_email');
+  updateAuthUI();
+  toast('Signed out');
+}
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let LEADS = [];       // current search results
+let SELECTED = new Set();
+let CURRENT = null;   // current lead open in detail
+let CURRENT_DTAB = 'overview';
+let QUEUE = [];       // outreach queue
+let CURRENT_Q = null; // queue item open
+
+// ═══════════════════════════════════════════════════════
+// NICHE INTEL
+// ═══════════════════════════════════════════════════════
+const NICHE_INTEL = {
+  contractor: {
+    keywords: ['electric','plumb','build','roof','heat','plaster','carpent','joiner','handyman','boiler','glazing','paving','landscap','roofer','builder'],
+    revenuePerLead: 650,
+    primaryAgents: [
+      { n: 'The Local SEO Pro', why: 'Trades live or die on Maps ranking. Service-area pages are the #1 lever.' },
+      { n: 'The Ads Specialist', why: 'Emergency intent (burst pipe, blown fuse) buys jobs at predictable cost.' },
+      { n: 'The Review Miner', why: 'Systematic review acquisition = 30-40% more booked jobs.' }
+    ],
+    secondaryAgents: ['The Copywriter', 'The Help Desk (FAQ)', 'The SMS Marketer'],
+    packageRec: 'lead-engine',
+    packageWhy: 'Contractors miss calls on-site. Every missed call = £300-£1,500 lost. AI Receptionist + missed-call text-back pays back in week one.',
+    niches: ['AI Receptionist', 'Missed-call Text-Back', 'Review Generation System', 'Google Maps Optimisation', 'Emergency Call Capture']
+  },
+  dentist: {
+    keywords: ['dent','dental','ortho','clinic','cosmet','invisalign','implant','hygien','aesthetic','botox','filler'],
+    revenuePerLead: 280,
+    primaryAgents: [
+      { n: 'The Strategist', why: 'High-value treatment funnel (Invisalign, implants) needs strategy first.' },
+      { n: 'The Copywriter', why: 'Treatment pages must overcome fear, build trust, surface the financial path.' },
+      { n: 'The SMS Marketer', why: 'No-show reduction by SMS reminder = single biggest dental revenue lever.' }
+    ],
+    secondaryAgents: ['The SEO Lead', 'The Review Miner', 'The Email Writer'],
+    packageRec: 'lead-engine',
+    packageWhy: 'Invisalign/implants are £2k-£8k per case. Nurture sequences for fence-sitters AND no-show prevention are both essential.',
+    niches: ['AI Consultation Chatbot', 'No-Show SMS Reminders', 'Treatment Nurture Sequences', 'High-Value Treatment Landing Pages', 'Review Acquisition System']
+  },
+  garage: {
+    keywords: ['garage','mot','autocentr','tyre','mechanic','car repair','exhaust','brake','clutch','autoservice'],
+    revenuePerLead: 140,
+    primaryAgents: [
+      { n: 'The SMS Marketer', why: 'Automated MOT reminders = biggest rebooking lever in independent garages.' },
+      { n: 'The Local SEO Pro', why: 'Garage searches are 90% local — Maps ranking determines volume.' },
+      { n: 'The Review Miner', why: 'Reviews close the trust gap vs dealers at comparable/lower prices.' }
+    ],
+    secondaryAgents: ['The Ads Specialist', 'The Help Desk (FAQ)'],
+    packageRec: 'receptionist',
+    packageWhy: 'Garages bleed on missed MOT reminders. A working reminder system pays for itself in month one.',
+    niches: ['MOT Reminder System', 'Service Rebooking Automation', 'AI Booking Chatbot', 'Google Maps Optimisation', 'Review Generation']
+  },
+  'estate-agent': {
+    keywords: ['estate','realt','propert','letting','sales agent','residential','house'],
+    revenuePerLead: 4500,
+    primaryAgents: [
+      { n: 'The Strategist', why: 'Speed-to-lead wins property: first responder closes 78% of deals.' },
+      { n: 'The Email Writer', why: 'Vendor nurture between valuation and instruction = where most listings are lost.' },
+      { n: 'The Copywriter', why: 'Listing descriptions and area pages need real differentiation.' }
+    ],
+    secondaryAgents: ['The Ads Specialist', 'The Local SEO Pro', 'The LinkedIn Ghost'],
+    packageRec: 'growth-system',
+    packageWhy: 'Per-deal commissions of £2k-£8k mean even small uplifts in valuation-to-instruction conversion are massive.',
+    niches: ['24/7 Valuation Request Chatbot', 'Portal Enquiry Auto-Response', 'Vendor Nurture Sequences', 'Sold Property Social Content', 'Review Acquisition']
+  },
+  restaurant: {
+    keywords: ['restaur','cafe','bistro','pub','bar','grill','kitchen','food','cuisine','pizza','curry','indian','italian','chinese','thai'],
+    revenuePerLead: 75,
+    primaryAgents: [
+      { n: 'The Local SEO Pro', why: '90% of restaurant decisions made in Google Maps. Profile completeness = covers booked.' },
+      { n: 'The Viral Editor', why: 'Short-form food content drives more discovery than any other channel.' },
+      { n: 'The Review Miner', why: 'Review velocity matters more than review count for restaurant ranking.' }
+    ],
+    secondaryAgents: ['The Community Manager', 'The Email Writer'],
+    packageRec: 'receptionist',
+    packageWhy: 'Booking automation and no-show reduction alone justify the investment for any mid-volume restaurant.',
+    niches: ['AI Booking Chatbot', 'No-Show Reminder System', 'Private Hire Lead Capture', 'Review Acceleration', 'Social Content Engine']
+  },
+  salon: {
+    keywords: ['salon','beauty','hair','barber','nail','spa','massage','facial','wax','lash','brow','skincare','aesthetic'],
+    revenuePerLead: 120,
+    primaryAgents: [
+      { n: 'The Viral Editor', why: 'Beauty is visual-led; reels drive 60-70% of new client acquisition.' },
+      { n: 'The Community Manager', why: 'Salon DMs convert more than form fills — engagement is a booking channel.' },
+      { n: 'The Review Miner', why: 'Premium services live or die on visible client testimonials.' }
+    ],
+    secondaryAgents: ['The Local SEO Pro', 'The SMS Marketer'],
+    packageRec: 'receptionist',
+    packageWhy: 'Rebook automation pays back fast. Premium salons benefit from full Lead Engine for trial campaigns.',
+    niches: ['Rebook Automation System', 'AI Booking Assistant', 'Short-Form Content Engine', 'Review Acceleration', 'Premium Service Promotion']
+  },
+  gym: {
+    keywords: ['gym','fitness','crossfit','pilates','yoga','training','f45','spin','boxing','martial','strength','studio'],
+    revenuePerLead: 900,
+    primaryAgents: [
+      { n: 'The Strategist', why: 'Trial-to-member conversion is the unit economic that makes or breaks a gym.' },
+      { n: 'The Email Writer', why: 'Nurture between trial and decision drives 30-50% conversion uplift.' },
+      { n: 'The Viral Editor', why: 'Member transformation content = most powerful organic acquisition.' }
+    ],
+    secondaryAgents: ['The Ads Specialist', 'The Community Manager'],
+    packageRec: 'lead-engine',
+    packageWhy: 'Gym MRR at £40-£200/mo per member = real recurring revenue. Trial conversion is the lever.',
+    niches: ['AI Trial Booking System', 'Trial-to-Member Nurture Sequence', 'Transformation Content Engine', 'Member Retention Automation', 'Lead Capture Chatbot']
+  },
+  legal: {
+    keywords: ['solicit','law','legal','attorn','accountant','tax','bookkeep','consultant','financ','will','probate','divorc','conveyance'],
+    revenuePerLead: 1500,
+    primaryAgents: [
+      { n: 'The Strategist', why: 'Professional services need authority positioning — not generic marketing.' },
+      { n: 'The Blog Manager', why: 'Authority content is the single best long-term acquisition channel for regulated professions.' },
+      { n: 'The Copywriter', why: 'Service pages must translate jargon into client language without losing credibility.' }
+    ],
+    secondaryAgents: ['The Local SEO Pro', 'The LinkedIn Ghost', 'The Help Desk (FAQ)'],
+    packageRec: 'growth-system',
+    packageWhy: 'Authority + speed-to-lead = the two levers in legal/accounting. Growth System covers both properly.',
+    niches: ['AI Enquiry Qualifier Chatbot', 'Same-Day Response Automation', 'Authority Content Programme', 'LinkedIn Founder Presence', 'Consultation Booking System']
+  },
+  other: {
+    keywords: [],
+    revenuePerLead: 400,
+    primaryAgents: [
+      { n: 'The Summariser', why: 'Start with a strict diagnostic before recommending tactics.' },
+      { n: 'The Strategist', why: 'Generic SMEs need a fundamental — what is the actual growth lever?' },
+      { n: 'The Local SEO Pro', why: 'Local visibility is the universal baseline for service SMEs.' }
+    ],
+    secondaryAgents: ['The Copywriter', 'The Review Miner'],
+    packageRec: 'lead-engine',
+    packageWhy: 'Diagnose the gaps, then match package to gap profile.',
+    niches: ['AI Lead Capture Chatbot', 'Local SEO System', 'Review Generation', 'Automated Follow-Up', 'Conversion Landing Page']
+  }
+};
+
+const PACKAGES = {
+  receptionist: { name: 'AI Receptionist', price: '£499/mo', tagline: 'Stop missing leads', includes: ['Niche-trained AI chatbot (website + WhatsApp)','Missed-call text-back automation','Review request automation post-job','Monthly performance report'] },
+  'lead-engine': { name: 'AI Lead Engine', price: '£1,299/mo', tagline: 'More booked jobs every month — or we work free', includes: ['Everything in Receptionist','Google Ads management','Conversion landing page per service','5-day SMS + email follow-up per enquiry','Quarterly strategy review'] },
+  'growth-system': { name: 'AI Growth System', price: '£2,499/mo', tagline: 'We run your customer acquisition end-to-end', includes: ['Everything in Lead Engine','Retargeting ads (Meta + Google)','Full SEO programme','Content system','Dedicated account manager'] }
+};
+
+// ═══════════════════════════════════════════════════════
+// NICHE DETECTION
+// ═══════════════════════════════════════════════════════
+function detectNiche(category, name) {
+  const s = ((category || '') + ' ' + (name || '')).toLowerCase();
+  for (const [k, v] of Object.entries(NICHE_INTEL)) {
+    if (k === 'other') continue;
+    if (v.keywords.some(kw => s.includes(kw))) return k;
+  }
+  return 'other';
+}
+
+// ═══════════════════════════════════════════════════════
+// GAP SCORING
+// ═══════════════════════════════════════════════════════
+const GAP_RULES = [
+  { k: 'no-website',     label: 'No website linked',        pts: 30, test: l => !l.website },
+  { k: 'under-20-rev',  label: 'Under 20 reviews',         pts: 25, test: l => l.reviews !== null && l.reviews < 20 },
+  { k: 'under-5-rev',   label: 'Under 5 reviews',          pts: 15, test: l => l.reviews !== null && l.reviews < 5 },
+  { k: 'low-rating',    label: 'Rating under 4.0',         pts: 15, test: l => l.rating !== null && l.rating < 4.0 },
+  { k: 'very-low-rat',  label: 'Rating under 3.5',         pts: 10, test: l => l.rating !== null && l.rating < 3.5 },
+  { k: 'no-phone',      label: 'No phone number',          pts: 10, test: l => !l.phone },
+  { k: 'no-hours',      label: 'No opening hours listed',  pts: 5,  test: l => !l.hasHours },
+];
+
+function scoreGap(lead) {
+  const signals = GAP_RULES.map(r => ({ ...r, hit: r.test(lead) }));
+  return { score: Math.min(100, signals.filter(s => s.hit).reduce((a, s) => a + s.pts, 0)), signals };
+}
+
+// ═══════════════════════════════════════════════════════
+// LEFT PANEL TABS
+// ═══════════════════════════════════════════════════════
+function setLeftTab(tab, btn) {
+  document.querySelectorAll('.ln').forEach(b => b.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  document.getElementById('ltab-search').style.display = tab === 'search' ? 'block' : 'none';
+  document.getElementById('ltab-queue').style.display  = tab === 'queue'  ? 'block' : 'none';
+  if (tab === 'queue') {
+    loadQueue();
+    document.getElementById('splash').style.display = 'flex';
+    document.getElementById('detail').classList.remove('on');
+    document.getElementById('qdetail').style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════
+async function runSearch() {
+  if (!TOKEN) {
+    toast('Log in first to enable live search', 'err');
+    openLoginModal();
+    return;
+  }
+  const customNiche = document.getElementById('sf-custom').value.trim();
+  const niche = customNiche || document.getElementById('sf-niche').value;
+  const city = document.getElementById('sf-city').value.trim();
+  const minGap = parseInt(document.getElementById('sf-mingap').value) || 0;
+  const maxR = parseInt(document.getElementById('sf-max').value) || 40;
+
+  if (!city) { toast('Enter a UK city or town', 'err'); return; }
+
+  const btn = document.getElementById('search-btn');
+  const st = document.getElementById('search-status');
+  btn.disabled = true;
+  setStatus('Searching Google Maps — takes 5-15 seconds…', true);
+
+  try {
+    const r = await fetch(API + '/api/places-search', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ query: niche, city, maxResults: maxR })
+    });
+    if (!r.ok) {
+      const errText = await r.text();
+      if (r.status === 401 || r.status === 403) { TOKEN = ''; localStorage.removeItem('kwba_token'); updateAuthUI(); openLoginModal(); }
+      throw new Error(errText || 'Search failed');
+    }
+    const data = await r.json();
+    const places = data.places || [];
+
+    // Score and filter
+    LEADS = places.map((p, i) => {
+      const niche2 = detectNiche(p.category, p.name);
+      const lead = { ...p, id: 'l_' + Date.now() + '_' + i, niche: niche2, status: 'new', auditText: null };
+      const gap = scoreGap(lead);
+      lead.gapScore = gap.score;
+      lead.gapSignals = gap.signals;
+      return lead;
+    }).filter(l => l.gapScore >= minGap).sort((a, b) => b.gapScore - a.gapScore);
+
+    SELECTED.clear();
+    renderLeadList();
+    setStatus(`✓ ${LEADS.length} leads found (${places.length} raw, ${LEADS.length} above gap ${minGap})`);
+
+    if (LEADS.length > 0) {
+      openLead(LEADS[0]);
+    }
+    toast(`${LEADS.length} leads found`);
+  } catch (e) {
+    setStatus('Error: ' + e.message, false, true);
+    toast(e.message, 'err');
+  }
+  btn.disabled = false;
+}
+
+function setStatus(msg, live, err) {
+  const el = document.getElementById('search-status');
+  el.textContent = msg || '';
+  el.className = 'sb-status' + (live ? ' live' : '') + (err ? ' err' : '');
+}
+
+// ═══════════════════════════════════════════════════════
+// LEAD LIST
+// ═══════════════════════════════════════════════════════
+function renderLeadList() {
+  const list = document.getElementById('rlist');
+  if (!LEADS.length) {
+    list.innerHTML = '<div class="ritem-empty">No leads found. Try a broader search or lower the min gap score.</div>';
+    return;
+  }
+  const rh = `<div class="rlist-head"><span class="rlist-ct"><strong>${LEADS.length}</strong> leads</span><button class="bulk-btn" onclick="selectAll()">Select All</button></div>`;
+  list.innerHTML = rh + LEADS.map(l => {
+    const isSel = SELECTED.has(l.id);
+    const statusBadge = l.status !== 'new' ? `<span class="ri-badge rb-${l.status}">${l.status}</span>` : '';
+    return `<div class="ritem${CURRENT?.id === l.id ? ' active' : ''}" id="ri-${l.id}" onclick="openLead(LEADS.find(x=>x.id==='${l.id}'))">
+      <div class="ritem-cb"><input type="checkbox" ${isSel ? 'checked' : ''} onclick="event.stopPropagation();toggleSel('${l.id}')"></div>
+      <div class="ritem-body">
+        <div class="ri-name">${esc(l.name)}</div>
+        <div class="ri-meta">
+          ${l.rating !== null ? `<span><span class="star">★</span><span class="${l.rating < 4 ? 'low' : ''}">${l.rating.toFixed(1)}</span></span>` : '<span style="color:var(--muted2)">no rating</span>'}
+          <span>${l.reviews !== null ? l.reviews + ' reviews' : 'no reviews'}</span>
+          ${l.website ? '' : '<span style="color:var(--red)">no site</span>'}
+        </div>
+        ${statusBadge}
+      </div>
+      <div class="ri-score">
+        <div class="ri-scorenum ${l.gapScore >= 60 ? 'hot' : l.gapScore >= 35 ? 'med' : 'cool'}">${l.gapScore}</div>
+        <div class="ri-scorelbl">Gap</div>
+      </div>
+    </div>`;
+  }).join('');
+  updateBulkBar();
+}
+
+function toggleSel(id) {
+  if (SELECTED.has(id)) SELECTED.delete(id);
+  else SELECTED.add(id);
+  const ri = document.getElementById('ri-' + id);
+  if (ri) ri.querySelector('input[type=checkbox]').checked = SELECTED.has(id);
+  updateBulkBar();
+}
+function selectAll() { LEADS.forEach(l => SELECTED.add(l.id)); renderLeadList(); }
+function clearSelection() { SELECTED.clear(); renderLeadList(); }
+function updateBulkBar() {
+  const bar = document.getElementById('bulkbar');
+  document.getElementById('sel-count').textContent = SELECTED.size;
+  bar.classList.toggle('on', SELECTED.size > 0);
+}
+
+// ═══════════════════════════════════════════════════════
+// OPEN LEAD — detail panel
+// ═══════════════════════════════════════════════════════
+function openLead(lead) {
+  CURRENT = lead;
+  CURRENT_DTAB = 'overview';
+
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('detail').classList.add('on');
+  document.getElementById('qdetail').style.display = 'none';
+
+  // Update active in list
+  document.querySelectorAll('.ritem').forEach(r => r.classList.remove('active'));
+  document.getElementById('ri-' + lead.id)?.classList.add('active');
+
+  // Header
+  const name = lead.name;
+  document.getElementById('dh-name').innerHTML = esc(name);
+  const gapNum = document.getElementById('dh-gapnum');
+  gapNum.textContent = lead.gapScore;
+  gapNum.className = 'dh-gapnum ' + (lead.gapScore >= 60 ? 'hot' : lead.gapScore >= 35 ? 'med' : 'cool');
+  document.getElementById('dh-meta').innerHTML = `
+    <span>${lead.city ? esc(lead.city) : '—'}</span>
+    <span>${lead.rating !== null ? '★ ' + lead.rating.toFixed(1) : 'no rating'}</span>
+    <span>${lead.reviews !== null ? lead.reviews + ' reviews' : 'no reviews'}</span>
+    <span>${lead.phone ? esc(lead.phone) : 'no phone'}</span>
+    ${lead.website ? `<a href="${esc(lead.website)}" target="_blank">↗ Website</a>` : '<span style="color:var(--red)">no website</span>'}
+  `;
+
+  // Reset tabs
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.dpane').forEach(p => p.classList.remove('on'));
+  document.querySelector('.dtab').classList.add('on');
+  document.getElementById('dp-overview').classList.add('on');
+
+  renderOverview(lead);
+  renderAgents(lead);
+  renderPackage(lead);
+  if (lead.auditText) renderAuditCached(lead);
+  else document.getElementById('dp-audit').innerHTML = `<div class="aud-empty">Click <strong style="color:var(--gold)">⚡ Run AI Audit</strong> in the action bar below to generate the full 7-step diagnostic.</div>`;
+  renderOutreachPane(lead);
+
+  document.getElementById('d-status').textContent = lead.status !== 'new' ? lead.status : '';
+}
+
+function setDTab(tab, btn) {
+  CURRENT_DTAB = tab;
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.dpane').forEach(p => p.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  document.getElementById('dp-' + tab).classList.add('on');
+}
+
+// ═══════════════════════════════════════════════════════
+// OVERVIEW PANE
+// ═══════════════════════════════════════════════════════
+function renderOverview(lead) {
+  const intel = NICHE_INTEL[lead.niche] || NICHE_INTEL.other;
+  const signals = lead.gapSignals.map(s => `
+    <div class="gsig${s.hit ? ' hit' : ''}">
+      <span class="g-ico">${s.hit ? '⚠' : '○'}</span>
+      <span class="g-lbl">${esc(s.label)}</span>
+      <span class="g-pts">+${s.pts}</span>
+    </div>`).join('');
+
+  document.getElementById('dp-overview').innerHTML = `
+    <h2 class="dc-h2">Listing Details</h2>
+    <ul class="dc-ul">
+      <li><strong>Address:</strong> ${esc(lead.address || '—')}</li>
+      <li><strong>Phone:</strong> ${lead.phone ? esc(lead.phone) : '<span style="color:var(--red)">Not listed</span>'}</li>
+      <li><strong>Website:</strong> ${lead.website ? `<a href="${esc(lead.website)}" target="_blank" style="color:var(--blue)">${esc(lead.website)}</a>` : '<span style="color:var(--red)">No website</span>'}</li>
+      <li><strong>Category:</strong> ${esc(lead.category || '—')}</li>
+      <li><strong>Niche detected:</strong> ${esc(intel.label || 'General SME')}</li>
+      <li><strong>Revenue per lead (niche avg):</strong> £${(intel.revenuePerLead || 400).toLocaleString()}</li>
+    </ul>
+    <h2 class="dc-h2">Gap Signals — Why ${lead.gapScore}/100</h2>
+    <div class="gap-grid">${signals}</div>
+    <h2 class="dc-h2">Estimated Opportunity</h2>
+    <p class="dc-p">If ${esc(lead.name)} is missing <strong>5-10 leads/month</strong> from these gaps, that's roughly <strong>£${(intel.revenuePerLead * 5).toLocaleString()} – £${(intel.revenuePerLead * 10).toLocaleString()}/month</strong> being left on the table. Run the <strong style="color:var(--gold)">AI Audit</strong> tab for a fully quantified 7-step report.</p>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+// AI AUDIT
+// ═══════════════════════════════════════════════════════
+async function runAuditForCurrent() {
+  if (!CURRENT) return;
+  if (!TOKEN) { toast('Log in first', 'err'); openLoginModal(); return; }
+
+  const pane = document.getElementById('dp-audit');
+  setDTab('audit', document.querySelectorAll('.dtab')[1]);
+
+  pane.innerHTML = `<div class="aud-status live">Building audit prompt…</div><div class="audit-wrap" id="aud-stream"></div>`;
+
+  const intel = NICHE_INTEL[CURRENT.niche] || NICHE_INTEL.other;
+  const observed = CURRENT.gapSignals.filter(s => s.hit).map(s => '- ' + s.label).join('\n') || '- (diagnose from context)';
+
+  const prompt = `You are a 25-year UK marketing strategist specialising in ${intel.label || 'UK SMEs'}.
+
+Produce a high-conversion audit for the prospect below. UK English. GBP only. Specific to this business.
+
+=== PROSPECT ===
+Business: ${CURRENT.name}
+Location: ${CURRENT.city || 'UK'}
+Address: ${CURRENT.address || '—'}
+Website: ${CURRENT.website || '(none)'}
+Phone: ${CURRENT.phone || '(not listed)'}
+Google Rating: ${CURRENT.rating !== null ? CURRENT.rating.toFixed(1) : 'unknown'}
+Reviews: ${CURRENT.reviews !== null ? CURRENT.reviews : 'unknown'}
+Category: ${CURRENT.category || '—'}
+
+=== GAP SIGNALS OBSERVED ===
+${observed}
+
+=== NICHE GROUNDING ===
+Revenue per lead in this niche: £${intel.revenuePerLead} avg.
+Niche package rationale: ${intel.packageWhy}
+
+=== YOUR TASK ===
+Produce these 7 sections. Markdown ## headings. Be specific to ${CURRENT.name}.
+
+## STEP 1 — VISIBILITY ANALYSIS
+Maps presence, review profile vs competitors, local SEO read.
+
+## STEP 2 — CONVERSION ANALYSIS
+Website quality, CTAs, lead capture mechanisms.
+
+## STEP 3 — FUNNEL ANALYSIS
+Post-enquiry follow-up, booking, lead nurture.
+
+## STEP 4 — REVENUE LEAKS (top 5)
+Per leak:
+**Issue:** [specific]
+**Why it costs money:** [niche-specific]
+**Lost leads/month:** [realistic number]
+**Lost revenue/month:** [GBP, grounded in £${intel.revenuePerLead}/lead avg]
+
+## STEP 5 — OPPORTUNITY SUMMARY
+Total missed leads/mo. Total missed revenue/mo. Annual opportunity.
+
+## STEP 6 — SOLUTION
+How a Client Acquisition System fixes the leaks. Tie each component to a specific leak. Recommend KWBA package with rationale.
+
+## STEP 7 — OUTREACH (Day 1 email, Day 3 follow-up, Day 5 close, SMS variant)
+UK tone. Specific to ${CURRENT.name}. Under 130 words per email. Single CTA. No generic phrases.`;
+
+  try {
+    const r = await fetch(API + '/public-audit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    if (!r.ok) throw new Error((await r.text()) || 'Audit failed');
+
+    const rd = r.body.getReader(), dc = new TextDecoder();
+    let full = '';
+    document.getElementById('dp-audit').querySelector('.aud-status').textContent = 'AI generating — streaming live…';
+    while (true) {
+      const { done, value } = await rd.read();
+      if (done) break;
+      const ck = dc.decode(value);
+      for (const p of ck.split('data: ')) {
+        if (!p.trim()) continue;
+        try { const d = JSON.parse(p); const tx = d.candidates?.[0]?.content?.parts?.[0]?.text; if (tx) { full += tx; document.getElementById('aud-stream').innerHTML = mdToHtml(full); } } catch (e) {}
+      }
+    }
+    CURRENT.auditText = full;
+    CURRENT.status = 'audited';
+    renderAuditCached(CURRENT);
+    renderLeadList();
+    renderOutreachPane(CURRENT);
+    toast('Audit complete', 'ok');
+  } catch (e) {
+    pane.innerHTML = `<div class="aud-empty" style="color:var(--red)"><strong>Audit failed.</strong><br><br>${esc(e.message)}<br><br>Make sure your Render server is running and API is configured.</div>`;
+  }
+}
+
+function renderAuditCached(lead) {
+  document.getElementById('dp-audit').innerHTML = `
+    <div class="aud-status">✓ Audit cached · click ⚡ Run AI Audit to regenerate</div>
+    <div class="audit-wrap">${mdToHtml(lead.auditText)}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// AGENTS PANE
+// ═══════════════════════════════════════════════════════
+function renderAgents(lead) {
+  const intel = NICHE_INTEL[lead.niche] || NICHE_INTEL.other;
+  const primary = intel.primaryAgents.map(a => `
+    <div class="agcard primary">
+      <div class="ag-name">⬩ ${esc(a.n)}</div>
+      <div class="ag-why">${esc(a.why)}</div>
+    </div>`).join('');
+  const secondary = intel.secondaryAgents.map(a => `
+    <div class="agcard">
+      <div class="ag-name">${esc(a)}</div>
+      <div class="ag-why">Supporting agent — deploy once primary agents are embedded.</div>
+    </div>`).join('');
+
+  document.getElementById('dp-agents').innerHTML = `
+    <h2 class="dc-h2">Recommended Agents</h2>
+    <p class="dc-p">Based on the niche (<strong>${esc((NICHE_INTEL[lead.niche] || NICHE_INTEL.other).label || 'General')}</strong>) and the gap signals fired, these agents from your 26-agent stack are the right deployment:</p>
+    <h3 class="dc-h3">Primary — deploy first</h3>
+    <div class="agent-grid">${primary}</div>
+    <h3 class="dc-h3">Secondary — add next</h3>
+    <div class="agent-grid">${secondary}</div>
+    <h2 class="dc-h2">Niche-Specific Features to Include</h2>
+    <ul class="dc-ul">${intel.niches.map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+// PACKAGE PANE
+// ═══════════════════════════════════════════════════════
+function renderPackage(lead) {
+  const intel = NICHE_INTEL[lead.niche] || NICHE_INTEL.other;
+  const recKey = intel.packageRec || 'lead-engine';
+  const pkg = PACKAGES[recKey];
+  const altKeys = Object.keys(PACKAGES).filter(k => k !== recKey);
+
+  document.getElementById('dp-package').innerHTML = `
+    <div class="pkg-main">
+      <div class="pm-eye">Recommended package</div>
+      <div class="pm-name"><em>${esc(pkg.name)}</em></div>
+      <div class="pm-price">${esc(pkg.price)}</div>
+      <div class="pm-why">${esc(intel.packageWhy)}</div>
+      <div class="pm-inc"><strong>Includes:</strong><ul>${pkg.includes.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>
+    </div>
+    <div class="pkg-alts">
+      ${altKeys.map(k => {
+        const p = PACKAGES[k];
+        return `<div class="pkg-alt"><div class="pa-lbl">Alternative</div><div class="pa-name">${esc(p.name)}</div><div class="pa-price">${esc(p.price)}</div><div class="pa-note">${esc(p.tagline)}</div></div>`;
+      }).join('')}
+    </div>
+    <h2 class="dc-h2">Niche-Specific Add-ons</h2>
+    <ul class="dc-ul">${intel.niches.map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+// OUTREACH PANE + SEQUENCE GENERATION
+// ═══════════════════════════════════════════════════════
+function renderOutreachPane(lead) {
+  if (!lead.outreachSequence) {
+    document.getElementById('dp-outreach').innerHTML = `
+      <div class="aud-empty">
+        <div style="margin-bottom:12px">Run the AI Audit first — the audit automatically generates the Day 1, Day 3, and Day 5 outreach messages.<br><br>Or click below to generate a quick sequence from the gap signals alone.</div>
+        <button class="btn btn-g" onclick="generateQuickOutreach()">Generate Outreach Sequence</button>
+      </div>`;
+    return;
+  }
+  const msgs = lead.outreachSequence;
+  document.getElementById('dp-outreach').innerHTML = msgs.map((m, i) => `
+    <div class="seq-card">
+      <span class="seq-badge">Day ${m.day}</span>
+      ${m.subject ? `<div class="seq-subj">${esc(m.subject)}</div>` : ''}
+      <div class="seq-body">${esc(m.body)}</div>
+      <button onclick="copyText('${esc(m.body).replace(/'/g,"\\'")}');" style="background:none;border:1px solid var(--border);color:var(--muted);padding:4px 10px;font-size:9px;letter-spacing:.13em;text-transform:uppercase;margin-top:9px;cursor:pointer;transition:.15s" onmouseover="this.style.borderColor='var(--gold-border)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">⎘ Copy</button>
+    </div>`).join('');
+}
+
+async function generateQuickOutreach() {
+  if (!CURRENT) return;
+  const intel = NICHE_INTEL[CURRENT.niche] || NICHE_INTEL.other;
+  const pkg = PACKAGES[intel.packageRec];
+  const city = CURRENT.city || 'your area';
+  const gaps = CURRENT.gapSignals.filter(s => s.hit).map(s => s.label);
+  const mainGap = gaps[0] || 'gaps in your online presence';
+  const fn = '[First name]';
+
+  CURRENT.outreachSequence = [
+    {
+      day: 1,
+      subject: `Quick observation about ${CURRENT.name}`,
+      body: `Hi ${fn},
+
+Came across ${CURRENT.name} on Google Maps.${CURRENT.rating !== null && CURRENT.rating >= 4.2 ? ` Strong ${CURRENT.rating.toFixed(1)}★ rating — clearly doing good work.` : ''}
+
+One thing stood out: ${mainGap.toLowerCase()}. For a ${intel.label?.split(' ')[0]?.toLowerCase() || 'local business'} in ${city}, that's likely costing somewhere around £${(intel.revenuePerLead * 5).toLocaleString()}-£${(intel.revenuePerLead * 8).toLocaleString()}/month in missed leads.
+
+We've built a fix for exactly this — usually live within 14 days.
+
+Worth a 15-minute call? No deck, no pitch.
+
+— [Your name], KWBA Agency
+hello@kwba.co.uk`
+    },
+    {
+      day: 3,
+      subject: `Re: ${CURRENT.name}`,
+      body: `Hi ${fn},
+
+Following up on my note from Tuesday.
+
+I know the inbox gets busy — just wanted to make sure this didn't get buried.
+
+One question worth thinking about: how many calls or enquiries do you think you miss in a typical week when you're out on jobs / with clients?
+
+For most ${intel.label?.split(' ')[0]?.toLowerCase() || 'local'} businesses in ${city}, it's 3-5 per week. At £${intel.revenuePerLead}/average, that's real money.
+
+Happy to show you the system we use — 15 minutes, no obligation.
+
+— [Your name]`
+    },
+    {
+      day: 5,
+      subject: `Last note — ${CURRENT.name}`,
+      body: `Hi ${fn},
+
+Last one from me — I don't want to be a pest.
+
+If the timing's off or this isn't a priority right now, completely understand. Just reply and I'll leave you alone.
+
+If you do want to see how we've helped similar ${intel.label?.split(' ')[0]?.toLowerCase() || 'local'} businesses in ${city} fix their lead-flow, the door's open whenever you're ready.
+
+Either way — best of luck with things.
+
+— [Your name], KWBA Agency`
+    },
+    {
+      day: 1,
+      subject: 'SMS',
+      body: `Hi ${fn}, saw ${CURRENT.name.slice(0,20)} on Maps — quick question about your lead flow. Worth a 15-min call? kwba.co.uk/audit | KWBA | Reply STOP to opt out`
+    }
+  ];
+
+  renderOutreachPane(CURRENT);
+  toast('Outreach sequence generated', 'ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// QUEUE OUTREACH
+// ═══════════════════════════════════════════════════════
+async function queueOutreachForCurrent() {
+  if (!CURRENT) return;
+  if (!TOKEN) { toast('Log in first', 'err'); openLoginModal(); return; }
+  if (!CURRENT.outreachSequence) { await generateQuickOutreach(); }
+
+  try {
+    const r = await fetch(API + '/api/outreach', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ prospect: { name: CURRENT.name, phone: CURRENT.phone, website: CURRENT.website, city: CURRENT.city, niche: CURRENT.niche }, messages: CURRENT.outreachSequence })
+    });
+    if (!r.ok) throw new Error(await r.text());
+    CURRENT.status = 'queued';
+    renderLeadList();
+    toast('Queued — switch to Outreach Queue tab', 'ok');
+    document.getElementById('bulk-send-all-btn').style.display = 'inline-flex';
+    loadQueue();
+  } catch (e) { toast(e.message, 'err'); }
+}
+
+async function bulkQueueSelected() {
+  if (!SELECTED.size) return;
+  const selected = LEADS.filter(l => SELECTED.has(l.id));
+  for (const lead of selected) {
+    CURRENT = lead;
+    if (!lead.outreachSequence) await generateQuickOutreach();
+    await queueOutreachForCurrent();
+  }
+  clearSelection();
+  toast(`${selected.length} leads queued`, 'ok');
+}
+
+async function bulkAuditSelected() {
+  if (!SELECTED.size) return;
+  const selected = LEADS.filter(l => SELECTED.has(l.id) && !l.auditText);
+  if (!selected.length) { toast('All selected leads already have audits'); return; }
+  toast(`Generating ${selected.length} audits — this will take ~${selected.length * 40}s`);
+  for (const lead of selected) {
+    CURRENT = lead;
+    await runAuditForCurrent();
+    await new Promise(r => setTimeout(r, 500));
+  }
+  clearSelection();
+  toast('All audits complete', 'ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// OUTREACH QUEUE
+// ═══════════════════════════════════════════════════════
+async function loadQueue() {
+  if (!TOKEN) return;
+  try {
+    const r = await fetch(API + '/api/outreach', { headers: authHeaders() });
+    if (!r.ok) return;
+    QUEUE = await r.json();
+    renderQueueList();
+    document.getElementById('bulk-send-all-btn').style.display = QUEUE.filter(q => q.status !== 'done').length ? 'inline-flex' : 'none';
+  } catch (e) { /* silent fail */ }
+}
+
+function renderQueueList() {
+  const list = document.getElementById('qlist');
+  if (!QUEUE.length) {
+    list.innerHTML = '<div class="ritem-empty">No outreach sequences yet.</div>';
+    return;
+  }
+  list.innerHTML = QUEUE.map(q => {
+    const sentCount = q.messages?.filter(m => m.sent)?.length || 0;
+    const total = q.messages?.length || 0;
+    const isDone = q.status === 'done' || sentCount >= total;
+    return `<div class="qitem" onclick="openQueueItem('${q.id}')">
+      <div class="qi-name">${esc(q.prospect?.name || 'Unknown')}</div>
+      <div class="qi-status">
+        <span>${esc(q.prospect?.city || '—')}</span>
+        <span class="qi-day ${isDone ? 'qi-done' : ''}">${isDone ? 'Done' : `Day ${nextDay(q)} ready`}</span>
+        <span>${sentCount}/${total} sent</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function nextDay(q) {
+  const m = (q.messages || []).find(m => !m.sent && !m.skipped);
+  return m?.day || 5;
+}
+
+function openQueueItem(id) {
+  CURRENT_Q = QUEUE.find(q => q.id == id);
+  if (!CURRENT_Q) return;
+
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('detail').classList.remove('on');
+  const qd = document.getElementById('qdetail');
+  qd.style.display = 'flex';
+
+  document.getElementById('qd-name').innerHTML = `<em style="font-style:italic;color:var(--gold)">${esc(CURRENT_Q.prospect?.name || 'Prospect')}</em>`;
+  document.getElementById('qd-meta').textContent = `${CURRENT_Q.prospect?.city || '—'} · ${(CURRENT_Q.messages || []).filter(m => m.sent).length}/${(CURRENT_Q.messages || []).length} messages sent`;
+  renderQueueMessages();
+}
+
+function renderQueueMessages() {
+  if (!CURRENT_Q) return;
+  const body = document.getElementById('qd-body');
+  body.innerHTML = (CURRENT_Q.messages || []).map((m, i) => `
+    <div class="seq-card">
+      <span class="seq-badge">${m.day === 1 && m.subject === 'SMS' ? 'SMS' : 'Day ' + m.day}</span>
+      ${m.subject && m.subject !== 'SMS' ? `<div class="seq-subj">${esc(m.subject)}</div>` : ''}
+      <div class="seq-body">${esc(m.body)}</div>
+      <span class="seq-status ${m.sent ? 'ss-sent' : m.skipped ? 'ss-skipped' : 'ss-pending'}">${m.sent ? '✓ Sent' : m.skipped ? 'Skipped' : 'Pending'}</span>
+    </div>`).join('');
+}
+
+async function sendSelectedDay() {
+  if (!CURRENT_Q) return;
+  const dayVal = parseInt(document.getElementById('qd-day-sel').value);
+  const msg = CURRENT_Q.messages?.find(m => m.day === dayVal && !m.sent && !m.skipped);
+  if (!msg) { toast('That message is already sent or doesn\'t exist', 'err'); return; }
+  msg.sent = true;
+  msg.sentAt = new Date().toISOString();
+  // Check if all done
+  const allDone = CURRENT_Q.messages.every(m => m.sent || m.skipped);
+  if (allDone) CURRENT_Q.status = 'done';
+  await patchQueue(CURRENT_Q.id, { messages: CURRENT_Q.messages, status: CURRENT_Q.status });
+  renderQueueMessages();
+  renderQueueList();
+  document.getElementById('qd-status').textContent = `Day ${dayVal} marked as sent`;
+  toast(`Day ${dayVal} marked sent`, 'ok');
+}
+
+async function skipSelectedDay() {
+  if (!CURRENT_Q) return;
+  const dayVal = parseInt(document.getElementById('qd-day-sel').value);
+  const msg = CURRENT_Q.messages?.find(m => m.day === dayVal && !m.sent && !m.skipped);
+  if (!msg) { toast('Nothing to skip', 'err'); return; }
+  msg.skipped = true;
+  await patchQueue(CURRENT_Q.id, { messages: CURRENT_Q.messages });
+  renderQueueMessages();
+  toast('Skipped', 'ok');
+}
+
+async function deleteQueueItem() {
+  if (!CURRENT_Q || !confirm('Delete this sequence?')) return;
+  // Mark as deleted by patching status
+  await patchQueue(CURRENT_Q.id, { status: 'deleted' });
+  QUEUE = QUEUE.filter(q => q.id != CURRENT_Q.id);
+  CURRENT_Q = null;
+  document.getElementById('qdetail').style.display = 'none';
+  document.getElementById('splash').style.display = 'flex';
+  renderQueueList();
+  toast('Deleted');
+}
+
+async function patchQueue(id, updates) {
+  try {
+    await fetch(API + '/api/outreach/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ updates }) });
+  } catch (e) { /* silent */ }
+}
+
+async function bulkSendAll() {
+  const pending = QUEUE.filter(q => q.status !== 'done' && q.status !== 'deleted');
+  if (!pending.length) { toast('Nothing pending in queue'); return; }
+  if (!confirm(`This will mark Day 1 as sent for all ${pending.length} queued prospects. Continue?`)) return;
+  for (const q of pending) {
+    const msg = q.messages?.find(m => m.day === 1 && !m.sent && !m.skipped);
+    if (msg) { msg.sent = true; msg.sentAt = new Date().toISOString(); await patchQueue(q.id, { messages: q.messages }); }
+  }
+  await loadQueue();
+  toast(`Day 1 sent for ${pending.length} prospects`, 'ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// MISC ACTIONS
+// ═══════════════════════════════════════════════════════
+function markContacted() {
+  if (!CURRENT) return;
+  CURRENT.status = 'contacted';
+  renderLeadList();
+  document.getElementById('d-status').textContent = 'contacted';
+  toast('Marked contacted');
+}
+
+function copyCurrentPane() {
+  const pane = document.getElementById('dp-' + CURRENT_DTAB);
+  navigator.clipboard.writeText(pane.innerText || '').then(() => toast('Copied'), () => toast('Copy failed', 'err'));
+}
+
+function copyOutreachDay() {
+  const body = document.getElementById('qd-body');
+  navigator.clipboard.writeText(body.innerText || '').then(() => toast('Copied'), () => toast('Copy failed', 'err'));
+}
+
+function copyText(txt) {
+  navigator.clipboard.writeText(txt).then(() => toast('Copied'), () => toast('Failed', 'err'));
+}
+
+// ═══════════════════════════════════════════════════════
+// MARKDOWN → HTML
+// ═══════════════════════════════════════════════════════
+function mdToHtml(t) {
+  if (!t) return '';
+  let h = esc(t)
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/\n\n/g, '</p><p>');
+  h = h.replace(/(<li>.*?<\/li>(?:\s*<li>.*?<\/li>)*)/gs, '<ul>$1</ul>');
+  h = '<p>' + h + '</p>';
+  h = h.replace(/<p>\s*(<h\d|<ul)/g, '$1').replace(/(<\/h\d>|<\/ul>)\s*<\/p>/g, '$1').replace(/<p>\s*<\/p>/g, '');
+  return h;
+}
+
+// ═══════════════════════════════════════════════════════
+// UTIL
+// ═══════════════════════════════════════════════════════
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+let _tt;
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast on' + (type === 'err' ? ' err' : type === 'ok' ? ' ok' : '');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.classList.remove('on'), 3000);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+updateAuthUI();
+if (TOKEN) loadQueue();
+
+document.getElementById('login-modal').addEventListener('click', e => { if (e.target === document.getElementById('login-modal')) closeLoginModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLoginModal(); } });
+document.getElementById('sf-city').addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+</script>
+</body>
+</html>

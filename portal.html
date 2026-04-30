@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- API: auto-detects local vs Render backend -->
+  <script>
+    window.API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ? ""
+      : "https://YOUR-APP-NAME.onrender.com"; // ← replace with your Render URL
+  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal — KWBA Agency</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Syne:wght@600&family=DM+Sans:wght@300;400;500&display=swap">
+    <style>
+        :root { --bg: #080807; --bg2: #101010; --gold: #c9a84c; --ink: #e8e4dc; --border: rgba(255,255,255,0.06); }
+        body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; margin: 0; padding: 40px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1, h2 { font-family: 'Cormorant Garamond', serif; font-weight: 400; color: var(--gold); }
+        .card { background: var(--bg2); border: 1px solid var(--border); padding: 30px; border-radius: 8px; margin-bottom: 20px; }
+        .output-item { border-bottom: 1px solid var(--border); padding: 20px 0; }
+        .output-item:last-child { border: none; }
+        .badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; background: rgba(201,168,76,0.1); color: var(--gold); padding: 4px 10px; border-radius: 4px; }
+        .login-wrap { height: 100vh; display: flex; align-items: center; justify-content: center; }
+        input { background: var(--bg2); border: 1px solid var(--border); color: white; padding: 12px; margin-bottom: 10px; width: 100%; border-radius: 4px; }
+        button { background: var(--gold); border: none; color: black; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div id="login-view" class="login-wrap">
+        <div style="width: 300px; text-align: center;">
+            <h1 style="font-size: 24px;">Client Portal</h1>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Enter Portal</button>
+        </div>
+    </div>
+
+    <div id="portal-view" class="container" style="display:none">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h1>KWBA <em>Client Portal</em></h1>
+            <button onclick="logout()" style="background:transparent; color:var(--ink); border:1px solid var(--border); font-size:12px;">Logout</button>
+        </div>
+        
+        <div class="card">
+            <h2>Project Status: <span style="color:white; font-style:italic;" id="biz-name">Loading...</span></h2>
+            <p id="biz-desc" style="color:#aaa; font-size:14px;"></p>
+        </div>
+
+        <h2>Approved Deliverables</h2>
+        <div id="outputs-list" class="card">
+            <p style="color:#666">Your approved agency reports will appear here once ready.</p>
+        </div>
+
+        <h2>Brand Assets</h2>
+        <div id="files-list" class="card" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:15px;">
+            <p style="color:#666">No files uploaded yet.</p>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('client_token');
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const res = await fetch(window.API_BASE + '/login', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem('client_token', data.token);
+                token = data.token;
+                loadPortal();
+            } else {
+                alert("Invalid Login");
+            }
+        }
+
+        async function loadPortal() {
+            if (!token) return;
+            const res = await fetch(window.API_BASE + '/client-portal/data', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) return logout();
+            const data = await res.json();
+
+            document.getElementById('login-view').style.display = 'none';
+            document.getElementById('portal-view').style.display = 'block';
+
+            document.getElementById('biz-name').textContent = data.brief.bizName || "Your Project";
+            document.getElementById('biz-desc').textContent = data.brief.bizDesc || "";
+
+            const outList = document.getElementById('outputs-list');
+            if (data.outputs.length) {
+                outList.innerHTML = data.outputs.map(o => `
+                    <div class="output-item">
+                        <span class="badge">${o.agent} Specialist Report</span>
+                        <div style="margin-top:10px; font-size:14px; line-height:1.6; white-space:pre-wrap;">${o.output}</div>
+                    </div>
+                `).join('');
+            }
+
+            const fileList = document.getElementById('files-list');
+            if (data.files.length) {
+                fileList.innerHTML = data.files.map(f => `
+                    <div style="text-align:center; border:1px solid var(--border); padding:10px; border-radius:4px;">
+                        <div style="font-size:10px; color:var(--gold); margin-bottom:5px;">${f.tag}</div>
+                        <a href="${f.url}" target="_blank" style="color:white; font-size:12px; text-decoration:none;">${f.name}</a>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('client_token');
+            location.reload();
+        }
+
+        if (token) loadPortal();
+    </script>
+</body>
+</html>

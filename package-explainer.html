@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --cream:#0f0e0c;--cream2:#1a1814;--cream3:#252219;
+  --gold:#c9a84c;--gold-light:#d4b86a;--gold-dim:rgba(201,168,76,0.12);--gold-border:rgba(201,168,76,0.4);
+  --ink:#f0ece4;--ink2:#ddd8ce;--muted:#9a9488;--muted2:#6a6460;
+  --border:rgba(201,168,76,0.18);--border2:rgba(201,168,76,0.08);
+}
+html,body{overflow:hidden;height:100%;margin:0;background:var(--cream);}
+.root{background:var(--cream);font-family:'Montserrat',sans-serif;color:var(--ink);width:100%;display:flex;flex-direction:column;height:100vh;}
+
+/* SLIDES */
+.slides{position:relative;overflow:hidden;flex:1;min-height:0;}
+.slide{display:none;width:100%;height:100%;padding:28px 40px 20px;position:relative;}
+.slide.active{display:block;}
+
+/* Animations */
+.anim-left{animation:al .5s cubic-bezier(.16,1,.3,1) both;}
+.anim-right{animation:ar .5s cubic-bezier(.16,1,.3,1) both;}
+.anim-up{animation:au .5s cubic-bezier(.16,1,.3,1) both;}
+@keyframes al{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
+@keyframes ar{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes au{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* Typography */
+.label{font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:14px;}
+.h1{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,52px);font-weight:400;line-height:1.06;letter-spacing:-.01em;color:var(--ink);margin-bottom:14px;}
+.h1 em{font-style:italic;color:var(--gold);}
+.h2{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,42px);font-weight:400;line-height:1.08;letter-spacing:-.01em;color:var(--ink);margin-bottom:12px;}
+.h2 em{font-style:italic;color:var(--gold);}
+.body{font-size:11.5px;color:var(--muted);line-height:1.8;font-weight:300;margin-bottom:20px;max-width:420px;}
+.rule{height:1px;background:var(--border);margin:14px 0;}
+.gold-rule{height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin:12px 0;opacity:.5;}
+
+/* Layout */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;height:100%;}
+.two-col.flip{direction:rtl;}
+.two-col.flip>*{direction:ltr;}
+
+/* Buttons */
+.btn-dark{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:11px 22px;border:none;border-radius:0;cursor:pointer;transition:opacity .2s;}
+.btn-dark:hover{opacity:.82;}
+.btn-line{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:transparent;color:var(--muted);padding:11px 22px;border:1px solid var(--border);border-radius:0;cursor:pointer;transition:all .2s;}
+.btn-line:hover{border-color:var(--gold);color:var(--ink);}
+.btn-gold{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:11px 22px;border:none;border-radius:0;cursor:pointer;transition:opacity .2s;}
+.btn-gold:hover{opacity:.88;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px;}
+
+/* Video container — 9:16 ratio box with corner brackets */
+.vid-container{position:relative;width:100%;max-width:280px;}
+.vid-container .vc{position:absolute;width:12px;height:12px;border-color:var(--gold);border-style:solid;opacity:.65;z-index:2;pointer-events:none;}
+.vid-container .vc.tl{top:-7px;left:-7px;border-width:1.5px 0 0 1.5px;}
+.vid-container .vc.tr{top:-7px;right:-7px;border-width:1.5px 1.5px 0 0;}
+.vid-container .vc.bl{bottom:-7px;left:-7px;border-width:0 0 1.5px 1.5px;}
+.vid-container .vc.br{bottom:-7px;right:-7px;border-width:0 1.5px 1.5px 0;}
+/* The slot itself enforces 9:16 */
+.vid-slot{
+  width:100%;
+  aspect-ratio:9/16;
+  background:#1a1814;
+  overflow:hidden;
+  position:relative;
+}
+/* The actual video fills its slot */
+#masterVideo{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  background:#1a1814;
+}
+.vid-label-row{margin-top:8px;display:flex;justify-content:space-between;align-items:center;padding:0 2px;}
+.vid-label-row .site{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+.vid-label-row .loc{font-size:8px;color:var(--gold);letter-spacing:.1em;}
+
+/* Hero stats */
+.hero-stats{display:flex;gap:28px;margin-top:24px;}
+.hstat{text-align:left;}
+.hstat-n{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:var(--ink);line-height:1;margin-bottom:3px;}
+.hstat-l{font-size:7.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+.hstat-sep{width:1px;background:var(--border);align-self:stretch;}
+
+/* Package cards */
+.pkg{background:#1a1814;border:1px solid var(--border);padding:24px 20px;position:relative;transition:border-color .25s;cursor:pointer;}
+.pkg:hover{border-color:var(--gold-border);}
+.pkg.featured{border-color:var(--gold);background:#1f1c16;}
+.pkg-pop{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-family:'Montserrat',sans-serif;font-size:7px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;padding:3px 12px;white-space:nowrap;}
+.pkg-tier{font-size:7.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);font-weight:400;margin-bottom:6px;}
+.pkg-price{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--ink);line-height:1;margin-bottom:3px;display:flex;align-items:flex-start;}
+.pkg-price sup{font-size:15px;margin-top:7px;font-weight:300;}
+.pkg-price-note{font-size:9px;color:var(--muted2);margin-bottom:10px;font-weight:300;}
+.pkg-desc{font-size:10px;color:var(--muted);line-height:1.65;font-weight:300;margin-bottom:12px;min-height:44px;}
+.pkg-divider{height:1px;background:var(--border);margin-bottom:12px;}
+.feat-li{list-style:none;}
+.feat-li li{font-size:9.5px;color:var(--ink2);padding:4px 0 4px 14px;position:relative;border-bottom:1px solid var(--border2);line-height:1.4;}
+.feat-li li:last-child{border-bottom:none;}
+.feat-li li::before{content:'';position:absolute;left:0;top:11px;width:5px;height:5px;border-radius:50%;background:var(--gold);}
+.feat-li li.off{color:var(--muted2);}
+.feat-li li.off::before{background:var(--border);}
+.pkg-btn-wrap{margin-top:16px;}
+.pkg-cta{width:100%;font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:11px 0;border:1px solid var(--gold-border);background:transparent;color:var(--ink);cursor:pointer;transition:all .22s;}
+.pkg-cta:hover,.pkg.featured .pkg-cta{background:var(--gold);color:#0f0e0c;}
+.three-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;}
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);margin-top:20px;}
+.stat{padding:16px 0;text-align:center;position:relative;}
+.stat+.stat::before{content:'';position:absolute;left:0;top:18%;height:64%;width:1px;background:var(--border2);}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:400;color:var(--ink);line-height:1;margin-bottom:3px;}
+.stat-l{font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
+.custom-note{font-size:10.5px;color:var(--muted);margin-top:14px;}
+.custom-note a{color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-border);}
+
+/* Footer */
+.foot{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:10px 40px;border-top:1px solid var(--border2);background:var(--cream);}
+.foot-left{display:flex;align-items:center;gap:14px;}
+.foot-counter{font-size:9px;letter-spacing:.14em;color:var(--muted);}
+.progress-track{width:140px;height:1px;background:var(--border);cursor:pointer;position:relative;}
+.progress-fill{height:100%;background:var(--gold);width:0%;}
+.arr{width:30px;height:30px;border:1px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.arr:hover{border-color:var(--gold);background:var(--gold-dim);}
+.arr svg{display:block;}
+.pause-btn{display:flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--gold-border);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.18em;text-transform:uppercase;padding:0 13px;height:30px;cursor:pointer;transition:all .2s;}
+.pause-btn:hover{background:var(--gold-dim);}
+.pause-btn svg{flex-shrink:0;}
+
+/* Find your fit quick-choice cards */
+.choice-card{cursor:pointer;border:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px;transition:border-color .2s;background:#1a1814;}
+.choice-card:hover{border-color:var(--gold-border);}
+.choice-card.popular{border-color:var(--gold);position:relative;}
+</style>
+</head>
+<body>
+<div class="root">
+
+  <div class="slides" id="sw">
+
+    <!-- SLIDE 0: INTRO -->
+    <div class="slide active" id="s0">
+      <div class="two-col" style="min-height:0;">
+        <div>
+          <div class="label anim-left" style="animation-delay:.04s">Web Design — Milton Keynes</div>
+          <h1 class="h1 anim-left" style="animation-delay:.1s">Professional<br>websites that<br><em>work for you.</em></h1>
+          <p class="body anim-left" style="animation-delay:.17s">We build clean, mobile-responsive websites for local businesses across the UK — designed to capture leads, rank on Google, and grow your customer base. One-time investment. No monthly fees. Real results.</p>
+          <div class="btn-row anim-left" style="animation-delay:.24s">
+            <button class="btn-dark" onclick="go(4)">View Packages</button>
+            <button class="btn-line" onclick="go(1)">Start with Starter</button>
+          </div>
+          <div class="hero-stats anim-up" style="animation-delay:.34s">
+            <div class="hstat"><div class="hstat-n">50+</div><div class="hstat-l">Clients launched</div></div>
+            <div class="hstat-sep"></div>
+            <div class="hstat"><div class="hstat-n">3×</div><div class="hstat-l">Lead increase</div></div>
+            <div class="hstat-sep"></div>
+            <div class="hstat"><div class="hstat-n">98%</div><div class="hstat-l">Satisfaction rate</div></div>
+          </div>
+        </div>
+        <div class="anim-right" style="animation-delay:.08s;display:flex;align-items:center;justify-content:center;">
+          <div class="vid-container">
+            <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+            <div class="vid-slot" id="slot-s0"></div>
+            <div class="vid-label-row"><span class="site">KWBA Guide</span><span class="loc">kwba-agency.com</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 1: STARTER -->
+    <div class="slide" id="s1">
+      <div class="two-col" style="min-height:0;">
+        <div>
+          <div class="label anim-left" style="animation-delay:.04s">Package 01</div>
+          <h2 class="h2 anim-left" style="animation-delay:.1s">Get online.<br><em>Look the part.</em></h2>
+          <p class="body anim-left" style="animation-delay:.17s">Everything you need to establish a professional online presence and start being found by new customers. A clean, mobile-responsive website built around your brand — ready to launch in days.</p>
+          <div class="rule anim-left" style="animation-delay:.2s;max-width:420px;"></div>
+          <p class="anim-left" style="animation-delay:.22s;font-size:10px;color:var(--muted);line-height:1.8;max-width:380px;font-weight:300;">Ideal for businesses just getting started online, or those replacing an outdated site that no longer reflects their quality.</p>
+          <div class="btn-row anim-left" style="animation-delay:.28s;margin-top:18px;">
+            <button class="btn-dark" onclick="openLink('https://buy.stripe.com/aFa14p9UydO89J26O16kg00')">Get Started — £800</button>
+            <button class="btn-line" onclick="go(2)">Next: Growth →</button>
+          </div>
+        </div>
+        <div class="anim-right" style="animation-delay:.08s;display:flex;align-items:center;justify-content:center;">
+          <div class="vid-container">
+            <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+            <div class="vid-slot" id="slot-s1"></div>
+            <div class="vid-label-row"><span class="site">KWBA Guide</span><span class="loc">kwba-agency.com</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: GROWTH -->
+    <div class="slide" id="s2">
+      <div class="two-col flip" style="min-height:0;">
+        <div>
+          <div class="label anim-right" style="animation-delay:.04s">Package 02 — Most Popular</div>
+          <h2 class="h2 anim-right" style="animation-delay:.1s">Leads while<br><em>you sleep.</em></h2>
+          <p class="body anim-right" style="animation-delay:.17s">Your website doesn't stop working at 5pm. Growth adds the full automation layer — every visitor is captured, followed up with, and tracked — so you never miss an opportunity.</p>
+          <div class="rule anim-right" style="animation-delay:.2s;max-width:420px;"></div>
+          <p class="anim-right" style="animation-delay:.22s;font-size:10px;color:var(--muted);line-height:1.8;max-width:380px;font-weight:300;">This is the package most of our clients choose. The automation pays for itself within weeks in recaptured leads alone.</p>
+          <div class="btn-row anim-right" style="animation-delay:.28s;margin-top:18px;">
+            <button class="btn-gold" onclick="openLink('https://buy.stripe.com/bJe28taYCbG0f3m1tH6kg01')">Get Started — £1,499</button>
+            <button class="btn-line" onclick="go(3)">Next: Pro →</button>
+          </div>
+        </div>
+        <div class="anim-left" style="animation-delay:.08s;display:flex;align-items:center;justify-content:center;">
+          <div class="vid-container">
+            <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+            <div class="vid-slot" id="slot-s2"></div>
+            <div class="vid-label-row"><span class="site">KWBA Guide</span><span class="loc">kwba-agency.com</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: PRO -->
+    <div class="slide" id="s3">
+      <div class="two-col" style="min-height:0;">
+        <div>
+          <div class="label anim-left" style="animation-delay:.04s">Package 03</div>
+          <h2 class="h2 anim-left" style="animation-delay:.1s">Total digital<br><em>dominance.</em></h2>
+          <p class="body anim-left" style="animation-delay:.17s">The complete package — website, automation, full local SEO, Google Ads, professional copywriting for every page, and three months of priority support with monthly performance reports.</p>
+          <div class="rule anim-left" style="animation-delay:.2s;max-width:420px;"></div>
+          <p class="anim-left" style="animation-delay:.22s;font-size:10px;color:var(--muted);line-height:1.8;max-width:380px;font-weight:300;">For businesses that want to dominate their local market and build a long-term digital presence that compounds over time.</p>
+          <div class="btn-row anim-left" style="animation-delay:.28s;margin-top:18px;">
+            <button class="btn-dark" onclick="openLink('https://buy.stripe.com/cNi8wR3wa9xS1cw3BP6kg02')">Get Started — £2,299</button>
+            <button class="btn-line" onclick="go(4)">Compare All →</button>
+          </div>
+        </div>
+        <div class="anim-right" style="animation-delay:.08s;display:flex;align-items:center;justify-content:center;">
+          <div class="vid-container">
+            <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+            <div class="vid-slot" id="slot-s3"></div>
+            <div class="vid-label-row"><span class="site">KWBA Guide</span><span class="loc">kwba-agency.com</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: ALL PACKAGES COMPARE -->
+    <div class="slide" id="s4" style="padding-top:28px;padding-bottom:20px;">
+      <div style="display:grid;grid-template-columns:160px 1fr;gap:32px;align-items:start;height:100%;">
+        <div class="anim-left" style="animation-delay:.04s;display:flex;flex-direction:column;align-items:center;padding-top:44px;">
+          <div class="vid-container" style="max-width:160px;">
+            <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+            <div class="vid-slot" id="slot-s4"></div>
+            <div style="margin-top:6px;text-align:center;font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2);">KWBA Guide</div>
+          </div>
+        </div>
+        <div>
+          <div class="anim-up" style="margin-bottom:18px;">
+            <div class="label">Three packages — one clear outcome</div>
+            <h2 class="h2">Choose the right package<br>for your business.</h2>
+          </div>
+          <div class="three-grid anim-up" style="animation-delay:.1s;">
+            <div class="pkg" onclick="openLink('https://buy.stripe.com/aFa14p9UydO89J26O16kg00')">
+              <div class="pkg-tier">Starter</div>
+              <div class="pkg-price"><sup>£</sup>800</div>
+              <div class="pkg-price-note">One-time</div>
+              <p class="pkg-desc">Everything you need to get online professionally.</p>
+              <div class="pkg-divider"></div>
+              <ul class="feat-li">
+                <li>Mobile-responsive website</li><li>Up to 5 pages</li><li>Branding, colours &amp; logo</li>
+                <li>Contact form &amp; click-to-call</li><li>Google Maps integration</li><li>Reviews &amp; testimonials</li>
+                <li class="off">Automation &amp; lead capture</li><li class="off">SEO optimisation</li><li class="off">Booking system</li>
+              </ul>
+              <div class="pkg-btn-wrap"><button class="pkg-cta" onclick="event.stopPropagation();openLink('https://buy.stripe.com/aFa14p9UydO89J26O16kg00')">Get Started</button></div>
+            </div>
+            <div class="pkg featured" onclick="openLink('https://buy.stripe.com/bJe28taYCbG0f3m1tH6kg01')">
+              <div class="pkg-pop">Most Popular</div>
+              <div class="pkg-tier">Growth</div>
+              <div class="pkg-price"><sup>£</sup>1,499</div>
+              <div class="pkg-price-note">One-time</div>
+              <p class="pkg-desc">Automation that captures leads while you work.</p>
+              <div class="pkg-divider"></div>
+              <ul class="feat-li">
+                <li>Everything in Starter</li><li>Lead capture automation</li><li>Email &amp; SMS follow-up</li>
+                <li>Online booking integration</li><li>CRM lead tracking</li><li>Google Business Profile</li>
+                <li>1 month post-launch support</li><li class="off">Full SEO package</li>
+              </ul>
+              <div class="pkg-btn-wrap"><button class="pkg-cta" onclick="event.stopPropagation();openLink('https://buy.stripe.com/bJe28taYCbG0f3m1tH6kg01')">Get Started</button></div>
+            </div>
+            <div class="pkg" onclick="openLink('https://buy.stripe.com/cNi8wR3wa9xS1cw3BP6kg02')">
+              <div class="pkg-tier">Pro</div>
+              <div class="pkg-price"><sup>£</sup>2,299</div>
+              <div class="pkg-price-note">One-time</div>
+              <p class="pkg-desc">The complete digital presence and growth strategy.</p>
+              <div class="pkg-divider"></div>
+              <ul class="feat-li">
+                <li>Everything in Growth</li><li>Full local SEO</li><li>Google Ads setup</li>
+                <li>Social media integration</li><li>Monthly reports</li><li>Keyword analysis</li>
+                <li>Copywriting — all key pages</li><li>3 months priority support</li>
+              </ul>
+              <div class="pkg-btn-wrap"><button class="pkg-cta" onclick="event.stopPropagation();openLink('https://buy.stripe.com/cNi8wR3wa9xS1cw3BP6kg02')">Get Started</button></div>
+            </div>
+          </div>
+          <div class="stats-bar anim-up" style="animation-delay:.18s;">
+            <div class="stat"><div class="stat-n">50+</div><div class="stat-l">Businesses launched</div></div>
+            <div class="stat"><div class="stat-n">3×</div><div class="stat-l">Average lead increase</div></div>
+            <div class="stat"><div class="stat-n">98%</div><div class="stat-l">Client satisfaction</div></div>
+          </div>
+          <p class="custom-note anim-up" style="animation-delay:.26s;">Need something custom? <a href="https://kwba-agency.com" target="_blank">Get in touch</a> and we'll build a package that fits.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: FIND YOUR FIT -->
+    <div class="slide" id="s5" style="padding-top:36px;padding-bottom:28px;">
+      <div class="two-col" style="min-height:0;gap:56px;align-items:center;">
+        <div class="anim-left" style="animation-delay:.06s;display:flex;align-items:center;justify-content:center;">
+          <div class="vid-container">
+            <div class="vc tl"></div><div class="vc tr"></div><div class="vc bl"></div><div class="vc br"></div>
+            <div class="vid-slot" id="slot-s5"></div>
+            <div class="vid-label-row"><span class="site">KWBA Guide</span><span class="loc">kwba-agency.com</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="label anim-right" style="animation-delay:.04s;">Find your fit</div>
+          <h2 class="h2 anim-right" style="animation-delay:.1s;">What's the right<br>package <em>for you?</em></h2>
+          <p class="body anim-right" style="animation-delay:.17s;">Not sure where to start? Watch our guide or use the quick selector below — pick what matters most to your business right now.</p>
+          <div class="gold-rule anim-right" style="animation-delay:.2s;max-width:440px;"></div>
+          <div style="display:flex;flex-direction:column;gap:9px;max-width:420px;" class="anim-right" style="animation-delay:.24s;">
+            <div class="choice-card" onclick="go(1)">
+              <div style="flex-shrink:0;width:34px;height:34px;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold);font-weight:300;">1</span>
+              </div>
+              <div><div style="font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-bottom:2px;font-weight:500;">Just getting online</div>
+              <div style="font-size:10px;color:var(--muted);font-weight:300;line-height:1.5;">I need a clean, professional website — nothing more.</div></div>
+              <div style="margin-left:auto;font-size:8.5px;letter-spacing:.12em;color:var(--gold);white-space:nowrap;">Starter →</div>
+            </div>
+            <div class="choice-card popular" onclick="go(2)">
+              <div style="position:absolute;top:-8px;left:14px;background:var(--gold);color:#fff;font-size:7px;letter-spacing:.18em;text-transform:uppercase;padding:2px 9px;font-family:'Montserrat',sans-serif;font-weight:500;">Most Popular</div>
+              <div style="flex-shrink:0;width:34px;height:34px;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold);font-weight:300;">2</span>
+              </div>
+              <div><div style="font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-bottom:2px;font-weight:500;">I want leads automatically</div>
+              <div style="font-size:10px;color:var(--muted);font-weight:300;line-height:1.5;">I want my site to capture &amp; follow up on leads for me.</div></div>
+              <div style="margin-left:auto;font-size:8.5px;letter-spacing:.12em;color:var(--gold);white-space:nowrap;">Growth →</div>
+            </div>
+            <div class="choice-card" onclick="go(3)">
+              <div style="flex-shrink:0;width:34px;height:34px;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;">
+                <span style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold);font-weight:300;">3</span>
+              </div>
+              <div><div style="font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-bottom:2px;font-weight:500;">Dominate my local market</div>
+              <div style="font-size:10px;color:var(--muted);font-weight:300;line-height:1.5;">I want SEO, ads, copywriting and long-term growth.</div></div>
+              <div style="margin-left:auto;font-size:8.5px;letter-spacing:.12em;color:var(--gold);white-space:nowrap;">Pro →</div>
+            </div>
+          </div>
+          <div class="btn-row anim-right" style="animation-delay:.3s;margin-top:18px;">
+            <button class="btn-line" onclick="go(4)">Compare all packages</button>
+            <button class="btn-dark" onclick="openLink('https://kwba-agency.com')">Talk to us</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slides -->
+
+  <!-- FOOTER — always visible, contains pause/play -->
+  <div class="foot">
+    <div class="foot-left">
+      <span class="foot-counter" id="fc">01 / 06</span>
+      <div class="progress-track" id="pt" onclick="seekTo(event)">
+        <div class="progress-fill" id="pf"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px;align-items:center;">
+      <button class="arr" onclick="prev()" title="Previous">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M7 2.5L3.5 6L7 9.5" stroke="#c9a84c" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="pause-btn" id="pauseBtn" onclick="togglePause()">
+        <svg id="pauseIcon" width="10" height="12" viewBox="0 0 10 12" fill="none">
+          <rect x="0" y="0" width="3.5" height="12" rx="1" fill="#c9a84c"/>
+          <rect x="6.5" y="0" width="3.5" height="12" rx="1" fill="#c9a84c"/>
+        </svg>
+        <span id="pauseLabel">Pause</span>
+      </button>
+      <button class="arr" onclick="next()" title="Next">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M5 2.5L8.5 6L5 9.5" stroke="#c9a84c" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /root -->
+
+<!-- Master video lives here — JS moves it into slots -->
+<video id="masterVideo"
+  playsinline
+  style="width:100%;height:100%;display:block;object-fit:cover;background:#1a1814;"
+  src="char-explainer.mp4"></video>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────
+// Cue points: at these video times, switch to the given slide
+// Slide 4 (Compare All) has NO cue point — it's only reached by manual nav
+const CUE_POINTS = [
+  { time: 0,  slide: 0 },
+  { time: 8,  slide: 1 },
+  { time: 22, slide: 2 },
+  { time: 38, slide: 3 },
+  { time: 50, slide: 5 },
+];
+
+const SLOT_IDS = {
+  0: 'slot-s0',
+  1: 'slot-s1',
+  2: 'slot-s2',
+  3: 'slot-s3',
+  4: 'slot-s4',
+  5: 'slot-s5',
+};
+
+const N = 6;
+const labels = ['01','02','03','04','05','06'];
+let cur = 0;
+let paused = false;
+// When user manually navigates, freeze auto-sync for a short period
+let manualNavTime = -999;
+const MANUAL_NAV_LOCK_SEC = 3; // seconds to ignore timeupdate-driven slide changes
+
+const vid = document.getElementById('masterVideo');
+
+function moveVideo(slideIdx) {
+  const slotId = SLOT_IDS[slideIdx];
+  if (!slotId) { vid.style.display = 'none'; return; }
+  const slot = document.getElementById(slotId);
+  if (slot && !slot.contains(vid)) {
+    slot.innerHTML = '';
+    slot.appendChild(vid);
+  }
+  vid.style.display = 'block';
+}
+
+function activateSlide(n) {
+  document.getElementById('s' + cur).classList.remove('active');
+  cur = n;
+  document.getElementById('s' + cur).classList.add('active');
+  document.getElementById('fc').textContent = labels[cur] + ' / 06';
+  moveVideo(cur);
+}
+
+// go(n): manual navigation — seeks video to matching cue point or keeps playing
+function go(n) {
+  if (n === cur) return;
+  activateSlide(n);
+  manualNavTime = vid.currentTime; // lock auto-sync from overriding this
+
+  const cue = CUE_POINTS.find(c => c.slide === n);
+  if (cue) {
+    vid.currentTime = cue.time;
+  }
+  // For slide 4 (no cue), video just keeps playing at current time
+  if (!paused) vid.play().catch(() => {});
+}
+
+function next() { go((cur + 1) % N); }
+function prev() { go((cur - 1 + N) % N); }
+
+function seekTo(e) {
+  const r = e.currentTarget.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+  go(Math.round(ratio * (N - 1)));
+}
+
+// ── Pause / Resume ────────────────────────────────────────────────────────
+function togglePause() {
+  paused = !paused;
+  const icon = document.getElementById('pauseIcon');
+  const lbl  = document.getElementById('pauseLabel');
+  if (paused) {
+    vid.pause();
+    lbl.textContent = 'Resume';
+    icon.innerHTML = '<polygon points="0,0 10,6 0,12" fill="#c9a84c"/>';
+  } else {
+    vid.play().catch(() => {});
+    lbl.textContent = 'Pause';
+    icon.innerHTML = '<rect x="0" y="0" width="3.5" height="12" rx="1" fill="#c9a84c"/><rect x="6.5" y="0" width="3.5" height="12" rx="1" fill="#c9a84c"/>';
+  }
+}
+
+// ── Audio-driven slide sync ───────────────────────────────────────────────
+vid.addEventListener('timeupdate', () => {
+  const t = vid.currentTime;
+
+  // Update progress bar
+  const pct = (t / (vid.duration || 57)) * 100;
+  document.getElementById('pf').style.width = pct + '%';
+
+  // Skip auto-sync if user manually navigated recently (within lock period)
+  if (Math.abs(t - manualNavTime) < MANUAL_NAV_LOCK_SEC) return;
+
+  // Don't auto-sync if on slide 4 (compare all — manual only)
+  if (cur === 4) return;
+
+  let targetSlide = 0;
+  for (const c of CUE_POINTS) {
+    if (t >= c.time) targetSlide = c.slide;
+  }
+  if (targetSlide !== cur) {
+    activateSlide(targetSlide);
+  }
+});
+
+vid.addEventListener('ended', () => {
+  activateSlide(5);
+});
+
+// ── Keyboard ─────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') next();
+  if (e.key === 'ArrowLeft')  prev();
+  if (e.key === ' ') { e.preventDefault(); togglePause(); }
+});
+
+// ── Touch swipe ───────────────────────────────────────────────────────────
+let tx = 0;
+document.getElementById('sw').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+document.getElementById('sw').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); }
+}, { passive: true });
+
+// ── Init ──────────────────────────────────────────────────────────────────
+vid.currentTime = 0;
+document.getElementById('pf').style.width = '0%';
+moveVideo(0);
+// Auto-play with audio — requires user gesture in most browsers
+// We try immediately; if blocked the user can click Pause/Resume to trigger
+vid.play().catch(() => {
+  // Autoplay blocked (no prior gesture) — show Resume state so user knows to click
+  paused = true;
+  document.getElementById('pauseLabel').textContent = 'Play';
+  document.getElementById('pauseIcon').innerHTML = '<polygon points="0,0 10,6 0,12" fill="#c9a84c"/>';
+});
+
+function openLink(url) { window.open(url, '_blank'); }
+</script>
+</body>
+</html>

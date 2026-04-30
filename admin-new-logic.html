@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — KWBA Agency</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080807;--bg2:#101010;--bg3:#1a1a18;--bg4:#141412;--gold:#c9a84c;--gold-dim:rgba(201,168,76,0.08);--gold-border:rgba(201,168,76,0.3);--ink:#e8e4dc;--ink2:#c8c4bc;--muted:#7a7870;--muted2:#4a4840;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.03);--red:#e05c5c;--green:#4caf7d;--blue:#5b8dee;--purple:#9b7fe8}
+html,body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{width:100%;max-width:360px}
+.login-icon{width:64px;height:64px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:22px}
+.login-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;text-align:center;margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+.login-input{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--ink);padding:14px 16px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:300;outline:none;transition:border-color .2s;border-radius:0;margin-bottom:12px}
+.login-input:focus{border-color:var(--gold-border)}
+.login-btn{width:100%;font-size:11px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:14px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity .2s}
+.login-btn:hover{opacity:.88}
+.login-error{color:var(--red);font-size:13px;text-align:center;margin-bottom:10px}
+/* TOP NAV */
+nav{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:200}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;letter-spacing:.04em;color:var(--gold)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.nav-tag{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2)}
+.sign-out{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;transition:color .2s}
+.sign-out:hover{color:var(--ink)}
+/* TABS */
+.tab-bar{display:flex;border-bottom:1px solid var(--border);padding:0 36px;background:var(--bg);gap:2px}
+.tab{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:14px 20px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:8px}
+.tab:hover{color:var(--ink2)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab-badge{background:var(--gold-dim);color:var(--gold);font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid rgba(201,168,76,0.2)}
+/* PANELS */
+.panel{display:none;max-width:1100px;margin:0 auto;padding:40px 36px}
+.panel.active{display:block}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-bottom:32px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);padding:20px 24px}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:400;color:var(--ink);line-height:1;margin-bottom:4px}
+.stat-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.stat-sub{font-size:11px;color:var(--muted2);margin-top:3px}
+/* BRIEFS */
+.dash-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:20px;flex-wrap:wrap}
+.dash-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400}
+.dash-title em{font-style:italic;color:var(--gold)}
+.dash-actions{display:flex;gap:8px;flex-wrap:wrap}
+.abtn{font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:9px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:400;transition:all .2s;border:1px solid;display:flex;align-items:center;gap:6px}
+.abtn-gold{background:var(--gold);color:#0f0e0c;border-color:var(--gold)}
+.abtn-gold:hover{opacity:.88}
+.abtn-outline{background:transparent;color:var(--muted);border-color:var(--border)}
+.abtn-outline:hover{border-color:var(--gold-border);color:var(--gold)}
+.loading{text-align:center;padding:60px;color:var(--muted);font-size:13px}
+.empty{text-align:center;padding:60px;color:var(--muted);font-size:13px}
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.fchip{font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s;background:none;font-family:'DM Sans',sans-serif}
+.fchip:hover{border-color:var(--gold-border);color:var(--gold)}
+.fchip.on{border-color:var(--gold-border);color:var(--gold);background:var(--gold-dim)}
+/* BRIEF CARDS */
+.briefs-list{display:flex;flex-direction:column;gap:2px}
+.brief-card{background:var(--bg2);border:1px solid var(--border)}
+.brief-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;cursor:pointer;gap:16px}
+.brief-header:hover{background:rgba(255,255,255,0.02)}
+.brief-biz{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.brief-meta{font-size:11px;color:var(--muted2)}
+.brief-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.badge{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border:1px solid}
+.badge-gold{background:var(--gold-dim);color:var(--gold);border-color:var(--gold-border)}
+.badge-green{background:rgba(76,175,125,0.1);color:var(--green);border-color:rgba(76,175,125,0.25)}
+.badge-blue{background:rgba(91,141,238,0.1);color:var(--blue);border-color:rgba(91,141,238,0.25)}
+.brief-chevron{color:var(--muted2);transition:transform .25s;font-size:14px}
+.brief-chevron.open{transform:rotate(180deg)}
+.brief-body{display:none;padding:20px 24px 24px;border-top:1px solid var(--border2)}
+.brief-body.open{display:block}
+.brief-type-tag{display:inline-block;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;margin-bottom:16px;border:1px solid var(--gold-border);color:var(--gold)}
+.brief-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:16px}
+.brief-field label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:4px}
+.brief-field p{font-size:13px;color:var(--ink2);line-height:1.55}
+.brief-full{margin-bottom:14px}
+.brief-full label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:5px}
+.brief-full p{font-size:13px;color:var(--ink2);line-height:1.7;white-space:pre-wrap}
+.brief-files{margin-bottom:14px}
+.brief-files label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:6px}
+.file-tags{display:flex;flex-wrap:wrap;gap:4px}
+.file-tag{font-size:11px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:3px 10px}
+.brief-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:1px solid var(--border2)}
+.bBtn{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:8px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:400;transition:all .2s;border:1px solid;display:flex;align-items:center;gap:6px}
+.bBtn-wa{background:transparent;color:var(--green);border-color:rgba(76,175,125,0.3)}
+.bBtn-wa:hover{background:rgba(76,175,125,0.08)}
+.bBtn-email{background:transparent;color:var(--ink2);border-color:var(--border)}
+.bBtn-email:hover{border-color:var(--gold-border)}
+.bBtn-ai{background:var(--gold-dim);color:var(--gold);border-color:var(--gold-border)}
+.bBtn-ai:hover{background:rgba(201,168,76,0.18)}
+.bBtn-del{background:transparent;color:var(--red);border-color:rgba(224,92,92,0.25)}
+.bBtn-del:hover{background:rgba(224,92,92,0.08)}
+
+/* AI HUB */
+.ai-hub{display:grid;grid-template-columns:280px 1fr;gap:2px;min-height:calc(100vh - 180px)}
+.ai-sidebar{background:var(--bg2);border:1px solid var(--border);padding:0}
+.ai-sidebar-head{padding:20px;border-bottom:1px solid var(--border);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.agent-list{display:flex;flex-direction:column;overflow-y:auto;max-height:800px;}
+.agent-item{padding:14px 20px;cursor:pointer;border-bottom:1px solid var(--border2);transition:all .2s;display:flex;align-items:flex-start;gap:12px}
+.agent-item:hover{background:rgba(255,255,255,0.03)}
+.agent-item.active{background:var(--gold-dim);border-left:2px solid var(--gold)}
+.agent-icon{font-size:18px;margin-top:2px;flex-shrink:0}
+.agent-name{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:3px;font-family:'Syne',sans-serif}
+.agent-desc{font-size:11px;color:var(--muted2);line-height:1.5}
+.ai-main{background:var(--bg2);border:1px solid var(--border);display:flex;flex-direction:column}
+.ai-main-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ai-main-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400}
+.ai-main-title em{font-style:italic;color:var(--gold)}
+.ai-main-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.ai-context{padding:16px 24px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.ai-context-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2);margin-bottom:8px}
+.ai-context-select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--ink);padding:10px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:300;outline:none;border-radius:0;cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a7870'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:32px}
+.ai-context-select:focus{border-color:var(--gold-border)}
+.ai-context-select option{background:var(--bg3)}
+.ai-inputs{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:10px}
+.ai-input-row{display:flex;flex-direction:column;gap:5px}
+.ai-input-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2)}
+.ai-input-field{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--ink);padding:10px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:300;outline:none;resize:vertical;border-radius:0;line-height:1.6}
+.ai-input-field:focus{border-color:var(--gold-border)}
+.ai-input-field::placeholder{color:var(--muted2)}
+.ai-run-bar{padding:12px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.ai-run-btn{font-size:10px;letter-spacing:.16em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:10px 24px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity .2s;display:flex;align-items:center;gap:8px}
+.ai-run-btn:hover{opacity:.88}
+.ai-run-btn:disabled{opacity:.4;cursor:not-allowed}
+.ai-copy-btn{font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--border);padding:9px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.ai-copy-btn:hover{border-color:var(--gold-border);color:var(--gold)}
+.ai-pdf-btn{font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:var(--green);color:white;border:none;padding:10px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s; display:none;}
+.ai-clear-btn{font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:transparent;color:var(--muted2);border:1px solid var(--border2);padding:9px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;margin-left:auto}
+.ai-clear-btn:hover{color:var(--muted);border-color:var(--border)}
+.ai-output{flex:1;padding:24px;overflow-y:auto;min-height:300px}
+.ai-output-empty{color:var(--muted2);font-size:13px;text-align:center;padding:60px 20px;line-height:1.8}
+.ai-output-content{font-size:13px;color:var(--ink2);line-height:1.85;white-space:pre-wrap}
+.ai-output-content h1,.ai-output-content h2,.ai-output-content h3{font-family:'Syne',sans-serif;color:var(--ink);margin:16px 0 8px;font-weight:600}
+.ai-output-content h1{font-size:16px}
+.ai-output-content h2{font-size:14px;color:var(--gold)}
+.ai-output-content h3{font-size:13px}
+.ai-output-content strong{color:var(--ink);font-weight:500}
+.ai-output-content em{font-style:italic;color:var(--gold)}
+.ai-output-content code{background:var(--bg3);padding:1px 6px;font-family:monospace;font-size:12px;border:1px solid var(--border)}
+.ai-streaming{display:inline-block;width:8px;height:14px;background:var(--gold);animation:blink .7s step-end infinite;margin-left:2px;vertical-align:text-bottom}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.ai-status{font-size:11px;color:var(--muted2);margin-left:8px}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--gold-border);color:var(--ink);padding:12px 20px;font-size:12px;z-index:999;display:none;animation:slideup .25s ease}
+.toast.show{display:block}
+@keyframes slideup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:900px){.ai-hub{grid-template-columns:1fr}.ai-sidebar{border-bottom:1px solid var(--border)}.stats-row{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){nav,.panel{padding-left:16px;padding-right:16px}.tab-bar{padding:0 8px}.brief-header{padding:14px 16px}.brief-body{padding:14px 16px 18px}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-wrap">
+  <div class="login-box">
+    <div class="login-icon">🔒</div>
+    <h1 class="login-title">KWBA Agency Access</h1>
+    <p class="login-sub">Internal dashboard — authorised users only</p>
+    <div id="login-error" class="login-error" style="display:none">Incorrect credentials. Try again.</div>
+    <input type="email" id="email-input" class="login-input" placeholder="Admin email" value="admin@kwba-agency.com">
+    <input type="password" id="pw-input" class="login-input" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none">
+  <nav>
+    <span class="nav-logo">KWBA Agency</span>
+    <div class="nav-right">
+      <span class="nav-tag">Admin Dashboard</span>
+      <button class="sign-out" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('briefs',this)">📋 Client Briefs <span class="tab-badge" id="brief-count-badge">0</span></button>
+    <button class="tab" onclick="switchTab('aihub',this)">🤖 AI Hub</button>
+    <button class="tab" onclick="switchTab('settings',this)">⚙ Settings</button>
+  </div>
+
+  <!-- BRIEFS PANEL -->
+  <div class="panel active" id="panel-briefs">
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="stat-num" id="s-total">0</div><div class="stat-label">Total Briefs</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-website">0</div><div class="stat-label">Website Briefs</div><div class="stat-sub">kwba-agency.com</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-marketing">0</div><div class="stat-label">Marketing Briefs</div><div class="stat-sub">SaaS Clients</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-today">0</div><div class="stat-label">Received Today</div></div>
+    </div>
+
+    <div class="dash-header">
+      <div>
+        <h1 class="dash-title">Client <em>Briefs</em></h1>
+        <p id="brief-count-text" style="font-size:12px;color:var(--muted);margin-top:4px">Loading from database…</p>
+      </div>
+      <div class="dash-actions">
+        <button class="abtn abtn-outline" onclick="exportBriefs()">⬇ Export JSON</button>
+        <button class="abtn abtn-gold" onclick="loadBriefs()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="fchip on" onclick="setFilter('all',this)">All</button>
+      <button class="fchip" onclick="setFilter('website',this)">Website</button>
+      <button class="fchip" onclick="setFilter('marketing',this)">Marketing</button>
+    </div>
+
+    <div id="loading" class="loading">Syncing with KWBA secure server…</div>
+    <div id="empty" class="empty" style="display:none">No briefs yet. Submissions will appear here automatically.</div>
+    <div id="briefs-list" class="briefs-list"></div>
+  </div>
+
+  <!-- AI HUB PANEL -->
+  <div class="panel" id="panel-aihub">
+    <div class="dash-header">
+      <div>
+        <h1 class="dash-title">AI <em>Hub</em></h1>
+        <p style="font-size:12px;color:var(--muted);margin-top:4px">AI specialists to help turn client briefs into agency-grade work — powered by Gemini 1.5</p>
+      </div>
+    </div>
+
+    <div class="ai-hub">
+      <!-- Sidebar: agent list -->
+      <div class="ai-sidebar">
+        <div class="ai-sidebar-head">Select a Specialist</div>
+        <div class="agent-list" id="agent-list-ui">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Main AI workspace -->
+      <div class="ai-main">
+        <div class="ai-main-head">
+          <div>
+            <div class="ai-main-title" id="agent-title">Brief <em>Summariser</em></div>
+            <div class="ai-main-sub" id="agent-sub">Condense any client brief into a sharp 1-page project overview</div>
+          </div>
+        </div>
+
+        <div class="ai-context">
+          <div class="ai-context-label">Load Client Brief as Context (optional)</div>
+          <select class="ai-context-select" id="brief-context-select" onchange="loadBriefContext()">
+            <option value="">— Select a brief to use as context</option>
+          </select>
+        </div>
+
+        <div class="ai-inputs" id="agent-inputs">
+          <!-- Dynamically populated per agent -->
+        </div>
+
+        <div class="ai-run-bar">
+          <button class="ai-run-btn" id="run-btn" onclick="runAgentLogic(currentAgent)">▶ Run Agent</button>
+          <button class="ai-run-btn" style="background:var(--blue); color:white;" onclick="runAutomationChain()">🚀 Full Agency Run</button>
+          <button class="ai-copy-btn" onclick="copyOutput()">⎘ Copy</button>
+          <button class="ai-pdf-btn" id="pdf-btn" onclick="exportToPDF()">📄 PDF Report</button>
+          <span class="ai-status" id="ai-status"></span>
+          <button class="ai-clear-btn" onclick="clearOutput()">✕ Clear</button>
+        </div>
+
+        <div class="ai-output" id="ai-output">
+          <div class="ai-output-empty">
+            Select a specialist from the left, optionally load a client brief as context, then click <strong>Run Agent</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-settings">
+    <div class="dash-header"><div><h1 class="dash-title">Agency <em>Settings</em></h1><p style="font-size:12px;color:var(--muted);margin-top:4px">Global configuration</p></div></div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div style="background:var(--bg2);border:1px solid var(--border);padding:32px;">
+        <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">API & Notifications</div>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:6px">Gemini API Key</label>
+            <input type="password" id="gemini-key" class="login-input" style="margin-bottom:0" placeholder="Paste your Gemini API key">
+          </div>
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:6px">Slack Webhook URL</label>
+            <input type="text" id="slack-webhook" class="login-input" style="margin-bottom:0" placeholder="https://hooks.slack.com/services/...">
+          </div>
+          <button onclick="saveSettings()" class="login-btn" style="width:fit-content;padding:12px 30px">Update Agency Config</button>
+        </div>
+      </div>
+      
+      <div style="background:var(--bg2);border:1px solid var(--border);padding:32px;">
+        <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;">Client Management</div>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <p style="font-size:12px; color:var(--muted);">Create a portal account for the selected brief.</p>
+          <input type="email" id="client-email" class="login-input" style="margin-bottom:0" placeholder="Client Email">
+          <input type="password" id="client-password" class="login-input" style="margin-bottom:0" placeholder="Temporary Password">
+          <button onclick="createClientAccount()" class="login-btn" style="width:fit-content;padding:12px 30px; background:var(--blue); color:white;">Create Client Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let allBriefs = [];
+let currentAgent = 'summary';
+let currentBriefContext = null;
+let apiToken = localStorage.getItem('agency_token');
+
+// ─── AUTH ──────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('email-input').value;
+  const password = document.getElementById('pw-input').value;
+  const error = document.getElementById('login-error');
+
+  const res = await fetch("/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+
+  if (res.ok) {
+    const data = await res.json();
+    apiToken = data.token;
+    localStorage.setItem("agency_token", apiToken);
+    initApp();
+  } else {
+    error.style.display = "block";
+  }
+}
+
+function signOut() {
+  localStorage.removeItem("agency_token");
+  location.reload();
+}
+
+function initApp() {
+  if (!apiToken) return;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  loadBriefs();
+  loadSettings();
+  renderAgentSidebar();
+}
+
+const authFetch = (url, options = {}) => {
+  options.headers = { ...options.headers, 'Authorization': `Bearer ${apiToken}` };
+  return fetch(url, options).then(res => {
+    if (res.status === 403) signOut();
+    return res;
+  });
+};
+
+// ─── TABS ──────────────────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'aihub') populateBriefContextSelect();
+}
+
+// ─── BRIEFS ────────────────────────────────────────────────────────────────
+let activeFilter = 'all';
+function setFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.fchip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+  renderBriefs();
+}
+
+async function loadBriefs() {
+  document.getElementById('loading').style.display = 'block';
+  try {
+    const res = await authFetch("/briefs");
+    allBriefs = await res.json();
+    allBriefs.sort((a, b) => b.id - a.id);
+  } catch(e) { console.error(e); }
+  document.getElementById('loading').style.display = 'none';
+  updateStats();
+  renderBriefs();
+  populateBriefContextSelect();
+}
+
+function updateStats() {
+  const total = allBriefs.length;
+  const web = allBriefs.filter(b => b.briefType === 'website' || !b.briefType).length;
+  const mkt = allBriefs.filter(b => b.briefType === 'marketing').length;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-website').textContent = web;
+  document.getElementById('s-marketing').textContent = mkt;
+  document.getElementById('brief-count-badge').textContent = total;
+  document.getElementById('brief-count-text').textContent = `${total} total briefs synced`;
+}
+
+function renderBriefs() {
+  const filtered = activeFilter === 'all' ? allBriefs :
+    activeFilter === 'website' ? allBriefs.filter(b => b.briefType === 'website' || !b.briefType) :
+    allBriefs.filter(b => b.briefType === 'marketing');
+  const list = document.getElementById('briefs-list');
+  if (!filtered.length) {
+    document.getElementById('empty').style.display = 'block';
+    list.innerHTML = '';
+    return;
+  }
+  document.getElementById('empty').style.display = 'none';
+  list.innerHTML = filtered.map((b, i) => {
+    const idx = allBriefs.indexOf(b);
+    const meta = [b.contactName, b.contactEmail, b.location].filter(Boolean).join(' · ');
+    const pkg = b.pkgName || '';
+    const typeBadge = (b.briefType === 'marketing') 
+      ? `<span class="badge badge-blue">Marketing</span>` 
+      : `<span class="badge badge-gold">Website</span>`;
+    return `
+    <div class="brief-card" id="card-${idx}">
+      <div class="brief-header" onclick="toggleCard(${idx})">
+        <div>
+          <div class="brief-biz">${esc(b.bizName || 'Unnamed Project')}</div>
+          <div class="brief-meta">${esc(meta)}</div>
+        </div>
+        <div class="brief-right">
+          ${typeBadge}
+          ${pkg ? `<span class="badge badge-gold">${esc(pkg)}</span>` : ''}
+          <span class="brief-chevron" id="chev-${idx}">▾</span>
+        </div>
+      </div>
+      <div class="brief-body" id="body-${idx}">
+        ${renderBriefBody(b, idx)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderBriefBody(b, idx) {
+  const g = (v) => esc(v || '—');
+  let html = `<div class="brief-grid">
+    <div class="brief-field"><label>Business</label><p>${g(b.bizName)}</p></div>
+    <div class="brief-field"><label>Industry</label><p>${g(b.bizIndustry || b.bizType)}</p></div>
+    <div class="brief-field"><label>Location</label><p>${g(b.location)}</p></div>
+    <div class="brief-field"><label>Package</label><p>${g(b.pkgName)}</p></div>
+  </div>`;
+  if (b.bizDesc) html += `<div class="brief-full"><label>Description</label><p>${g(b.bizDesc)}</p></div>`;
+  
+  html += `<div class="brief-actions">
+    <button class="bBtn bBtn-ai" onclick="loadBriefIntoHub(${idx})">🤖 AI Specialist</button>
+    <button class="bBtn bBtn-del" onclick="deleteBrief(${b.id})">✕ Remove</button>
+  </div>`;
+  return html;
+}
+
+function toggleCard(idx) {
+  const body = document.getElementById('body-' + idx);
+  const chev = document.getElementById('chev-' + idx);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+
+async function deleteBrief(id) {
+  if (!confirm('Delete brief from database?')) return;
+  // Note: We'd need a DELETE endpoint in server.js, for now just hide it or add the endpoint
+  showToast('Functionality coming in next update');
+}
+
+// ─── AI HUB ────────────────────────────────────────────────────────────────
+const AGENTS = {
+  summary: { icon: '📋', name: 'Brief Summariser', desc: 'Sharp 1-page overview', prompt: (ctx) => `Summarise this brief for KWBA Agency:\n\n${ctx}` },
+  'website-copy': { icon: '✍️', name: 'Website Copywriter', desc: 'Hero & Service page copy', prompt: (ctx) => `Write conversion-focused website copy for:\n\n${ctx}` },
+  'seo-pages': { icon: '🔍', name: 'SEO Page Builder', desc: 'Keyword-optimised landing pages', prompt: (ctx) => `Build an SEO landing page strategy for:\n\n${ctx}` },
+  strategy: { icon: '🎯', name: 'Marketing Strategist', desc: '90-day growth roadmap', prompt: (ctx) => `Create a 90-day marketing strategy for:\n\n${ctx}` },
+  'email-seq': { icon: '📧', name: 'Email Sequence', desc: 'Cold & Nurture emails', prompt: (ctx) => `Write a 5-email sequence for:\n\n${ctx}` },
+  linkedin: { icon: '💼', name: 'LinkedIn Content', desc: 'Ghostwriting service', prompt: (ctx) => `Generate 14 LinkedIn posts for:\n\n${ctx}` },
+  ads: { icon: '📢', name: 'Ad Copy Gen', desc: 'Meta & Google Ads', prompt: (ctx) => `Write ad copy variants for:\n\n${ctx}` },
+  proposal: { icon: '📄', name: 'Proposal Writer', desc: 'Full agency proposals', prompt: (ctx) => `Draft a professional proposal for:\n\n${ctx}` },
+  onboarding: { icon: '🚀', name: 'Onboarding Pack', desc: 'Checklists & Timelines', prompt: (ctx) => `Create an onboarding checklist for:\n\n${ctx}` },
+  faq: { icon: '❓', name: 'FAQ Generator', desc: 'Objection handling', prompt: (ctx) => `Generate a site FAQ based on:\n\n${ctx}` }
+};
+
+function renderAgentSidebar() {
+  const list = document.getElementById('agent-list-ui');
+  list.innerHTML = Object.entries(AGENTS).map(([id, a]) => `
+    <div class="agent-item ${id==='summary'?'active':''}" onclick="selectAgent('${id}',this)">
+      <div class="agent-icon">${a.icon}</div>
+      <div><div class="agent-name">${a.name}</div><div class="agent-desc">${a.desc}</div></div>
+    </div>
+  `).join('');
+}
+
+function selectAgent(id, el) {
+  currentAgent = id;
+  document.querySelectorAll('.agent-item').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
+  const agent = AGENTS[id];
+  document.getElementById('agent-title').innerHTML = agent.name;
+  document.getElementById('agent-sub').textContent = agent.desc;
+  clearOutput();
+}
+
+function populateBriefContextSelect() {
+  const sel = document.getElementById('brief-context-select');
+  sel.innerHTML = '<option value="">— Select a brief to use as context</option>';
+  allBriefs.forEach((b, i) => {
+    sel.appendChild(new Option(`${b.bizName} (${b.briefType || 'Web'})`, i));
+  });
+}
+
+function loadBriefContext() {
+  const idx = document.getElementById('brief-context-select').value;
+  currentBriefContext = (idx === '') ? null : allBriefs[parseInt(idx)];
+}
+
+async function createClientAccount() {
+  if (!currentBriefContext) return alert("Select a brief first");
+  const email = document.getElementById('client-email').value;
+  const password = document.getElementById('client-password').value;
+  if (!email || !password) return alert("Email and Password required");
+
+  const res = await authFetch("/create-client", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ 
+      email, 
+      password, 
+      briefId: currentBriefContext.id,
+      bizName: currentBriefContext.bizName
+    })
+  });
+  if (res.ok) {
+    showToast("Client account created & Email sent!");
+    document.getElementById('client-email').value = '';
+    document.getElementById('client-password').value = '';
+  } else {
+    alert("Error creating account");
+  }
+}
+
+async function runAutomationChain() {
+  if (!currentBriefContext) return alert("Select a brief first");
+  const chain = ['summary', 'strategy', 'website-copy', 'ads', 'onboarding'];
+  
+  const btn = document.getElementById('run-btn'); // reusing run-btn UI for status
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Running Chain...';
+  
+  clearOutput();
+  let context = "";
+  
+  for (const agentId of chain) {
+    document.getElementById('ai-status').textContent = `Running ${AGENTS[agentId].name}...`;
+    const result = await runAgentLogic(agentId, context);
+    context += `\n[${AGENTS[agentId].name} Output]:\n${result}\n`;
+    showToast(`${AGENTS[agentId].name} completed`);
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = '▶ Run Agent';
+  document.getElementById('ai-status').textContent = 'Automation Chain Complete';
+}
+
+async function runAgentLogic(agentId, chainContext = "") {
+  const geminiKey = document.getElementById('gemini-key').value || localStorage.getItem('GEMINI_API_KEY');
+  const ctx = JSON.stringify(currentBriefContext, null, 2);
+  const prompt = AGENTS[agentId].prompt(ctx) + (chainContext ? "\n\nContext from previous steps:\n" + chainContext : "");
+
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  });
+  const data = await res.json();
+  const result = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error";
+  
+  // Append to UI
+  const outputEl = document.getElementById('ai-output');
+  const div = document.createElement('div');
+  div.innerHTML = `<h2>${AGENTS[agentId].name}</h2>` + formatOutput(result);
+  outputEl.appendChild(div);
+  
+  // Save to DB
+  await authFetch("/output", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ briefId: currentBriefContext.id, agent: agentId, output: result })
+  });
+  
+  return result;
+}
+
+function formatOutput(text) {
+  return text
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function exportToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const title = currentBriefContext ? currentBriefContext.bizName : "Agency Deliverable";
+  doc.setFontSize(20); doc.text(title, 20, 20);
+  doc.setFontSize(12);
+  const text = document.getElementById('ai-output').innerText;
+  const splitText = doc.splitTextToSize(text, 170);
+  doc.text(splitText, 20, 30);
+  doc.save(`Deliverable_${title}.pdf`);
+}
+
+function copyOutput() {
+  navigator.clipboard.writeText(document.getElementById('ai-output').innerText);
+  showToast('Output copied to clipboard');
+}
+
+function clearOutput() {
+  document.getElementById('ai-output').innerHTML = '<div class="ai-output-empty">Ready. Select a specialist and run.</div>';
+  document.getElementById('pdf-btn').style.display = 'none';
+  document.getElementById('ai-status').textContent = '';
+}
+
+function loadBriefIntoHub(idx) {
+  switchTab('aihub', document.querySelectorAll('.tab')[1]);
+  currentBriefContext = allBriefs[idx];
+  populateBriefContextSelect();
+  document.getElementById('brief-context-select').value = idx;
+}
+
+// ─── SETTINGS ──────────────────────────────────────────────────────────────
+async function loadSettings() {
+  const res = await authFetch("/settings");
+  const data = await res.json();
+  document.getElementById('slack-webhook').value = data.slack_webhook || '';
+  document.getElementById('gemini-key').value = localStorage.getItem('GEMINI_API_KEY') || '';
+}
+
+async function saveSettings() {
+  const slack = document.getElementById('slack-webhook').value;
+  const gemini = document.getElementById('gemini-key').value;
+  localStorage.setItem('GEMINI_API_KEY', gemini);
+  await authFetch("/settings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key: 'slack_webhook', value: slack })
+  });
+  showToast('Settings Saved');
+}
+
+// ─── UTILS ─────────────────────────────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Init check
+if (apiToken) initApp();
+</script>
+</body>
+</html>

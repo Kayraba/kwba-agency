@@ -1,0 +1,68 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/portal"
+  to = "/portal.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog"
+  to = "/blog.html"
+  status = 200
+
+[[redirects]]
+  from = "/client"
+  to = "/client.html"
+  status = 200
+
+[[redirects]]
+  from = "/intake"
+  to = "/intake.html"
+  status = 200
+
+[[redirects]]
+  from = "/brief"
+  to = "/brief.html"
+  status = 200
+
+[[redirects]]
+  from = "/marketing"
+  to = "/marketing.html"
+  status = 200
+
+[[redirects]]
+  from = "/marketing-brief"
+  to = "/marketing-brief.html"
+  status = 200
+
+[[redirects]]
+  from = "/package-explainer"
+  to = "/package-explainer.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin-new-logic"
+  to = "/admin-new-logic.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

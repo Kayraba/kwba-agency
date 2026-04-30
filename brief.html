@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- API: auto-detects local vs Render backend -->
+  <script>
+    window.API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+      ? ""
+      : "https://YOUR-APP-NAME.onrender.com"; // ← replace with your Render URL
+  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Website Brief — KWBA Agency</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0e0c;--bg2:#1a1814;--bg3:#252219;--gold:#c9a84c;--gold-dim:rgba(201,168,76,0.1);--gold-border:rgba(201,168,76,0.35);--ink:#f0ece4;--ink2:#ddd8ce;--muted:#9a9488;--muted2:#6a6460;--border:rgba(201,168,76,0.15);--border2:rgba(201,168,76,0.07);--green:#4caf7d;--green-dim:rgba(76,175,125,0.12)}
+html,body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;letter-spacing:.04em}
+.nav-logo span{color:var(--gold)}
+.nav-tag{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2)}
+
+/* Progress */
+.prog-bar-wrap{position:sticky;top:68px;z-index:90;background:rgba(15,14,12,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border2);padding:13px 40px 11px}
+.prog-inner{max-width:760px;margin:0 auto}
+.prog-track{height:2px;background:var(--border2);margin-bottom:9px}
+.prog-fill{height:100%;background:var(--gold);width:0%;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.prog-steps{display:flex;justify-content:space-between}
+.ps{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);transition:color .3s}
+.ps.done{color:var(--gold);opacity:.55}
+.ps.active{color:var(--gold)}
+
+/* Wizard */
+.wizard{max-width:760px;margin:0 auto;padding:52px 40px 100px;overflow:hidden}
+
+/* Step slides */
+.step{display:none}
+.step.active{display:block;animation:sIn .4s cubic-bezier(.4,0,.2,1)}
+.step.exit-fwd{animation:sOut .28s cubic-bezier(.4,0,.2,1) forwards}
+.step.enter-back{animation:sInBack .4s cubic-bezier(.4,0,.2,1)}
+@keyframes sIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes sInBack{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes sOut{to{opacity:0;transform:translateX(-28px)}}
+
+/* Step header */
+.sh{margin-bottom:36px}
+.slbl{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.slbl::before{content:'';display:block;width:22px;height:1px;background:var(--gold);opacity:.6}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4.2vw,44px);font-weight:400;line-height:1.05;letter-spacing:-.02em;margin-bottom:10px}
+h1 em{font-style:italic;color:var(--gold)}
+.ssub{font-size:14px;color:var(--muted);line-height:1.8;font-weight:300;max-width:600px}
+.pkg-tag{display:inline-block;font-size:9px;letter-spacing:.22em;text-transform:uppercase;padding:5px 14px;border:1px solid var(--gold-border);color:var(--gold);margin-top:14px}
+
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);padding:36px;margin-bottom:2px}
+
+/* Fields */
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.fr.full{grid-template-columns:1fr}
+.fg{display:flex;flex-direction:column;gap:6px}
+label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.hint{font-size:10px;letter-spacing:0;text-transform:none;color:var(--muted2);font-style:italic;display:block;margin-top:2px}
+input,select,textarea{background:var(--bg3);border:1px solid var(--border);color:var(--ink);padding:12px 16px;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:300;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;border-radius:0;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--gold-border)}
+input::placeholder,textarea::placeholder{color:var(--muted2)}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239a9488'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
+select option{background:var(--bg3);color:var(--ink)}
+textarea{resize:vertical;min-height:100px;line-height:1.65}
+.cc{font-size:10px;color:var(--muted2);text-align:right;margin-top:3px}
+.rule{height:1px;background:var(--border2);margin:22px 0}
+
+/* Checkboxes */
+.cg{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.ci{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);padding:8px 12px;cursor:pointer;transition:all .2s;font-size:12px;color:var(--ink2);user-select:none}
+.ci:hover{border-color:var(--gold-border)}
+.ci.sel{border-color:var(--gold-border);background:var(--gold-dim);color:var(--gold)}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--muted2);flex-shrink:0;transition:background .15s}
+.ci.sel .cdot{background:var(--gold)}
+
+/* Add rows */
+.add-row{display:flex;gap:8px;margin-top:8px}
+.add-row input{flex:1}
+.add-btn{font-size:10px;letter-spacing:.14em;text-transform:uppercase;background:transparent;border:1px solid var(--gold-border);color:var(--gold);padding:10px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.add-btn:hover{background:var(--gold-dim)}
+
+/* Uploads */
+.uz{border:1px dashed var(--gold-border);padding:22px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3);position:relative;margin-bottom:4px}
+.uz:hover,.uz.dv{border-color:var(--gold);background:var(--gold-dim)}
+.uz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.ui{font-size:20px;margin-bottom:6px;color:var(--gold)}
+.ut{font-size:13px;color:var(--ink2);margin-bottom:3px}
+.us{font-size:11px;color:var(--muted2)}
+.fl{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.fi{display:flex;align-items:center;background:var(--bg2);border:1px solid var(--border);padding:8px 12px;gap:10px;font-size:12px}
+.fn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2)}
+.fsz{color:var(--muted2);flex-shrink:0}
+.frm{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:15px;line-height:1;padding:0 2px;flex-shrink:0;transition:color .15s}
+.frm:hover{color:#e05c5c}
+.un{font-size:11px;color:var(--muted2);margin-top:5px;font-style:italic}
+
+/* Nav */
+.snav{display:flex;align-items:center;justify-content:space-between;margin-top:32px;padding-top:22px;border-top:1px solid var(--border2)}
+.btn-b{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:transparent;border:1px solid var(--border);padding:13px 26px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:8px}
+.btn-b:hover{border-color:var(--gold-border);color:var(--ink2)}
+.btn-b svg,.btn-n svg{flex-shrink:0}
+.btn-n{font-size:10px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:13px 34px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity .2s;display:flex;align-items:center;gap:8px}
+.btn-n:hover{opacity:.88}
+.btn-n:disabled{opacity:.4;cursor:not-allowed}
+.sctr{font-size:11px;color:var(--muted2);letter-spacing:.06em}
+.errmsg{color:#e05c5c;font-size:12px;margin-top:10px;text-align:center}
+
+/* Success */
+.succ-wrap{display:none;max-width:560px;margin:100px auto;text-align:center;padding:0 40px}
+.succ-icon{width:62px;height:62px;border-radius:50%;background:var(--green-dim);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 26px;font-size:24px}
+.succ-wrap h2{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:400;margin-bottom:12px}
+.succ-wrap h2 em{font-style:italic;color:var(--gold)}
+.succ-wrap p{font-size:14px;color:var(--muted);line-height:1.85;max-width:400px;margin:0 auto 28px}
+.back-btn{display:inline-block;font-size:10px;letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--gold-border);color:var(--gold);padding:12px 28px;transition:all .2s}
+.back-btn:hover{border-color:var(--gold);background:var(--gold-dim)}
+
+@media(max-width:680px){
+  .fr{grid-template-columns:1fr}
+  .wizard{padding:36px 20px 80px}
+  .prog-bar-wrap{padding:12px 20px 10px}
+  nav{padding:0 20px}
+  .snav{flex-wrap:wrap;gap:12px}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">KW<span>B</span>A</a>
+  <span class="nav-tag">Website Brief</span>
+</nav>
+
+<div class="prog-bar-wrap">
+  <div class="prog-inner">
+    <div class="prog-track"><div class="prog-fill" id="pf"></div></div>
+    <div class="prog-steps">
+      <span class="ps active" id="ps0">Business</span>
+      <span class="ps" id="ps1">Audience</span>
+      <span class="ps" id="ps2">Design</span>
+      <span class="ps" id="ps3">Pages</span>
+      <span class="ps" id="ps4">Assets</span>
+      <span class="ps" id="ps5">Technical</span>
+      <span class="ps" id="ps6">Contact</span>
+    </div>
+  </div>
+</div>
+
+<div class="wizard" id="fw">
+
+<!-- ====== STEP 1: BUSINESS ====== -->
+<div class="step active" id="s0">
+  <div class="sh">
+    <div class="slbl">Step 1 of 7</div>
+    <h1>Tell us about your <em>business</em></h1>
+    <p class="ssub">The foundation everything is built on. The more specific you are here, the stronger your site's copy and structure will be.</p>
+    <div id="pkg-tag" class="pkg-tag" style="display:none"></div>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Business Name *</label><input id="bn" placeholder="Your Business Ltd" maxlength="100"></div>
+      <div class="fg"><label>Trading Name<span class="hint">If different from registered name</span></label><input id="bt" placeholder="e.g. Joe's Plumbing" maxlength="100"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Type of Business *</label><input id="btype" placeholder="e.g. Plumber, Accountant, Salon" maxlength="100"></div>
+      <div class="fg"><label>Years Trading</label>
+        <select id="bage"><option value="">— Select</option><option>Just starting</option><option>Under 1 year</option><option>1–3 years</option><option>3–5 years</option><option>5–10 years</option><option>10+ years</option></select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Primary Location *</label><input id="bloc" placeholder="e.g. Milton Keynes, MK1" maxlength="150"></div>
+      <div class="fg"><label>Service Area / Coverage</label><input id="bcov" placeholder="e.g. Nationwide, or 30-mile radius of MK" maxlength="200"></div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>What Does Your Business Do? *<span class="hint">Main services, who you serve, what you specialise in</span></label>
+        <textarea id="bdesc" rows="4" placeholder="Be specific. E.g. 'We're a family-run plumbing firm specialising in emergency callouts, boiler installations (Worcester Bosch approved), and bathroom renovations. Gas Safe registered with 200+ 5-star Google reviews…'" maxlength="3000" oninput="cci(this,'bdesc-c',3000)"></textarea>
+        <div class="cc"><span id="bdesc-c">0</span>/3000</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>What Makes You Different? *<span class="hint">Your USPs — why choose you over a competitor?</span></label>
+        <textarea id="busp" rows="3" placeholder="E.g. '2-hour response time, 12-month guarantee, 200 5-star reviews, no call-out charge, fixed pricing before we start…'" maxlength="2000" oninput="cci(this,'busp-c',2000)"></textarea>
+        <div class="cc"><span id="busp-c">0</span>/2000</div>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Current Website URL<span class="hint">If you have one</span></label><input id="curl" type="url" placeholder="https://yoursite.com"></div>
+      <div class="fg"><label>Main Website Goal *</label>
+        <select id="bgoal">
+          <option value="">— Select primary goal</option>
+          <option>Get phone calls / enquiries</option>
+          <option>Online bookings / appointments</option>
+          <option>Sell products (e-commerce)</option>
+          <option>Generate quote requests</option>
+          <option>Build brand awareness / credibility</option>
+          <option>Grow email subscriber list</option>
+          <option>Recruit staff</option>
+          <option>Portfolio / showcase work</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Secondary Goals<span class="hint">Optional</span></label><input id="bgoal2" placeholder="e.g. Rank on Google locally, reduce time answering enquiries, showcase portfolio" maxlength="300"></div>
+    </div>
+  </div>
+  <div class="snav">
+    <span class="sctr">1 / 7</span>
+    <button class="btn-n" onclick="goN(0)">Audience <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 2: AUDIENCE ====== -->
+<div class="step" id="s1">
+  <div class="sh">
+    <div class="slbl">Step 2 of 7</div>
+    <h1>Who are your <em>ideal customers?</em></h1>
+    <p class="ssub">The more we understand your customer, the more targeted your copy, imagery, and calls to action will be.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Customer Type *</label>
+        <select id="ctype"><option value="">— Select</option><option>Homeowners / Residential</option><option>Small businesses (B2B)</option><option>Medium/large businesses (B2B)</option><option>Both consumers and businesses</option><option>Public sector / charities</option></select>
+      </div>
+      <div class="fg"><label>Typical Age Range</label>
+        <select id="cage"><option value="">— Select</option><option>18–25</option><option>25–35</option><option>35–50</option><option>50+</option><option>All ages</option><option>N/A (B2B focus)</option></select>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Describe Your Ideal Customer<span class="hint">What problem are they solving? What do they value?</span></label>
+        <textarea id="cdesc" rows="3" placeholder="E.g. 'Homeowners aged 35–60 who need reliable tradespeople. They're worried about being ripped off. Trust signals like reviews and accreditations are critical. They usually search Google or ask friends…'" maxlength="2000" oninput="cci(this,'cdesc-c',2000)"></textarea>
+        <div class="cc"><span id="cdesc-c">0</span>/2000</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Customer Pain Points<span class="hint">What problems do they have that you solve?</span></label>
+        <textarea id="cpain" rows="3" placeholder="E.g. 'Can't find a plumber who shows up when they say. Worried about hidden costs. Need a fast response for emergencies. Previous bad experiences with unreliable tradespeople…'" maxlength="1500" oninput="cci(this,'cpain-c',1500)"></textarea>
+        <div class="cc"><span id="cpain-c">0</span>/1500</div>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>What Stops People Buying?<span class="hint">Hesitations before contacting you</span></label>
+        <textarea id="cobj" rows="2" placeholder="E.g. 'Worried about price, unsure if we cover their area, comparing quotes from multiple firms…'" maxlength="1000"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(1)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Business</button>
+    <span class="sctr">2 / 7</span>
+    <button class="btn-n" onclick="goN(1)">Design <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 3: DESIGN ====== -->
+<div class="step" id="s2">
+  <div class="sh">
+    <div class="slbl">Step 3 of 7</div>
+    <h1>What should your site <em>look like?</em></h1>
+    <p class="ssub">This shapes the entire visual direction. If you have brand guidelines or logos, you'll upload them in the Assets step.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Visual Style *</label>
+        <select id="vstyle">
+          <option value="">— Select a style</option>
+          <option value="Clean and Modern">Clean &amp; Modern — minimal, strong typography, white space</option>
+          <option value="Bold and Premium">Bold &amp; Premium — dark tones, high-end luxury feel</option>
+          <option value="Warm and Approachable">Warm &amp; Approachable — friendly colours, community feel</option>
+          <option value="Trust and Authority">Trust &amp; Authority — credentials and proof front-centre</option>
+          <option value="Vibrant and Energetic">Vibrant &amp; Energetic — bright colours, youthful, dynamic</option>
+          <option value="Corporate and Professional">Corporate &amp; Professional — traditional, formal, conservative</option>
+          <option value="Creative and Artistic">Creative &amp; Artistic — expressive, design-led, unique</option>
+        </select>
+      </div>
+      <div class="fg"><label>Existing Brand Colours</label><input id="vcols" placeholder="e.g. Navy #1a3a6b + White + Gold, or 'no brand colours yet'" maxlength="300"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Brand Tone of Voice</label>
+        <select id="vtone"><option value="">— Select</option><option>Professional and authoritative</option><option>Friendly and conversational</option><option>Luxury and exclusive</option><option>Fun and energetic</option><option>Calm and reassuring</option><option>Technical and detailed</option><option>Straight-talking, no-nonsense</option></select>
+      </div>
+      <div class="fg"><label>Preferred Fonts<span class="hint">If you have a preference</span></label><input id="vfonts" placeholder="e.g. Montserrat, or 'something modern and clean'" maxlength="200"></div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Reference Websites<span class="hint">Paste URLs you admire and say what you like about each</span></label>
+        <textarea id="vrefs" rows="3" placeholder="List 2–5 websites and what you like about each. E.g. 'https://example.com — love the dark premium feel. https://example2.com — exactly the kind of homepage impact I want…'" maxlength="1000"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Competitors' Websites<span class="hint">Helps us position you clearly above them</span></label>
+        <textarea id="vcomp" rows="2" placeholder="E.g. 'https://competitor.com — our main local rival. We want to look significantly more premium than them…'" maxlength="800"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>What You DON'T Want</label>
+        <textarea id="vdont" rows="2" placeholder="E.g. 'No cheesy stock photos, no cluttered layouts, no autoplay video, nothing that looks like a template…'" maxlength="800"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(2)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Audience</button>
+    <span class="sctr">3 / 7</span>
+    <button class="btn-n" onclick="goN(2)">Pages <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 4: PAGES ====== -->
+<div class="step" id="s3">
+  <div class="sh">
+    <div class="slbl">Step 4 of 7</div>
+    <h1>What pages do you <em>need?</em></h1>
+    <p class="ssub">Tick the pages you want, add any custom ones, and tell us what each should contain.</p>
+  </div>
+  <div class="card">
+    <div class="fr full">
+      <div class="fg">
+        <label>Standard Pages — tick all required</label>
+        <div class="cg" id="std-pages">
+          <div class="ci sel" data-val="Home" onclick="tc(this)"><span class="cdot"></span>Home</div>
+          <div class="ci sel" data-val="About Us" onclick="tc(this)"><span class="cdot"></span>About Us</div>
+          <div class="ci sel" data-val="Services" onclick="tc(this)"><span class="cdot"></span>Services</div>
+          <div class="ci" data-val="Individual Service Pages" onclick="tc(this)"><span class="cdot"></span>Individual Service Pages</div>
+          <div class="ci sel" data-val="Contact" onclick="tc(this)"><span class="cdot"></span>Contact</div>
+          <div class="ci" data-val="Gallery / Portfolio" onclick="tc(this)"><span class="cdot"></span>Gallery / Portfolio</div>
+          <div class="ci" data-val="Testimonials" onclick="tc(this)"><span class="cdot"></span>Testimonials</div>
+          <div class="ci" data-val="Blog / News" onclick="tc(this)"><span class="cdot"></span>Blog / News</div>
+          <div class="ci" data-val="FAQ" onclick="tc(this)"><span class="cdot"></span>FAQ</div>
+          <div class="ci" data-val="Pricing" onclick="tc(this)"><span class="cdot"></span>Pricing</div>
+          <div class="ci" data-val="Online Booking" onclick="tc(this)"><span class="cdot"></span>Online Booking</div>
+          <div class="ci" data-val="Shop / Products" onclick="tc(this)"><span class="cdot"></span>Shop / Products</div>
+          <div class="ci" data-val="Team / Staff" onclick="tc(this)"><span class="cdot"></span>Team / Staff</div>
+          <div class="ci" data-val="Privacy Policy" onclick="tc(this)"><span class="cdot"></span>Privacy Policy</div>
+        </div>
+      </div>
+    </div>
+    <div class="fr full" style="margin-top:14px">
+      <div class="fg">
+        <label>Add Custom Pages</label>
+        <div class="add-row">
+          <input id="cp-in" placeholder="e.g. Emergency Callout, Area Coverage Map, Case Studies…" maxlength="100" onkeydown="if(event.key==='Enter'){event.preventDefault();addCP()}">
+          <button class="add-btn" onclick="addCP()">+ Add</button>
+        </div>
+        <div id="cp-list" style="margin-top:8px;display:flex;flex-direction:column;gap:4px"></div>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Homepage — What Must Appear Above the Fold?<span class="hint">What a visitor sees the moment they land</span></label>
+        <textarea id="phome" rows="3" placeholder="E.g. 'Large headline + service + city, a Call Now button, trust badges (Gas Safe, 200 reviews), and a free quote form…'" maxlength="2000"></textarea>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Do You Have Existing Copy / Text?</label>
+        <select id="pcopy"><option value="">— Select</option><option>No — please write all copy</option><option>Partial — I'll supply some, you write the rest</option><option>Yes — I'll supply all text</option><option>Migrating from an existing site</option></select>
+      </div>
+      <div class="fg"><label>Content Supply Timeline</label>
+        <select id="ptime"><option value="">— Select</option><option>Immediately — all ready to go</option><option>Within 1 week</option><option>Within 2 weeks</option><option>Need a bit longer — will discuss</option></select>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Key Messages / Phrases to Include</label>
+        <textarea id="pmsg" rows="2" placeholder="E.g. 'No call-out charge', '24/7 emergency service', 'Gas Safe Registered No. 12345', 'Free no-obligation quote'…" maxlength="1000"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Testimonials / Reviews to Feature<span class="hint">Paste real reviews or tell us where to find them</span></label>
+        <textarea id="prevs" rows="4" placeholder="Paste 3–6 of your best customer reviews (name, star rating, source).&#10;Or write: 'Pull my top 5 from my Google Business profile at [URL]'" maxlength="3000" oninput="cci(this,'prevs-c',3000)"></textarea>
+        <div class="cc"><span id="prevs-c">0</span>/3000</div>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Design</button>
+    <span class="sctr">4 / 7</span>
+    <button class="btn-n" onclick="goN(3)">Assets <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 5: ASSETS ====== -->
+<div class="step" id="s4">
+  <div class="sh">
+    <div class="slbl">Step 5 of 7</div>
+    <h1>Upload your <em>brand files</em></h1>
+    <p class="ssub">Real photos of your team, premises, and work always outperform stock imagery. The more you upload, the better your site will look.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Logo Status</label>
+        <select id="alogo"><option value="Yes — will upload below">Yes — I'll upload files below</option><option value="No — please design one">No — please design one for me</option><option value="Needs updating">I have one but it needs modernising</option><option value="Text only">Text / wordmark only, no icon</option></select>
+      </div>
+      <div class="fg"><label>Brand Guidelines?</label>
+        <select id="abrand"><option value="None">No, I don't have any</option><option value="Will upload">Yes — uploading below</option><option value="Basic notes">I have basic notes I'll describe below</option></select>
+      </div>
+    </div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Upload Logo Files<span class="hint">SVG, AI, EPS, or PNG with transparent background preferred</span></label>
+      <div class="uz" id="z-logo">
+        <input type="file" id="f-logo" accept=".svg,.ai,.eps,.png,.pdf,.jpg,.jpeg,.zip" multiple onchange="hu(this,'logo')">
+        <div class="ui">🖼</div><div class="ut">Click to upload or drag &amp; drop logo files</div>
+        <div class="us">SVG · AI · EPS · PNG · PDF · ZIP</div>
+      </div>
+      <div id="ll" class="fl"></div>
+      <div class="un">Include: full colour, white/reversed, icon-only if available</div>
+    </div>
+    <div class="rule"></div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Upload Photos &amp; Images<span class="hint">Team, premises, completed work — real photos beat stock every time</span></label>
+      <div class="uz" id="z-photos">
+        <input type="file" id="f-photos" accept=".jpg,.jpeg,.png,.webp,.gif,.heic" multiple onchange="hu(this,'photos')">
+        <div class="ui">📷</div><div class="ut">Click to upload or drag &amp; drop photos</div>
+        <div class="us">JPG · PNG · WebP · HEIC — min 1200px wide recommended</div>
+      </div>
+      <div id="lp" class="fl"></div>
+      <div class="un">Suggested: team headshots, before/after shots, your van/premises, examples of work</div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Photo Notes</label>
+        <textarea id="apnotes" rows="2" placeholder="Tell us what each photo is for. E.g. 'Photo 1 = team shot for About page. Photos 2–8 = bathroom installations for gallery…'" maxlength="1000"></textarea>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Other Brand Files<span class="hint">Brand guidelines, certificates, award logos, marketing materials</span></label>
+      <div class="uz" id="z-docs">
+        <input type="file" id="f-docs" accept=".pdf,.ai,.psd,.zip,.docx,.svg,.eps,.png" multiple onchange="hu(this,'docs')">
+        <div class="ui">📄</div><div class="ut">Click to upload brand docs &amp; other files</div>
+        <div class="us">PDF · AI · PSD · ZIP · DOCX</div>
+      </div>
+      <div id="ld" class="fl"></div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Accreditations &amp; Certifications to Display</label>
+        <textarea id="aaccred" rows="2" placeholder="E.g. Gas Safe Registered No. 12345 · NICEIC Approved · Checkatrade · Trustpilot 4.9/5…" maxlength="800"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(4)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Pages</button>
+    <span class="sctr">5 / 7</span>
+    <button class="btn-n" onclick="goN(4)">Technical <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 6: TECHNICAL ====== -->
+<div class="step" id="s5">
+  <div class="sh">
+    <div class="slbl">Step 6 of 7</div>
+    <h1>What does your site <em>need to do?</em></h1>
+    <p class="ssub">Ticking everything upfront means no surprises — we build these in from day one.</p>
+  </div>
+  <div class="card">
+    <div class="fr full">
+      <div class="fg">
+        <label>Required Features — tick all that apply</label>
+        <div class="cg" id="feats">
+          <div class="ci" data-val="Contact form" onclick="tc(this)"><span class="cdot"></span>Contact Form</div>
+          <div class="ci" data-val="Online booking / calendar" onclick="tc(this)"><span class="cdot"></span>Online Booking</div>
+          <div class="ci" data-val="Live chat widget" onclick="tc(this)"><span class="cdot"></span>Live Chat</div>
+          <div class="ci" data-val="Quote calculator" onclick="tc(this)"><span class="cdot"></span>Quote Calculator</div>
+          <div class="ci" data-val="Online payments / checkout" onclick="tc(this)"><span class="cdot"></span>Online Payments</div>
+          <div class="ci" data-val="E-commerce / shop" onclick="tc(this)"><span class="cdot"></span>E-commerce Shop</div>
+          <div class="ci" data-val="Blog / CMS" onclick="tc(this)"><span class="cdot"></span>Blog / CMS</div>
+          <div class="ci" data-val="Google Maps integration" onclick="tc(this)"><span class="cdot"></span>Google Maps</div>
+          <div class="ci" data-val="Google Analytics 4" onclick="tc(this)"><span class="cdot"></span>Analytics Setup</div>
+          <div class="ci" data-val="Cookie consent banner" onclick="tc(this)"><span class="cdot"></span>Cookie Banner</div>
+          <div class="ci" data-val="Newsletter / email signup" onclick="tc(this)"><span class="cdot"></span>Newsletter Signup</div>
+          <div class="ci" data-val="Social media feed" onclick="tc(this)"><span class="cdot"></span>Social Media Feed</div>
+          <div class="ci" data-val="Video background or embed" onclick="tc(this)"><span class="cdot"></span>Video Embed</div>
+          <div class="ci" data-val="Password protected pages" onclick="tc(this)"><span class="cdot"></span>Password Protected Area</div>
+          <div class="ci" data-val="Customer login / portal" onclick="tc(this)"><span class="cdot"></span>Customer Portal</div>
+          <div class="ci" data-val="Multi-language support" onclick="tc(this)"><span class="cdot"></span>Multi-Language</div>
+          <div class="ci" data-val="WCAG Accessibility" onclick="tc(this)"><span class="cdot"></span>WCAG Accessibility</div>
+        </div>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="fr">
+      <div class="fg"><label>Domain Name?</label>
+        <select id="tdomain"><option value="">— Select</option><option>Yes — I own it, will provide access</option><option>Yes — need help pointing it</option><option>No — please help me buy one</option></select>
+      </div>
+      <div class="fg"><label>Your Domain / Desired Domain</label><input id="tdomnm" placeholder="e.g. mybusiness.co.uk" maxlength="100"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Web Hosting?</label>
+        <select id="thost"><option value="">— Select</option><option>Yes — will provide login details</option><option>No — please set up hosting</option><option>Not sure — please advise</option></select>
+      </div>
+      <div class="fg"><label>Business Email Format</label><input id="temail" placeholder="e.g. hello@mybusiness.co.uk" maxlength="100"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Third-Party Integrations</label><input id="tinteg" placeholder="e.g. Mailchimp, Calendly, Stripe, Xero, Zoho CRM…" maxlength="300"></div>
+      <div class="fg"><label>Target Launch Date</label><input id="tlaunch" placeholder="e.g. 'Within 4 weeks' or 'By 1st June 2025'" maxlength="100"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>SEO Requirements</label>
+        <select id="tseo"><option value="">— Select</option><option>Basic on-page SEO setup</option><option>Target specific local keywords (list below)</option><option>Full SEO campaign — see marketing brief</option><option>None at this stage</option></select>
+      </div>
+      <div class="fg"><label>Performance Priority</label>
+        <select id="tperf"><option value="">— Select</option><option>Standard — looks great and works well</option><option>High performance — speed is critical (ads / e-commerce)</option><option>Ultra-fast — Core Web Vitals green across all metrics</option></select>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>Target Keywords</label>
+        <textarea id="tkw" rows="2" placeholder="E.g. 'emergency plumber Milton Keynes', 'boiler installation MK', 'bathroom fitter near me'…" maxlength="800"></textarea>
+      </div>
+    </div>
+    <div class="fr full">
+      <div class="fg">
+        <label>Anything Else — Special Requirements, Deadlines, Notes</label>
+        <textarea id="textra" rows="3" placeholder="E.g. 'Trade-only section needs password protection', 'We're rebranding in 2 weeks', 'Want to update the site ourselves without a developer', 'We have 5 locations needing separate pages'…" maxlength="3000" oninput="cci(this,'textra-c',3000)"></textarea>
+        <div class="cc"><span id="textra-c">0</span>/3000</div>
+      </div>
+    </div>
+  </div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(5)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Assets</button>
+    <span class="sctr">6 / 7</span>
+    <button class="btn-n" onclick="goN(5)">Contact <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+  </div>
+</div>
+
+<!-- ====== STEP 7: CONTACT ====== -->
+<div class="step" id="s6">
+  <div class="sh">
+    <div class="slbl">Step 7 of 7</div>
+    <h1>Almost <em>done.</em></h1>
+    <p class="ssub">Your dedicated project manager will keep you updated at every stage of the build.</p>
+  </div>
+  <div class="card">
+    <div class="fr">
+      <div class="fg"><label>Your Full Name *</label><input id="cn" placeholder="John Smith" maxlength="100"></div>
+      <div class="fg"><label>Job Title / Role</label><input id="crole" placeholder="e.g. Owner, Director, Marketing Manager" maxlength="100"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Email Address *</label><input id="ce" type="email" placeholder="john@yourbusiness.com" maxlength="255"></div>
+      <div class="fg"><label>Phone / WhatsApp *</label><input id="cp" type="tel" placeholder="07700 000 000" maxlength="20"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Best Time to Contact</label>
+        <select id="ctime"><option value="">— Select</option><option>Any time</option><option>Morning 9am–12pm</option><option>Afternoon 12pm–5pm</option><option>Evening 5pm–8pm</option><option>Weekdays only</option><option>Email only — please don't call</option></select>
+      </div>
+      <div class="fg"><label>Package</label><input id="pkg-display" readonly style="opacity:.6;cursor:default"></div>
+    </div>
+    <div class="fr full">
+      <div class="fg"><label>How Did You Hear About KWBA?</label>
+        <select id="cref"><option value="">— Select</option><option>Google Search</option><option>Referred by someone I know</option><option>Social Media</option><option>Networking Event</option><option>Returning client</option><option>You approached me</option><option>Other</option></select>
+      </div>
+    </div>
+  </div>
+  <div id="fe" class="errmsg" style="display:none"></div>
+  <div class="snav">
+    <button class="btn-b" onclick="goB(6)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Technical</button>
+    <span class="sctr">7 / 7</span>
+    <button class="btn-n" id="sb" onclick="sub()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Submit Brief
+    </button>
+  </div>
+  <p style="font-size:11px;color:var(--muted2);margin-top:16px;text-align:center">Files are uploaded securely. We'll review and contact you within 24 hours to confirm your project kickoff.</p>
+</div>
+
+</div><!-- /wizard -->
+
+<!-- SUCCESS -->
+<div class="succ-wrap" id="sw">
+  <div class="succ-icon">✓</div>
+  <h2>Brief <em>received</em></h2>
+  <p>Your website brief has been submitted. We'll review everything and contact you within 24 hours to confirm the project timeline.</p>
+  <a href="/" class="back-btn">Back to Home</a>
+</div>
+
+<script>
+const FORMSPREE_URL='https://formspree.io/f/xpwzgkdl';
+const JBN='69b043756a0858658be24fdf';
+const JAK='$2a$10$36fMbyFWdJhH7w0K.eb8kuyFcc.USY3NIEpBjX5OusE2.sri2UDEe';
+const PKG={starter:'Starter — £800',growth:'Growth — £1,499',premium:'Premium — £2,299','digital-marketing':'Digital Marketing — £850'};
+const up=new URLSearchParams(window.location.search);
+const pk=up.get('pkg')||'starter';
+const pn=PKG[pk]||'Starter — £800';
+document.getElementById('pkg-display').value=pn;
+const tg=document.getElementById('pkg-tag');tg.textContent=pn;tg.style.display='inline-block';
+
+let cur=0;
+const TOTAL=7;
+
+function goN(from){
+  const cur=document.getElementById('s'+from);
+  const nxt=document.getElementById('s'+(from+1));
+  if(!nxt)return;
+  cur.classList.add('exit-fwd');
+  setTimeout(()=>{
+    cur.classList.remove('active','exit-fwd');
+    nxt.classList.add('active');
+    nxt.classList.remove('enter-back');
+    upProg(from+1);
+    window.scrollTo({top:0,behavior:'smooth'});
+  },260);
+}
+function goB(from){
+  const cur=document.getElementById('s'+from);
+  const prv=document.getElementById('s'+(from-1));
+  if(!prv)return;
+  cur.classList.remove('active');
+  setTimeout(()=>{
+    prv.classList.add('active','enter-back');
+    upProg(from-1);
+    window.scrollTo({top:0,behavior:'smooth'});
+  },20);
+}
+function upProg(n){
+  document.getElementById('pf').style.width=Math.round(n/TOTAL*100)+'%';
+  for(let i=0;i<TOTAL;i++){
+    const s=document.getElementById('ps'+i);
+    if(!s)continue;
+    s.classList.remove('active','done');
+    if(i===n)s.classList.add('active');
+    else if(i<n)s.classList.add('done');
+  }
+}
+
+// Files
+const files={logo:[],photos:[],docs:[]};
+function hu(inp,cat){Array.from(inp.files).forEach(f=>{if(!files[cat].find(x=>x.name===f.name&&x.size===f.size))files[cat].push(f);});rl(cat);}
+function rl(cat){
+  const ids={logo:'ll',photos:'lp',docs:'ld'};
+  const el=document.getElementById(ids[cat]);
+  if(!el)return;
+  el.innerHTML=files[cat].map((f,i)=>`<div class="fi"><span class="fn">${esc(f.name)}</span><span class="fsz">${fmt(f.size)}</span><button class="frm" onclick="rf('${cat}',${i})">×</button></div>`).join('');
+}
+function rf(cat,i){files[cat].splice(i,1);rl(cat);}
+function fmt(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
+['z-logo','z-photos','z-docs'].forEach(id=>{
+  const z=document.getElementById(id);
+  if(!z)return;
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('dv');});
+  z.addEventListener('dragleave',()=>z.classList.remove('dv'));
+  z.addEventListener('drop',e=>{
+    e.preventDefault();z.classList.remove('dv');
+    const cat=id.replace('z-','');
+    Array.from(e.dataTransfer.files).forEach(f=>{if(!files[cat].find(x=>x.name===f.name))files[cat].push(f);});
+    rl(cat);
+  });
+});
+
+// Checkboxes
+function tc(el){el.classList.toggle('sel');}
+function gc(id){return Array.from(document.querySelectorAll('#'+id+' .ci.sel')).map(e=>e.dataset.val).join(', ');}
+
+// Custom pages
+const cps=[];
+function addCP(){const v=document.getElementById('cp-in').value.trim();if(!v)return;cps.push(v);document.getElementById('cp-in').value='';rCP();}
+function rCP(){document.getElementById('cp-list').innerHTML=cps.map((p,i)=>`<div class="fi"><span class="fn">${esc(p)}</span><button class="frm" onclick="rmCP(${i})">×</button></div>`).join('');}
+function rmCP(i){cps.splice(i,1);rCP();}
+
+function cci(el,id,max){document.getElementById(id).textContent=el.value.length;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function gv(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+
+async function saveCloud(b){
+  try{
+    const r=await fetch(`https://api.jsonbin.io/v3/b/${JBN}/latest`,{headers:{'X-Master-Key':JAK}});
+    const j=await r.json();
+    const ex=Array.isArray(j.record)?j.record:[];
+    ex.push(b);
+    await fetch(`https://api.jsonbin.io/v3/b/${JBN}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JAK},body:JSON.stringify(ex)});
+  }catch(e){console.error(e);}
+}
+
+async function sub(){
+  const bizName=gv('bn'),cName=gv('cn'),cEmail=gv('ce'),cPhone=gv('cp');
+  const err=document.getElementById('fe');
+  if(!bizName||!cName||!cEmail||!cPhone){err.textContent='Please complete: Business Name, Your Name, Email, and Phone.';err.style.display='block';return;}
+  const btn=document.getElementById('sb');
+  btn.disabled=true;
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Submitting…';
+  err.style.display='none';
+  const lu=files.logo.map(f=>f.name+' ('+fmt(f.size)+')').join(', ')||'None';
+  const pu=files.photos.map(f=>f.name+' ('+fmt(f.size)+')').join(', ')||'None';
+  const du=files.docs.map(f=>f.name+' ('+fmt(f.size)+')').join(', ')||'None';
+  const b={id:Date.now().toString(),briefType:'website',timestamp:new Date().toISOString(),pkg:pk,pkgName:pn,
+    bizName,bizTrading:gv('bt'),bizType:gv('btype'),bizAge:gv('bage'),location:gv('bloc'),coverage:gv('bcov'),
+    bizDesc:gv('bdesc'),bizUSP:gv('busp'),currentURL:gv('curl'),goal:gv('bgoal'),goal2:gv('bgoal2'),
+    custType:gv('ctype'),custAge:gv('cage'),custDesc:gv('cdesc'),custPain:gv('cpain'),custObj:gv('cobj'),
+    style:gv('vstyle'),colours:gv('vcols'),tone:gv('vtone'),fonts:gv('vfonts'),refs:gv('vrefs'),competitors:gv('vcomp'),dontWant:gv('vdont'),
+    stdPages:gc('std-pages'),customPages:cps.join(', '),homepage:gv('phome'),hasCopy:gv('pcopy'),contentTimeline:gv('ptime'),keyMsg:gv('pmsg'),reviews:gv('prevs'),
+    logoStatus:gv('alogo'),brandGuide:gv('abrand'),logoUploaded:lu,photosUploaded:pu,docsUploaded:du,photoNotes:gv('apnotes'),accred:gv('aaccred'),
+    features:gc('feats'),domain:gv('tdomain'),domainName:gv('tdomnm'),hosting:gv('thost'),bizEmailFmt:gv('temail'),
+    integrations:gv('tinteg'),launchDate:gv('tlaunch'),seoReq:gv('tseo'),perf:gv('tperf'),keywords:gv('tkw'),extra:gv('textra'),
+    contactName:cName,contactRole:gv('crole'),contactEmail:cEmail,contactPhone:cPhone,contactTime:gv('ctime'),referral:gv('cref')};
+  try{
+    const res=await fetch(FORMSPREE_URL,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},
+      body:JSON.stringify({_subject:`New Website Brief — ${bizName} (${pn})`,...Object.fromEntries(Object.entries(b).map(([k,v])=>[k,v||'—']))})});
+    if(!res.ok)throw new Error('fail');
+    // ALSO SAVE TO LOCAL SERVER
+    try {
+      await fetch(window.API_BASE + '/public-brief', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(b)
+      });
+    } catch(e) { console.log("Local server sync failed, cloud saved."); }
+    await saveCloud(b);
+    document.getElementById('fw').style.display='none';
+    document.getElementById('sw').style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(e){
+    err.textContent='Something went wrong. Please try again or email hello@kwba-agency.com';
+    err.style.display='block';
+    btn.disabled=false;
+    btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Submit Brief';
+  }
+}
+</script>
+</body>
+</html>

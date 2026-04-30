@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KWBA Agency — Web Design &amp; Digital Marketing, Milton Keynes</title>
+  <meta name="description" content="KWBA Agency builds professional websites and runs targeted digital marketing campaigns for UK businesses. Fast delivery, transparent pricing. No retainers."/>
+  <meta property="og:title" content="KWBA Agency — Web Design &amp; Digital Marketing"/>
+  <meta property="og:description" content="Professional websites and AI-powered marketing for UK businesses. Most sites live within 48–72 hours. Transparent pricing from £800."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://kwba-agency.com/"/>
+  <meta property="og:image" content="https://kwba-agency.com/og-image.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:locale" content="en_GB"/>
+  <meta property="og:site_name" content="KWBA Agency"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:image" content="https://kwba-agency.com/og-image.png"/>
+  <link rel="canonical" href="https://kwba-agency.com/"/>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+  <meta name="theme-color" content="#0f0e0c"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"KWBA Agency","description":"Professional web design and digital marketing agency based in Milton Keynes, UK.","url":"https://kwba-agency.com","image":"https://kwba-agency.com/og-image.png","address":{"@type":"PostalAddress","addressLocality":"Milton Keynes","addressRegion":"Buckinghamshire","addressCountry":"GB"},"priceRange":"££","aggregateRating":{"@type":"AggregateRating","ratingValue":"5","reviewCount":"12","bestRating":"5"}}</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0e0c;--bg2:#1a1814;--bg3:#1f1c16;--bg4:#151310;
+  --gold:#c9a84c;--gold-dim:rgba(201,168,76,0.07);--gold-border:rgba(201,168,76,0.22);--gold-strong:rgba(201,168,76,0.42);
+  --ink:#f0ece4;--ink2:#ddd8ce;--muted:#9a9488;--muted2:#6a6460;
+  --border:rgba(201,168,76,0.11);
+}
+html{scroll-behavior:smooth}
+html,body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;background:rgba(15,14,12,0.94);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;letter-spacing:.04em}
+.nav-logo em{font-style:normal;color:var(--gold)}
+.nav-links{display:flex;gap:36px;align-items:center}
+.nav-link{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+.nav-link:hover{color:var(--gold)}
+.nav-cta{font-size:10px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:11px 24px;font-weight:500;transition:opacity .2s}
+.nav-cta:hover{opacity:.85}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:22px;height:1.5px;background:var(--ink);transition:all .3s}
+.mmenu{display:none;position:fixed;inset:0;top:64px;background:rgba(15,14,12,0.98);padding:36px 32px;flex-direction:column;gap:20px;z-index:99}
+.mmenu.open{display:flex}
+.mlink{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:14px 0;border-bottom:1px solid var(--border);transition:color .2s}
+.mlink:hover{color:var(--gold)}
+.mcta{font-size:11px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:16px;font-weight:500;text-align:center;margin-top:8px}
+
+.hero{min-height:100svh;display:flex;align-items:center;padding:80px 48px 48px;position:relative;overflow:hidden}
+.hbg{position:absolute;inset:0;pointer-events:none}
+.hbg::before{content:'';position:absolute;top:-15%;right:-8%;width:700px;height:700px;background:radial-gradient(circle,rgba(201,168,76,0.06) 0%,transparent 65%)}
+.hbg::after{content:'';position:absolute;bottom:10%;left:-5%;width:400px;height:400px;background:radial-gradient(circle,rgba(201,168,76,0.04) 0%,transparent 70%)}
+.hero-inner{max-width:1140px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center}
+.hlabel{font-size:9px;letter-spacing:.36em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;display:flex;align-items:center;gap:12px}
+.hlabel::before{content:'';display:block;width:28px;height:1px;background:var(--gold);opacity:.65}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(46px,5.5vw,80px);font-weight:400;line-height:1.0;letter-spacing:-.03em;margin-bottom:26px}
+h1 em{font-style:italic;color:var(--gold)}
+.hsub{font-size:15px;color:var(--muted);line-height:1.9;max-width:460px;margin-bottom:44px;font-weight:300}
+.hbtns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-g{display:inline-flex;align-items:center;gap:10px;background:var(--gold);color:#0f0e0c;padding:15px 34px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;transition:opacity .2s,transform .15s}
+.btn-g:hover{opacity:.88;transform:translateY(-1px)}
+.btn-o{display:inline-flex;align-items:center;gap:8px;color:var(--muted);padding:15px 26px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--border);transition:all .2s}
+.btn-o:hover{border-color:var(--gold-strong);color:var(--gold)}
+.hstats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border)}
+.hstat{padding:24px 16px;text-align:center;border-right:1px solid var(--border)}
+.hstat:last-child{border-right:none}
+.hstat-n{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:400;line-height:1;margin-bottom:6px}
+.hstat-l{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+
+.section{padding:100px 48px 0}
+.si{max-width:1140px;margin:0 auto}
+.slabel{font-size:9px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.slabel::before{content:'';display:block;width:22px;height:1px;background:var(--gold);opacity:.6}
+h2{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,48px);font-weight:400;line-height:1.06;letter-spacing:-.02em;margin-bottom:16px}
+h2 em{font-style:italic;color:var(--gold)}
+.section-desc{font-size:15px;color:var(--muted);line-height:1.85;max-width:600px;margin-bottom:52px;font-weight:300}
+
+.services-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.svc-block{background:var(--bg2);border:1px solid var(--border);padding:48px 40px;position:relative;overflow:hidden;transition:border-color .25s}
+.svc-block:hover{border-color:var(--gold-strong)}
+.svc-block::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.4),transparent);opacity:0;transition:opacity .3s}
+.svc-block:hover::after{opacity:1}
+.svc-num{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--muted2);letter-spacing:.2em;margin-bottom:20px}
+.svc-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3vw,36px);font-weight:400;line-height:1.08;letter-spacing:-.01em;margin-bottom:14px}
+.svc-title em{font-style:italic;color:var(--gold)}
+.svc-desc{font-size:13px;color:var(--muted);line-height:1.85;margin-bottom:28px;font-weight:300}
+.svc-items{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.svc-item{font-size:12px;color:var(--ink2);display:flex;align-items:flex-start;gap:12px;line-height:1.6}
+.svc-dot{width:3px;height:3px;background:var(--gold);border-radius:50%;flex-shrink:0;margin-top:7px}
+.svc-link{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:inline-flex;align-items:center;gap:8px;border-bottom:1px solid var(--gold-border);padding-bottom:2px;transition:border-color .2s}
+.svc-link:hover{border-color:var(--gold)}
+.svc-link svg{transition:transform .2s}
+.svc-link:hover svg{transform:translateX(3px)}
+
+.pricing-tabs{display:flex;gap:2px;margin-bottom:36px}
+.ptab{font-size:10px;letter-spacing:.2em;text-transform:uppercase;padding:12px 24px;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s;background:transparent;font-family:'DM Sans',sans-serif}
+.ptab.active{border-color:var(--gold-strong);color:var(--gold);background:var(--gold-dim)}
+.ptab:hover{border-color:var(--gold-border);color:var(--ink2)}
+.pricing-panel{display:none}
+.pricing-panel.active{display:block}
+
+.pkgs{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.pkg{background:var(--bg2);border:1px solid var(--border);padding:36px 32px;position:relative;transition:border-color .25s}
+.pkg:hover{border-color:var(--gold-strong)}
+.pkg.feat{border-color:var(--gold-strong);background:var(--bg3)}
+.pkg.feat::before{content:'Most popular';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0f0e0c;font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;padding:4px 18px;white-space:nowrap}
+.pkg-name{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted2);margin-bottom:14px}
+.pkg-price{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:400;line-height:1;margin-bottom:4px}
+.pkg-price sup{font-size:22px;vertical-align:top;margin-top:10px;display:inline-block}
+.pkg-cad{font-size:11px;color:var(--muted2);margin-bottom:20px}
+.pkg-div{height:1px;background:var(--border);margin-bottom:20px}
+.pkg-feats{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.pkg-feat{font-size:13px;color:var(--ink2);display:flex;align-items:flex-start;gap:10px;line-height:1.55}
+.pkg-feat::before{content:'';display:block;width:3px;height:3px;background:var(--gold);border-radius:50%;flex-shrink:0;margin-top:7px}
+.pbtn{width:100%;font-size:10px;letter-spacing:.2em;text-transform:uppercase;padding:14px;border:1px solid;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all .2s;display:block;text-align:center}
+.pbtn-p{background:var(--gold);color:#0f0e0c;border-color:var(--gold)}
+.pbtn-p:hover{opacity:.88}
+.pbtn-g{background:transparent;color:var(--muted);border-color:var(--border)}
+.pbtn-g:hover{border-color:var(--gold-strong);color:var(--gold)}
+
+.bundle{background:var(--bg3);border:1px solid var(--gold-strong);padding:48px;position:relative;overflow:hidden;margin-top:2px}
+.bundle::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.bundle-badge{display:inline-flex;align-items:center;gap:8px;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-border);padding:5px 14px;margin-bottom:20px}
+.bdot{width:5px;height:5px;background:var(--gold);border-radius:50%}
+.bundle-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.bundle-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.5vw,42px);font-weight:400;line-height:1.06;letter-spacing:-.02em;margin-bottom:12px}
+.bundle-title em{font-style:italic;color:var(--gold)}
+.bundle-sub{font-size:14px;color:var(--muted);line-height:1.8;font-weight:300;margin-bottom:24px}
+.bundle-includes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bundle-item{font-size:12px;color:var(--ink2);display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.bundle-item::before{content:'';display:block;width:3px;height:3px;background:var(--gold);border-radius:50%;flex-shrink:0;margin-top:7px}
+.bundle-pricing{border:1px solid var(--border);padding:32px;background:var(--bg4)}
+.b-was{font-size:12px;color:var(--muted2);margin-bottom:8px;text-decoration:line-through}
+.b-price{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:400;line-height:1;margin-bottom:4px}
+.b-price sup{font-size:24px;vertical-align:top;margin-top:12px;display:inline-block}
+.b-saving{font-size:11px;color:var(--gold);margin-bottom:20px;letter-spacing:.06em}
+.b-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--gold);color:#0f0e0c;padding:16px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;text-decoration:none}
+.b-btn:hover{opacity:.88}
+.b-note{font-size:11px;color:var(--muted2);text-align:center;margin-top:10px}
+
+.outreach-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.ob{background:var(--bg2);border:1px solid var(--border);padding:40px;transition:border-color .25s}
+.ob:hover{border-color:var(--gold-strong)}
+.ob-num{font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--muted2);letter-spacing:.2em;margin-bottom:16px}
+.ob-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;line-height:1.1;margin-bottom:12px}
+.ob-title em{font-style:italic;color:var(--gold)}
+.ob-desc{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:20px;font-weight:300}
+.ob-items{display:flex;flex-direction:column;gap:8px}
+.ob-item{font-size:12px;color:var(--ink2);display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.ob-item::before{content:'';display:block;width:3px;height:3px;background:var(--gold);border-radius:50%;flex-shrink:0;margin-top:7px}
+.oc-bar{grid-column:1/-1;background:var(--bg3);border:1px solid var(--border);padding:36px 40px;display:flex;align-items:center;justify-content:space-between;gap:40px;transition:border-color .25s}
+.oc-bar:hover{border-color:var(--gold-strong)}
+.oc-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;margin-bottom:8px}
+.oc-title em{font-style:italic;color:var(--gold)}
+.oc-sub{font-size:13px;color:var(--muted);line-height:1.7;font-weight:300;max-width:540px}
+.oc-right{flex-shrink:0;text-align:right}
+.oc-price{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;line-height:1;margin-bottom:4px}
+.oc-price sup{font-size:18px;vertical-align:top;margin-top:8px;display:inline-block}
+.oc-cad{font-size:11px;color:var(--muted2);margin-bottom:16px}
+
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.pcard{position:relative;overflow:hidden;aspect-ratio:16/9;background:var(--bg2);border:1px solid var(--border)}
+.pcard img{width:100%;height:100%;object-fit:contain;object-position:center top;transition:transform .4s ease;background:var(--bg2)}
+.pcard:hover img{transform:scale(1.04)}
+.pov{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,14,12,0.92) 0%,transparent 60%);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:22px}
+.pcard:hover .pov{opacity:1}
+.pname{font-size:15px;font-weight:500;margin-bottom:2px}
+.ptype{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.pph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--muted2);font-style:italic}
+
+.aihub-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.ai-left{background:var(--bg2);border:1px solid var(--border);padding:48px 40px}
+.ai-right{background:var(--bg3);border:1px solid var(--gold-strong);padding:48px 40px;position:relative;overflow:hidden}
+.ai-right::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.aibadge{display:inline-flex;align-items:center;gap:8px;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-border);padding:5px 14px;margin-bottom:22px}
+.aidot{width:5px;height:5px;background:var(--gold);border-radius:50%;animation:dp 2s ease-in-out infinite}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.4}}
+.aititle{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.5vw,42px);font-weight:400;line-height:1.06;letter-spacing:-.02em;margin-bottom:14px}
+.aititle em{font-style:italic;color:var(--gold)}
+.aisub{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:28px;font-weight:300}
+.aitools{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.aitool{background:var(--bg);border:1px solid var(--border);padding:10px 14px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);display:flex;align-items:center;gap:8px;transition:border-color .2s}
+.aitool:hover{border-color:var(--gold-border)}
+.aitool-dot{width:4px;height:4px;background:var(--gold);border-radius:50%;flex-shrink:0;opacity:.7}
+.aibox-label{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.aibox-price{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:400;line-height:1;margin-bottom:4px}
+.aibox-price sup{font-size:22px;vertical-align:top;margin-top:10px;display:inline-block}
+.aibox-cad{font-size:12px;color:var(--muted2);margin-bottom:22px}
+.aibox-feats{display:flex;flex-direction:column;gap:9px;margin-bottom:26px}
+.aibox-feat{font-size:13px;color:var(--ink2);display:flex;align-items:flex-start;gap:10px;line-height:1.55}
+.afc{width:14px;height:14px;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;color:var(--gold)}
+.aibuy{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--gold);color:#0f0e0c;padding:16px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:500;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;text-decoration:none}
+.aibuy:hover{opacity:.88}
+.aigarantee{font-size:11px;color:var(--muted2);text-align:center;margin-top:10px}
+
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.tcard{background:var(--bg2);border:1px solid var(--border);padding:32px}
+.tstars{display:flex;gap:4px;margin-bottom:16px}
+.star{width:11px;height:11px;background:var(--gold);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.ttext{font-size:13px;color:var(--ink2);line-height:1.8;margin-bottom:18px;font-style:italic;font-weight:300}
+.tauthor{font-size:11px;color:var(--muted)}
+.tauthor strong{color:var(--ink2);font-weight:500;display:block;margin-bottom:2px}
+
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.csub{font-size:14px;color:var(--muted);line-height:1.85;margin-bottom:32px;font-weight:300;max-width:400px}
+.citems{display:flex;flex-direction:column;gap:16px}
+.citem{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--ink2)}
+.cicon{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
+.form{display:flex;flex-direction:column;gap:14px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:8px}
+.fl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.fi{background:var(--bg2);border:1px solid var(--border);color:var(--ink);padding:12px 16px;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:300;outline:none;transition:border-color .2s;border-radius:0;-webkit-appearance:none;width:100%}
+.fi:focus{border-color:var(--gold-strong)}
+.fi::placeholder{color:var(--muted2)}
+select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239a9488'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
+select.fi option{background:var(--bg2)}
+.fsub{width:100%;font-size:10px;letter-spacing:.22em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:15px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity .2s;margin-top:4px}
+.fsub:hover{opacity:.88}
+
+footer{border-top:1px solid var(--border);padding:28px 48px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.flogo{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--muted2)}
+.flogo em{font-style:normal;color:var(--gold)}
+.flinks{display:flex;gap:22px;flex-wrap:wrap}
+.flink{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);transition:color .2s}
+.flink:hover{color:var(--gold)}
+.fcopy{font-size:11px;color:var(--muted2)}
+
+@media(max-width:960px){
+  nav{padding:0 24px}
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:flex}
+  .hero{padding:80px 24px 60px;min-height:auto}
+  .hero-inner,.services-grid,.aihub-grid,.cgrid,.bundle-inner{grid-template-columns:1fr}
+  .hero-inner{gap:40px}
+  .section{padding:72px 24px 0}
+  .pkgs,.tgrid,.pgrid,.outreach-grid{grid-template-columns:1fr}
+  .oc-bar{flex-direction:column;gap:20px}
+  .oc-right{text-align:left;width:100%}
+  footer{flex-direction:column;gap:14px;text-align:center;padding:28px 24px}
+}
+@media(max-width:600px){
+  .pricing-tabs{flex-direction:column}
+  .bundle-includes,.aitools,.frow{grid-template-columns:1fr}
+}
+
+/* ── Hero Card ── */
+.hero-card{background:var(--bg2);border:1px solid var(--border);overflow:hidden}
+.hc-top{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
+.hc-label{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted2)}
+.hc-badge{display:inline-flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.hc-dot{width:5px;height:5px;background:var(--gold);border-radius:50%;animation:dp 2s ease-in-out infinite;display:inline-block}
+.hc-items{display:flex;flex-direction:column;gap:0}
+.hc-item{display:flex;align-items:center;gap:16px;padding:18px 24px;border-bottom:1px solid var(--border);transition:background .2s}
+.hc-item:hover{background:var(--bg3)}
+.hc-item-icon{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--gold)}
+.hc-item-body{flex:1}
+.hc-item-title{font-size:13px;color:var(--ink);font-weight:400;margin-bottom:2px}
+.hc-item-sub{font-size:11px;color:var(--muted2);letter-spacing:.02em}
+.hc-item-price{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--gold);white-space:nowrap;flex-shrink:0}
+.hc-divider{height:1px;background:var(--border)}
+.hc-stats{display:grid;grid-template-columns:repeat(3,1fr)}
+.hc-stat{padding:16px;text-align:center;border-right:1px solid var(--border)}
+.hc-stat:last-child{border-right:none}
+.hc-stat-n{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--ink);line-height:1;margin-bottom:4px}
+.hc-stat-l{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+
+/* ── Locked Tools Preview ── */
+.tools-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;position:relative}
+.tool-card{background:var(--bg2);border:1px solid var(--border);padding:32px 28px;position:relative;overflow:hidden}
+.tool-card-inner{filter:blur(3px);pointer-events:none;user-select:none}
+.tool-card-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;margin-bottom:8px}
+.tool-card-name em{font-style:italic;color:var(--gold)}
+.tool-card-desc{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:16px}
+.tool-card-fields{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.tool-card-field{height:9px;background:var(--bg3);border:1px solid var(--border)}
+.tool-card-field.short{width:60%}
+.tool-card-field.medium{width:80%}
+.tool-card-btn{height:36px;background:var(--bg3);border:1px solid var(--border);width:100%}
+.tool-lock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(15,14,12,0.6);backdrop-filter:blur(2px)}
+.lock-icon{width:40px;height:40px;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;color:var(--gold)}
+.lock-text{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.8}
+.lock-cta{font-size:9px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:8px 20px;font-weight:500;transition:opacity .2s;text-decoration:none;font-family:'DM Sans',sans-serif}
+.lock-cta:hover{opacity:.88}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">KWBA<em>.</em></a>
+  <div class="nav-links">
+    <a href="#services" class="nav-link">Services</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="#portfolio" class="nav-link">Work</a>
+    <a href="#ai-hub" class="nav-link">AI Hub</a>
+    <a href="#contact" class="nav-link">Contact</a>
+    <a href="brief.html" class="nav-link">Brief</a>
+  </div>
+  <a href="#contact" class="nav-cta">Get a Quote</a>
+  <div class="hamburger" onclick="document.getElementById('mm').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="mmenu" id="mm">
+  <a href="#services" class="mlink" onclick="document.getElementById('mm').classList.remove('open')">Services</a>
+  <a href="#pricing" class="mlink" onclick="document.getElementById('mm').classList.remove('open')">Pricing</a>
+  <a href="#portfolio" class="mlink" onclick="document.getElementById('mm').classList.remove('open')">Work</a>
+  <a href="#ai-hub" class="mlink" onclick="document.getElementById('mm').classList.remove('open')">AI Hub</a>
+  <a href="#contact" class="mlink" onclick="document.getElementById('mm').classList.remove('open')">Contact</a>
+  <a href="brief.html" class="mlink" onclick="document.getElementById('mm').classList.remove('open')">Brief</a>
+  <a href="admin.html" class="mlink" onclick="document.getElementById('mm').classList.remove('open')">Admin</a>
+  <a href="#contact" class="mcta" onclick="document.getElementById('mm').classList.remove('open')">Get a Free Quote</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hbg"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hlabel">Milton Keynes &middot; UK</div>
+      <h1>Websites &amp;<br><em>marketing</em><br>that perform</h1>
+      <p class="hsub">Professional web design and targeted digital marketing for UK businesses. Fast delivery, transparent pricing, no retainers. We handle it all end to end.</p>
+      <div class="hbtns">
+        <a href="#contact" class="btn-g">Get a free quote <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7.5 1.5L13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="#portfolio" class="btn-o">See our work</a>
+      </div>
+    </div>
+    <div>
+      <div class="hero-card">
+        <div class="hc-top">
+          <div class="hc-label">What we deliver</div>
+          <div class="hc-badge"><span class="hc-dot"></span>Available now</div>
+        </div>
+        <div class="hc-items">
+          <div class="hc-item">
+            <div class="hc-item-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+            <div class="hc-item-body">
+              <div class="hc-item-title">Professional websites</div>
+              <div class="hc-item-sub">Custom-built, mobile-first, fast</div>
+            </div>
+            <div class="hc-item-price">From £800</div>
+          </div>
+          <div class="hc-item">
+            <div class="hc-item-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div class="hc-item-body">
+              <div class="hc-item-title">Digital marketing</div>
+              <div class="hc-item-sub">SEO, ads, cold outreach</div>
+            </div>
+            <div class="hc-item-price">From £2,500/mo</div>
+          </div>
+          <div class="hc-item">
+            <div class="hc-item-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+            </div>
+            <div class="hc-item-body">
+              <div class="hc-item-title">AI Marketing Hub</div>
+              <div class="hc-item-sub">Content, copy and campaigns</div>
+            </div>
+            <div class="hc-item-price">£49</div>
+          </div>
+        </div>
+        <div class="hc-divider"></div>
+        <div class="hc-stats">
+          <div class="hc-stat"><div class="hc-stat-n">48hr</div><div class="hc-stat-l">Delivery</div></div>
+          <div class="hc-stat"><div class="hc-stat-n">5★</div><div class="hc-stat-l">Reviews</div></div>
+          <div class="hc-stat"><div class="hc-stat-n">UK</div><div class="hc-stat-l">Based</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<div class="section" id="services">
+  <div class="si">
+    <div class="slabel">Our services</div>
+    <h2>Two core services,<br><em>one agency</em></h2>
+    <p class="section-desc">Whether you need a high-converting website, a full marketing campaign, or both — KWBA delivers results without the agency overhead.</p>
+    <div class="services-grid">
+      <div class="svc-block">
+        <div class="svc-num">01</div>
+        <div class="svc-title">Web <em>Design</em></div>
+        <p class="svc-desc">Fast, professional websites built to convert visitors into enquiries and sales. Every site is mobile-first, SEO-ready, and delivered in 48–72 hours.</p>
+        <div class="svc-items">
+          <div class="svc-item"><span class="svc-dot"></span>Bespoke design tailored to your brand</div>
+          <div class="svc-item"><span class="svc-dot"></span>Mobile-first, fully responsive build</div>
+          <div class="svc-item"><span class="svc-dot"></span>On-page SEO and Google Analytics</div>
+          <div class="svc-item"><span class="svc-dot"></span>Contact forms, booking systems, e-commerce</div>
+          <div class="svc-item"><span class="svc-dot"></span>Delivered in 48–72 hours</div>
+        </div>
+        <a href="#pricing" class="svc-link">View web packages <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7.5 1.5L13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <div class="svc-block">
+        <div class="svc-num">02</div>
+        <div class="svc-title">Digital <em>Marketing</em></div>
+        <p class="svc-desc">Targeted cold outreach, mass email campaigns, and AI-powered content strategy to put your business in front of the right people at the right time.</p>
+        <div class="svc-items">
+          <div class="svc-item"><span class="svc-dot"></span>Cold outreach campaigns and lead generation</div>
+          <div class="svc-item"><span class="svc-dot"></span>Mass email campaigns with full automation</div>
+          <div class="svc-item"><span class="svc-dot"></span>SEO content writing and blog management</div>
+          <div class="svc-item"><span class="svc-dot"></span>Google Ads copy and LinkedIn campaigns</div>
+          <div class="svc-item"><span class="svc-dot"></span>Monthly performance reporting</div>
+        </div>
+        <a href="#pricing" class="svc-link" onclick="showTab('marketing')">View marketing packages <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M7.5 1.5L13 7l-5.5 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="section" id="pricing">
+  <div class="si">
+    <div class="slabel">Pricing</div>
+    <h2>Simple, <em>transparent</em> pricing</h2>
+    <div class="pricing-tabs">
+      <button class="ptab active" onclick="showTab('web',event)">Web Design</button>
+      <button class="ptab" onclick="showTab('marketing',event)">Digital Marketing</button>
+    </div>
+
+    <div class="pricing-panel active" id="tab-web">
+      <div class="pkgs">
+        <div class="pkg">
+          <div class="pkg-name">Starter</div>
+          <div class="pkg-price"><sup>£</sup>800</div>
+          <div class="pkg-cad">One-off &middot; No retainers</div>
+          <div class="pkg-div"></div>
+          <div class="pkg-feats">
+            <div class="pkg-feat">4–5 page professional website</div>
+            <div class="pkg-feat">Mobile-first responsive design</div>
+            <div class="pkg-feat">Contact form and Google Maps</div>
+            <div class="pkg-feat">Basic on-page SEO</div>
+            <div class="pkg-feat">Delivered in 48–72 hours</div>
+          </div>
+          <a href="https://buy.stripe.com/aFa14p9UydO89J26O16kg00" class="pbtn pbtn-g">Get started — £800</a>
+        </div>
+        <div class="pkg feat">
+          <div class="pkg-name">Growth</div>
+          <div class="pkg-price"><sup>£</sup>1,499</div>
+          <div class="pkg-cad">One-off &middot; No retainers</div>
+          <div class="pkg-div"></div>
+          <div class="pkg-feats">
+            <div class="pkg-feat">Everything in Starter</div>
+            <div class="pkg-feat">Booking and enquiry system</div>
+            <div class="pkg-feat">Blog and content hub</div>
+            <div class="pkg-feat">Full SEO optimisation</div>
+            <div class="pkg-feat">Google Analytics setup</div>
+            <div class="pkg-feat">Delivered in 48–72 hours</div>
+          </div>
+          <a href="https://buy.stripe.com/bJe28taYCbG0f3m1tH6kg01" class="pbtn pbtn-p">Get started — £1,499</a>
+        </div>
+        <div class="pkg">
+          <div class="pkg-name">Premium</div>
+          <div class="pkg-price"><sup>£</sup>2,299</div>
+          <div class="pkg-cad">One-off &middot; No retainers</div>
+          <div class="pkg-div"></div>
+          <div class="pkg-feats">
+            <div class="pkg-feat">Everything in Growth</div>
+            <div class="pkg-feat">E-commerce and online shop</div>
+            <div class="pkg-feat">Custom features and integrations</div>
+            <div class="pkg-feat">Priority build and support</div>
+            <div class="pkg-feat">30-day post-launch support</div>
+          </div>
+          <a href="https://buy.stripe.com/cNi8wR3wa9xS1cw3BP6kg02" class="pbtn pbtn-g">Get started — £2,299</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pricing-panel" id="tab-marketing">
+      <div class="pkgs" style="justify-content:center">
+        <div class="pkg feat" style="max-width:480px">
+          <div class="pkg-name">Digital Marketing</div>
+          <div class="pkg-price"><sup>£</sup>2,500</div>
+          <div class="pkg-cad">Per month &mdash; everything included</div>
+          <div class="pkg-div"></div>
+          <div class="pkg-feats">
+            <div class="pkg-feat">Cold outreach campaign setup</div>
+            <div class="pkg-feat">2,000 targeted emails per month</div>
+            <div class="pkg-feat">AI-written personalised email sequences</div>
+            <div class="pkg-feat">Lead list building and validation</div>
+            <div class="pkg-feat">LinkedIn outreach campaigns</div>
+            <div class="pkg-feat">SEO blog content (2 posts per month)</div>
+            <div class="pkg-feat">Google Ads management</div>
+            <div class="pkg-feat">Content calendar and strategy</div>
+            <div class="pkg-feat">Full analytics dashboard and reporting</div>
+          </div>
+          <a href="https://buy.stripe.com/7sY5kF1o25hCbRa1tH6kg05" class="pbtn pbtn-p">Get started — £2,500/mo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OUTREACH -->
+<div class="section">
+  <div class="si">
+    <div class="slabel">Cold outreach &amp; mass email</div>
+    <h2>Reach <em>thousands</em> of<br>qualified prospects</h2>
+    <p class="section-desc">We build, write, and send targeted email campaigns that land in inboxes, not spam folders. AI-written copy, validated lead lists, and automated follow-up sequences.</p>
+    <div class="outreach-grid">
+      <div class="ob">
+        <div class="ob-num">01</div>
+        <div class="ob-title">Cold <em>Outreach</em></div>
+        <p class="ob-desc">Personalised outreach to verified prospects in your target market. We build the list, write the sequence, and manage delivery.</p>
+        <div class="ob-items">
+          <div class="ob-item">Industry-specific lead list building</div>
+          <div class="ob-item">AI-personalised email copy per recipient</div>
+          <div class="ob-item">Multi-step follow-up sequences</div>
+          <div class="ob-item">Domain warm-up and deliverability management</div>
+          <div class="ob-item">Reply and booking tracking</div>
+        </div>
+      </div>
+      <div class="ob">
+        <div class="ob-num">02</div>
+        <div class="ob-title">Mass Email <em>Campaigns</em></div>
+        <p class="ob-desc">Broadcast campaigns to large subscriber lists or targeted data sets. High deliverability, automated segmentation, and full compliance.</p>
+        <div class="ob-items">
+          <div class="ob-item">Up to 50,000 emails per campaign</div>
+          <div class="ob-item">List cleaning and validation</div>
+          <div class="ob-item">Branded email design and copywriting</div>
+          <div class="ob-item">A/B subject line testing</div>
+          <div class="ob-item">Open, click, and conversion reporting</div>
+        </div>
+      </div>
+      <div class="oc-bar">
+        <div>
+          <div class="oc-title">Ready to start <em>generating leads?</em></div>
+          <p class="oc-sub">Tell us your target market and we will scope a campaign within 24 hours. Most campaigns launch within 5 working days of sign-off.</p>
+        </div>
+        <div class="oc-right">
+          <div class="oc-price"><sup>£</sup>2,500</div>
+          <div class="oc-cad">Per month</div>
+          <a href="brief.html?pkg=digital-marketing" class="pbtn pbtn-p" style="white-space:nowrap">Start a campaign</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PORTFOLIO -->
+<div class="section" id="portfolio">
+  <div class="si">
+    <div class="slabel">Our work</div>
+    <h2>Recent <em>projects</em></h2>
+    <div class="pgrid">
+      <div class="pcard"><img src="/assets/portfolio-etncty--6nvijdg.png" alt="ETNCTY streetwear website" loading="lazy"/><div class="pov"><div><div class="pname">ETNCTY</div><div class="ptype">Fashion &middot; E-commerce</div></div></div></div>
+      <div class="pcard"><img src="/assets/portfolio-mkgas-vvztx_ed.png" alt="MK Gas Engineers website" loading="lazy"/><div class="pov"><div><div class="pname">MK Gas Engineers</div><div class="ptype">Tradesman &middot; Local</div></div></div></div>
+      <div class="pcard"><img src="/assets/portfolio-flowmaster-cfidoifi.png" alt="FlowMaster SaaS website" loading="lazy"/><div class="pov"><div><div class="pname">FlowMaster</div><div class="ptype">SaaS &middot; Technology</div></div></div></div>
+      <div class="pcard"><img src="/assets/portfolio-restaurant-bfcl6wsl.png" alt="Restaurant website" loading="lazy"/><div class="pov"><div><div class="pname">Restaurant Project</div><div class="ptype">Hospitality</div></div></div></div>
+      <div class="pcard"><img src="/assets/portfolio-yoga-cul8i2wn.png" alt="Yoga studio website" loading="lazy"/><div class="pov"><div><div class="pname">Yoga Studio</div><div class="ptype">Wellness &middot; Bookings</div></div></div></div>
+      <div class="pcard" style="background:var(--bg3)"><div class="pph">Your project?</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI HUB -->
+<div class="section" id="ai-hub">
+  <div class="si">
+    <div class="slabel">Agency Intelligence</div>
+    <div class="aihub-grid">
+      <div class="ai-left">
+        <div class="aibadge"><span class="aidot"></span>KWBA OS</div>
+        <h2 class="aititle">Proprietary AI <em>Specialists</em></h2>
+        <p class="aisub">We've built a suite of 26 specialized AI agents, each trained on our internal agency frameworks for SEO, copywriting, and strategy. This isn't generic AI — it's our expertise, automated.</p>
+        <div class="aitools">
+          <div class="aitool"><span class="aitool-dot"></span>Strategist Agent</div>
+          <div class="aitool"><span class="aitool-dot"></span>SEO Lead Agent</div>
+          <div class="aitool"><span class="aitool-dot"></span>Copywriter Agent</div>
+          <div class="aitool"><span class="aitool-dot"></span>Ads Specialist Agent</div>
+        </div>
+      </div>
+      <div class="ai-right">
+        <div class="aibox-label">Full Agency Access</div>
+        <div class="aibox-price"><sup>£</sup>49</div>
+        <div class="aibox-cad">Monthly Subscription &middot; Cancel Anytime</div>
+        <div class="aibox-feats">
+          <div class="aibox-feat"><span class="afc">✓</span> Full access to 26 Specialists</div>
+          <div class="aibox-feat"><span class="afc">✓</span> Unlimited Content Generation</div>
+          <div class="aibox-feat"><span class="afc">✓</span> Custom Brand Voice Training</div>
+          <div class="aibox-feat"><span class="afc">✓</span> PDF Export and Deliverables</div>
+        </div>
+        <a href="/login.html" class="aibuy">Login to AI Hub</a>
+        <p class="aigarantee">Included free with any Growth or Premium package</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div class="section">
+  <div class="si">
+    <div class="slabel">Client reviews</div>
+    <h2>What our <em>clients say</em></h2>
+    <div class="tgrid">
+      <div class="tcard">
+        <div class="tstars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+        <p class="ttext">"KWBA completely transformed how customers see our brand. We started getting enquiries from people who found us on Google — that never happened before. The site was live within 48 hours."</p>
+        <div class="tauthor"><strong>Jake Richardson</strong>Richardson Electrical, Milton Keynes</div>
+      </div>
+      <div class="tcard">
+        <div class="tstars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+        <p class="ttext">"I was sceptical a website would make a difference for a tradesman. I was wrong. I landed my biggest commercial contract three weeks after launch — the client said we looked more established than the big firms."</p>
+        <div class="tauthor"><strong>Mark Osei</strong>MK Gas Engineers, Northampton</div>
+      </div>
+      <div class="tcard">
+        <div class="tstars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+        <p class="ttext">"The site looks exactly like our brand — premium, dark, eye-catching. Our online sales have tripled since launch. KWBA delivered everything in 48 hours exactly as promised."</p>
+        <div class="tauthor"><strong>ETNCTY Brand</strong>Streetwear, Milton Keynes</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="section" id="contact" style="padding-bottom:100px">
+  <div class="si">
+    <div class="slabel">Get in touch</div>
+    <h2>Start your <em>project</em></h2>
+    <div class="cgrid">
+      <div>
+        <p class="csub">Tell us about your business and we will come back to you within a few hours with a clear quote. Most sites are live within 48–72 hours of you approving the brief.</p>
+        <div class="citems">
+          <div class="citem"><div class="cicon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>hello@kwba-agency.com</div>
+          <div class="citem"><div class="cicon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>Milton Keynes, UK &middot; Serving businesses nationwide</div>
+          <div class="citem"><div class="cicon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>Response within 4 hours &middot; Mon–Fri</div>
+        </div>
+      </div>
+      <form class="form" name="contact" method="POST" data-netlify="true">
+        <input type="hidden" name="form-name" value="contact"/>
+        <div class="frow">
+          <div class="fg"><label class="fl" for="fn">Your name</label><input class="fi" type="text" id="fn" name="name" placeholder="Jane Smith" required/></div>
+          <div class="fg"><label class="fl" for="fe">Email address</label><input class="fi" type="email" id="fe" name="email" placeholder="jane@business.co.uk" required/></div>
+        </div>
+        <div class="fg"><label class="fl" for="fb">Business name and type</label><input class="fi" type="text" id="fb" name="business" placeholder="e.g. Smith Plumbing — heating engineer"/></div>
+        <div class="fg">
+          <label class="fl" for="fs">Service interested in</label>
+          <select class="fi" id="fs" name="service">
+            <option value="">Select a service</option>
+            <option>Web Design</option>
+            <option>Digital Marketing</option>
+            <option>Digital Marketing — £2,500/mo</option>
+            <option>Cold Outreach / Mass Email Campaign</option>
+            <option>AI Marketing Hub</option>
+            <option>Not sure — need advice</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl" for="fm">Tell us about your project</label><textarea class="fi" id="fm" name="message" rows="4" placeholder="What does your business do? What are you looking to achieve?" style="resize:vertical"></textarea></div>
+        <button type="submit" class="fsub">Send enquiry</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="flogo">KWBA<em>.</em></div>
+  <div class="flinks">
+    <a href="#services" class="flink">Services</a>
+    <a href="#pricing" class="flink">Pricing</a>
+    <a href="#portfolio" class="flink">Work</a>
+    <a href="#ai-hub" class="flink">AI Hub</a>
+    <a href="/blog.html" class="flink">Blog</a>
+    <a href="brief.html" class="flink">Brief</a>
+    <a href="admin.html" class="flink">Admin</a>
+  </div>
+  <div class="fcopy">&copy; 2025 KWBA Agency</div>
+</footer>
+
+<script>
+function showTab(tab, e) {
+  document.querySelectorAll('.pricing-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (e && e.target) e.target.classList.add('active');
+}
+</script>
+</body>
+</html>
