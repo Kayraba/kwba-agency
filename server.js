@@ -124,6 +124,46 @@ const initDb = async () => {
     `CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
       value TEXT
+    )`,
+    `CREATE TABLE IF NOT EXISTS chatbots (
+      id SERIAL PRIMARY KEY,
+      slug TEXT UNIQUE NOT NULL,
+      business_name TEXT NOT NULL,
+      niche TEXT,
+      city TEXT,
+      phone TEXT,
+      email TEXT,
+      color TEXT DEFAULT '#c9a84c',
+      avatar TEXT DEFAULT '💬',
+      knowledge_base TEXT,
+      system_prompt TEXT,
+      hours TEXT,
+      services TEXT,
+      pricing TEXT,
+      service_area TEXT,
+      about TEXT,
+      wont_do TEXT,
+      booking_url TEXT,
+      lead_threshold INT DEFAULT 3,
+      welcome_message TEXT,
+      tone TEXT DEFAULT 'warm-professional',
+      owner_user_id INT,
+      status TEXT DEFAULT 'active',
+      total_conversations INT DEFAULT 0,
+      total_leads INT DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS chatbot_conversations (
+      id SERIAL PRIMARY KEY,
+      chatbot_slug TEXT NOT NULL,
+      session_id TEXT NOT NULL,
+      messages TEXT,
+      lead_captured INT DEFAULT 0,
+      lead_data TEXT,
+      visitor_meta TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`
   ];
 
@@ -609,6 +649,351 @@ app.patch("/api/outreach/:id", authenticate, async (req, res) => {
     const updated = { ...current, ...updates };
     await db.query("UPDATE briefs SET data = $1 WHERE id = $2", [JSON.stringify(updated), parseInt(req.params.id)]);
     res.send({ success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// =====================================================================
+// AI CHATBOT — multi-tenant AI receptionist product
+// Each client gets their own /chatbot/:slug endpoint with their own
+// knowledge base, system prompt, and lead capture rules.
+// =====================================================================
+
+// Rate limiting per chatbot session — prevent abuse
+const chatRateLimits = new Map();
+function checkChatLimit(sessionKey) {
+  const now = Date.now();
+  const win = 60 * 1000; // 1 minute window
+  const ts = (chatRateLimits.get(sessionKey) || []).filter(t => now - t < win);
+  if (ts.length >= 20) return false; // 20 messages per minute per session
+  ts.push(now);
+  chatRateLimits.set(sessionKey, ts);
+  // Cleanup
+  if (chatRateLimits.size > 5000) {
+    for (const [k, v] of chatRateLimits) {
+      if (v.every(t => now - t > win)) chatRateLimits.delete(k);
+    }
+  }
+  return true;
+}
+
+// Build the AI receptionist system prompt from a chatbot config
+function buildChatbotSystemPrompt(c) {
+  const lines = [];
+  lines.push(`You are the AI receptionist for ${c.business_name}${c.city ? ', a ' + (c.niche || 'local business') + ' in ' + c.city + ', UK' : ''}.`);
+  lines.push(`You speak in a warm, professional UK English tone — like an experienced receptionist who knows the business inside out. Concise. Helpful. Never robotic.`);
+  lines.push('');
+  lines.push('=== YOUR ABSOLUTE RULES ===');
+  lines.push('1. NEVER invent prices, services, hours, or capabilities not listed below. If unsure, say "I\'ll have someone confirm that when they call you back."');
+  lines.push('2. Your goal is to capture qualified leads — name, phone number, what they need. Get to that goal naturally, never robotically.');
+  lines.push('3. Keep messages short (1-3 sentences usually). Real receptionists don\'t write essays.');
+  lines.push('4. UK English throughout. Use £ for prices. No US-isms.');
+  lines.push('5. If asked something not in the knowledge below, acknowledge honestly: "Let me get someone to confirm that for you — what\'s the best number to call you back on?"');
+  lines.push('6. When the user mentions an enquiry/job/booking, gently capture (in this order): what they need → name → phone → confirm callback.');
+  lines.push('7. Do NOT capture info via emoji-bombs or pushiness. One question at a time.');
+  lines.push('8. If user is rude, abusive, or off-topic, stay polite and redirect: "Happy to help with anything about ' + c.business_name + ' — what brings you here today?"');
+  lines.push('9. NEVER say "as an AI" or break character. You ARE the receptionist for this business.');
+  lines.push('10. When you have name + phone + intent, end your reply with: [LEAD_CAPTURED] on its own line. The system will detect this and save the lead.');
+  lines.push('');
+  lines.push('=== ABOUT THE BUSINESS ===');
+  lines.push('Name: ' + c.business_name);
+  if (c.niche) lines.push('Type: ' + c.niche);
+  if (c.city) lines.push('Location: ' + c.city + ', UK');
+  if (c.about) lines.push('About: ' + c.about);
+  if (c.hours) lines.push('Hours: ' + c.hours);
+  if (c.services) lines.push('Services we offer:\n' + c.services);
+  if (c.pricing) lines.push('Pricing guidance (use these as ranges, never quote exact prices unless explicitly listed):\n' + c.pricing);
+  if (c.service_area) lines.push('Service area: ' + c.service_area);
+  if (c.wont_do) lines.push('We do NOT offer: ' + c.wont_do);
+  if (c.phone) lines.push('Direct phone (only share if user asks for it): ' + c.phone);
+  if (c.email) lines.push('Direct email (only if asked): ' + c.email);
+  if (c.booking_url) lines.push('Online booking: ' + c.booking_url);
+  if (c.knowledge_base) lines.push('Additional knowledge:\n' + c.knowledge_base);
+  if (c.system_prompt) {
+    lines.push('');
+    lines.push('=== ADDITIONAL OWNER INSTRUCTIONS ===');
+    lines.push(c.system_prompt);
+  }
+  return lines.join('\n');
+}
+
+// Helper to fetch a chatbot by slug
+async function getChatbotBySlug(slug) {
+  const r = await db.query("SELECT * FROM chatbots WHERE slug = $1 AND status = 'active'", [slug]);
+  const rows = isProduction ? r.rows : r;
+  return rows[0] || null;
+}
+
+// PUBLIC — get chatbot's public config (used by widget at load time)
+app.get("/api/chatbot/:slug", async (req, res) => {
+  try {
+    const c = await getChatbotBySlug(req.params.slug);
+    if (!c) return res.status(404).send("Chatbot not found");
+    // Strip private fields — only return what the widget needs
+    res.send({
+      slug: c.slug,
+      business_name: c.business_name,
+      niche: c.niche,
+      city: c.city,
+      color: c.color || '#c9a84c',
+      avatar: c.avatar || '💬',
+      welcome_message: c.welcome_message || `Hi! I'm the AI receptionist for ${c.business_name}. How can I help you today?`,
+      phone: c.phone || null,
+      email: c.email || null,
+      booking_url: c.booking_url || null
+    });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// PUBLIC — chat with the AI receptionist
+app.post("/api/chatbot/:slug/chat", async (req, res) => {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+  const { sessionId, messages } = req.body;
+  if (!sessionId || typeof sessionId !== 'string') return res.status(400).send("sessionId required");
+  if (!Array.isArray(messages) || messages.length === 0) return res.status(400).send("messages array required");
+
+  const sessionKey = req.params.slug + ':' + sessionId;
+  if (!checkChatLimit(sessionKey)) return res.status(429).send("Rate limit reached. Please wait a moment.");
+
+  // Validate message format
+  for (const m of messages) {
+    if (!m || !['user','model'].includes(m.role) || typeof m.text !== 'string') {
+      return res.status(400).send("Invalid message format");
+    }
+    if (m.text.length > 2000) return res.status(400).send("Message too long");
+  }
+  if (messages.length > 40) return res.status(400).send("Conversation too long");
+
+  const chatbot = await getChatbotBySlug(req.params.slug);
+  if (!chatbot) return res.status(404).send("Chatbot not found");
+
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (!geminiKey) return res.status(500).send("AI not configured");
+
+  const systemPrompt = buildChatbotSystemPrompt(chatbot);
+
+  // Build Gemini request — system_instruction + conversation history
+  const geminiBody = {
+    system_instruction: { parts: [{ text: systemPrompt }] },
+    contents: messages.map(m => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      parts: [{ text: m.text }]
+    })),
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 400,
+      topP: 0.95
+    },
+    safetySettings: [
+      { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+      { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+      { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+      { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
+    ]
+  };
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(geminiBody)
+      }
+    );
+    if (!response.ok) {
+      const err = await response.text();
+      console.log('Gemini error:', err);
+      return res.status(500).send("AI temporarily unavailable. Please try again.");
+    }
+    const data = await response.json();
+    let aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!aiText) return res.status(500).send("AI returned empty response");
+
+    // Detect lead capture marker
+    const leadCaptured = aiText.includes('[LEAD_CAPTURED]');
+    aiText = aiText.replace(/\[LEAD_CAPTURED\]/g, '').trim();
+
+    // Save/update conversation
+    const fullMessages = [...messages, { role: 'model', text: aiText }];
+    try {
+      const existing = await db.query(
+        "SELECT id FROM chatbot_conversations WHERE chatbot_slug = $1 AND session_id = $2",
+        [req.params.slug, sessionId]
+      );
+      const exRows = isProduction ? existing.rows : existing;
+      if (exRows.length) {
+        await db.query(
+          "UPDATE chatbot_conversations SET messages = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
+          [JSON.stringify(fullMessages), exRows[0].id]
+        );
+      } else {
+        await db.query(
+          "INSERT INTO chatbot_conversations (chatbot_slug, session_id, messages, visitor_meta) VALUES ($1, $2, $3, $4)",
+          [req.params.slug, sessionId, JSON.stringify(fullMessages), JSON.stringify({ ip, ua: req.headers['user-agent'] || '' })]
+        );
+        // Increment conversation counter on chatbot
+        if (isProduction) await db.query("UPDATE chatbots SET total_conversations = total_conversations + 1 WHERE slug = $1", [req.params.slug]);
+        else await db.query("UPDATE chatbots SET total_conversations = total_conversations + 1 WHERE slug = $1", [req.params.slug]);
+      }
+    } catch (e) { /* logging is best-effort */ }
+
+    res.send({
+      reply: aiText,
+      leadCaptured: leadCaptured
+    });
+  } catch (e) {
+    res.status(500).send("AI request failed: " + e.message);
+  }
+});
+
+// PUBLIC — explicitly capture a lead (called when chatbot returns leadCaptured: true,
+// or when the user fills a final form)
+app.post("/api/chatbot/:slug/lead", async (req, res) => {
+  const { sessionId, lead } = req.body;
+  if (!sessionId || !lead) return res.status(400).send("sessionId and lead required");
+  const chatbot = await getChatbotBySlug(req.params.slug);
+  if (!chatbot) return res.status(404).send("Chatbot not found");
+
+  try {
+    // Update conversation row
+    await db.query(
+      "UPDATE chatbot_conversations SET lead_captured = 1, lead_data = $1, updated_at = CURRENT_TIMESTAMP WHERE chatbot_slug = $2 AND session_id = $3",
+      [JSON.stringify(lead), req.params.slug, sessionId]
+    );
+    // Increment lead counter
+    await db.query("UPDATE chatbots SET total_leads = total_leads + 1 WHERE slug = $1", [req.params.slug]);
+
+    // Also create a brief in the main admin so KWBA team sees it
+    const briefData = JSON.stringify({
+      bizName: chatbot.business_name,
+      contact: lead.name || 'Chatbot lead',
+      email: lead.email || '',
+      phone: lead.phone || '',
+      city: chatbot.city || '',
+      industry: chatbot.niche || '',
+      source: 'ai-chatbot:' + req.params.slug,
+      message: lead.message || '',
+      chatLead: lead
+    });
+    await db.query("INSERT INTO briefs (data, status) VALUES ($1, 'new')", [briefData]);
+
+    await logActivity('chatbot@public', 'chatbot_lead', 'chatbot', 0, `Lead from ${chatbot.business_name}: ${lead.name || '?'} ${lead.phone || ''}`);
+
+    res.send({ success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// ADMIN — list all chatbots (KWBA team or specific owner)
+app.get("/api/chatbots", authenticate, async (req, res) => {
+  try {
+    let query, params;
+    if (req.user.role === 'admin') {
+      query = "SELECT id, slug, business_name, niche, city, color, status, total_conversations, total_leads, created_at, owner_user_id FROM chatbots ORDER BY id DESC";
+      params = [];
+    } else {
+      query = "SELECT id, slug, business_name, niche, city, color, status, total_conversations, total_leads, created_at FROM chatbots WHERE owner_user_id = $1 ORDER BY id DESC";
+      params = [req.user.id];
+    }
+    const r = await db.query(query, params);
+    const rows = isProduction ? r.rows : r;
+    res.send(rows);
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// ADMIN — fetch single chatbot full config
+app.get("/api/chatbots/:slug", authenticate, async (req, res) => {
+  try {
+    const c = await getChatbotBySlug(req.params.slug);
+    if (!c) return res.status(404).send("Not found");
+    if (req.user.role !== 'admin' && c.owner_user_id !== req.user.id) return res.status(403).send("Forbidden");
+    res.send(c);
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// ADMIN — create new chatbot
+app.post("/api/chatbots", authenticate, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).send("Admin only");
+  const b = req.body;
+  if (!b.business_name) return res.status(400).send("business_name required");
+
+  // Generate slug from business name + random suffix
+  let baseSlug = (b.business_name || 'chatbot').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'chatbot';
+  let slug = b.slug || (baseSlug + '-' + Math.random().toString(36).slice(2, 7));
+
+  try {
+    // Check slug availability
+    const exists = await db.query("SELECT 1 FROM chatbots WHERE slug = $1", [slug]);
+    const exRows = isProduction ? exists.rows : exists;
+    if (exRows.length) slug = baseSlug + '-' + Math.random().toString(36).slice(2, 8);
+
+    const fields = ['slug','business_name','niche','city','phone','email','color','avatar',
+      'knowledge_base','system_prompt','hours','services','pricing','service_area','about',
+      'wont_do','booking_url','lead_threshold','welcome_message','tone','owner_user_id'];
+    const values = [slug, b.business_name, b.niche || null, b.city || null, b.phone || null,
+      b.email || null, b.color || '#c9a84c', b.avatar || '💬', b.knowledge_base || null,
+      b.system_prompt || null, b.hours || null, b.services || null, b.pricing || null,
+      b.service_area || null, b.about || null, b.wont_do || null, b.booking_url || null,
+      b.lead_threshold || 3, b.welcome_message || null, b.tone || 'warm-professional',
+      b.owner_user_id || null];
+
+    const placeholders = values.map((_, i) => '$' + (i + 1)).join(', ');
+    const result = await db.query(
+      `INSERT INTO chatbots (${fields.join(',')}) VALUES (${placeholders}) RETURNING id, slug`,
+      values
+    );
+    const row = isProduction ? result.rows[0] : { id: result.lastID, slug };
+    await logActivity(req.user.email, 'chatbot_create', 'chatbot', row.id, b.business_name);
+    res.send({ id: row.id, slug: row.slug, success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// ADMIN — update chatbot
+app.patch("/api/chatbots/:slug", authenticate, async (req, res) => {
+  const allowed = ['business_name','niche','city','phone','email','color','avatar',
+    'knowledge_base','system_prompt','hours','services','pricing','service_area',
+    'about','wont_do','booking_url','lead_threshold','welcome_message','tone','status'];
+  const updates = {};
+  for (const k of allowed) if (req.body[k] !== undefined) updates[k] = req.body[k];
+  if (Object.keys(updates).length === 0) return res.status(400).send("No valid fields");
+
+  try {
+    const c = await getChatbotBySlug(req.params.slug);
+    if (!c) return res.status(404).send("Not found");
+    if (req.user.role !== 'admin' && c.owner_user_id !== req.user.id) return res.status(403).send("Forbidden");
+
+    const setClauses = Object.keys(updates).map((k, i) => `${k} = $${i + 1}`).join(', ');
+    const values = [...Object.values(updates), req.params.slug];
+    await db.query(
+      `UPDATE chatbots SET ${setClauses}, updated_at = CURRENT_TIMESTAMP WHERE slug = $${values.length}`,
+      values
+    );
+    await logActivity(req.user.email, 'chatbot_update', 'chatbot', c.id, c.business_name);
+    res.send({ success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// ADMIN — delete chatbot
+app.delete("/api/chatbots/:slug", authenticate, async (req, res) => {
+  if (req.user.role !== 'admin') return res.status(403).send("Admin only");
+  try {
+    await db.query("DELETE FROM chatbots WHERE slug = $1", [req.params.slug]);
+    res.send({ success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// ADMIN — list conversations for a chatbot
+app.get("/api/chatbots/:slug/conversations", authenticate, async (req, res) => {
+  try {
+    const c = await getChatbotBySlug(req.params.slug);
+    if (!c) return res.status(404).send("Not found");
+    if (req.user.role !== 'admin' && c.owner_user_id !== req.user.id) return res.status(403).send("Forbidden");
+    const r = await db.query(
+      "SELECT id, session_id, messages, lead_captured, lead_data, visitor_meta, created_at, updated_at FROM chatbot_conversations WHERE chatbot_slug = $1 ORDER BY id DESC LIMIT 200",
+      [req.params.slug]
+    );
+    const rows = isProduction ? r.rows : r;
+    res.send(rows);
   } catch (e) { res.status(500).send(e.message); }
 });
 

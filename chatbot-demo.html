@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KWBA AI Receptionist — Create & Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070706;--bg2:#0f0f0e;--bg3:#171714;--bg4:#1e1e1b;
+  --gold:#c9a84c;--gold2:#e8c96a;--gold-dim:rgba(201,168,76,0.07);--gold-border:rgba(201,168,76,0.25);
+  --ink:#ede9e0;--ink2:#c4bfb4;--muted:#7a7568;--muted2:#3e3c36;
+  --border:rgba(255,255,255,0.055);
+  --red:#d9534f;--green:#4fa878;--blue:#4a7fd4;
+}
+html,body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(201,168,76,.05),transparent 60%);pointer-events:none;z-index:0}
+
+.topbar{position:sticky;top:0;z-index:100;background:rgba(7,7,6,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;letter-spacing:.06em;color:var(--gold)}
+.brand em{font-style:italic;color:var(--ink2);font-size:13px;letter-spacing:.14em;margin-left:10px}
+.tools{display:flex;gap:8px;align-items:center}
+.btn{font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:9px 16px;border:1px solid;font-weight:400;transition:.2s;cursor:pointer;font-family:'DM Sans',sans-serif;line-height:1;display:inline-flex;align-items:center;gap:6px}
+.btn-g{background:var(--gold);color:#0a0906;border-color:var(--gold)}
+.btn-g:hover{background:var(--gold2);border-color:var(--gold2)}
+.btn-o{background:transparent;color:var(--muted);border-color:var(--border)}
+.btn-o:hover{color:var(--gold);border-color:var(--gold-border)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.wrap{max-width:1280px;margin:0 auto;padding:32px 28px;position:relative;z-index:1}
+.hero{text-align:center;margin-bottom:36px}
+.ey{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;font-weight:500}
+.ey::before,.ey::after{content:"";display:inline-block;width:24px;height:1px;background:var(--gold-border);vertical-align:middle;margin:0 10px}
+.h1{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,4.5vw,52px);font-weight:300;line-height:1.05;letter-spacing:-.015em;margin-bottom:12px}
+.h1 em{font-style:italic;color:var(--gold)}
+.sub{font-size:13.5px;color:var(--ink2);max-width:560px;margin:0 auto 0;line-height:1.7;font-weight:300}
+.sub strong{color:var(--gold);font-weight:400}
+
+.tabs{display:flex;justify-content:center;gap:1px;background:var(--border);margin-bottom:0;border-bottom:1px solid var(--border)}
+.tab{padding:14px 26px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:var(--bg2);border:none;border-bottom:2px solid transparent;transition:.18s;font-family:'DM Sans',sans-serif;cursor:pointer}
+.tab:hover{color:var(--ink2)}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold);background:var(--bg3)}
+
+.panel-wrap{display:none}
+.panel-wrap.on{display:block}
+
+/* Configure panel */
+.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.cfg-side{background:var(--bg2);padding:30px 28px;max-height:calc(100vh - 230px);overflow-y:auto}
+.cfg-side::-webkit-scrollbar{width:5px}
+.cfg-side::-webkit-scrollbar-thumb{background:var(--muted2)}
+.cfg-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:.04em;margin-bottom:4px}
+.cfg-sub{font-size:11px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.flbl{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2);display:block;margin-bottom:5px;margin-top:14px;font-weight:500}
+.flbl:first-of-type{margin-top:0}
+.flbl-help{font-size:10px;color:var(--muted);font-weight:300;letter-spacing:0;text-transform:none;margin-top:3px;line-height:1.5;font-style:italic}
+.fin{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--ink);padding:10px 12px;font-size:12.5px;font-weight:300;outline:none;transition:.2s;font-family:'DM Sans',sans-serif}
+.fin:focus{border-color:var(--gold-border)}
+.fin::placeholder{color:var(--muted2)}
+.fin-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+textarea.fin{resize:vertical;min-height:80px;line-height:1.6}
+select.fin{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path fill='%237a7568' d='M3 4.5L6 8l3-3.5z'/></svg>");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
+.color-row{display:flex;gap:8px;align-items:center}
+.color-row input[type=color]{width:42px;height:36px;border:1px solid var(--border);background:var(--bg);padding:2px;cursor:pointer}
+
+.section-divider{margin:24px 0 0;padding-top:24px;border-top:1px solid var(--border);font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--gold);letter-spacing:-.005em;font-style:italic}
+
+.preview-col{background:var(--bg);padding:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:600px;position:relative;overflow:hidden}
+.preview-frame{width:100%;height:100%;border:none;flex:1;background:linear-gradient(135deg,#1a1814 0%,#0a0906 100%);min-height:600px}
+.preview-empty{padding:60px 32px;text-align:center;color:var(--muted);font-size:12px;font-style:italic;line-height:1.7;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.preview-empty .ico{font-size:42px;color:var(--gold);opacity:.4;margin-bottom:14px;font-style:normal}
+
+.action-bar{padding:16px 28px;background:var(--bg2);border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.action-bar .status{margin-left:auto;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.action-bar .status.ok{color:var(--green)}
+.action-bar .status.err{color:var(--red)}
+
+/* Embed code panel */
+.embed-panel{background:var(--bg2);padding:30px 28px;border-top:1px solid var(--border);display:none}
+.embed-panel.on{display:block}
+.embed-code{background:var(--bg);border:1px solid var(--gold-border);padding:18px 20px;margin-top:14px;position:relative;font-family:'SF Mono','Consolas',monospace;font-size:12px;color:var(--ink2);line-height:1.7;white-space:pre-wrap;word-break:break-all}
+.embed-code .tag{color:var(--muted)}
+.embed-code .attr{color:var(--gold)}
+.embed-code .val{color:var(--green)}
+.copy-btn{position:absolute;top:12px;right:12px;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);background:var(--bg3);border:1px solid var(--border);padding:6px 12px;cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif}
+.copy-btn:hover{color:var(--gold);border-color:var(--gold-border)}
+
+/* Manage panel */
+.manage-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--border);min-height:400px}
+.bot-row{background:var(--bg2);padding:18px 22px;display:grid;grid-template-columns:1fr auto auto auto;gap:16px;align-items:center}
+.bot-row:hover{background:var(--bg3)}
+.bot-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--ink)}
+.bot-meta{font-size:10.5px;color:var(--muted);margin-top:3px}
+.bot-stats{font-size:10px;color:var(--muted2);text-align:right;letter-spacing:.05em;line-height:1.6}
+.bot-stats strong{color:var(--gold);font-family:'Syne',sans-serif;font-weight:600}
+.bot-empty{padding:80px 30px;text-align:center;color:var(--muted);font-size:12.5px;font-style:italic;line-height:1.7}
+
+/* Login modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(7,7,6,.9);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:30px}
+.modal-bg.on{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--gold-border);max-width:440px;width:100%;padding:32px 36px}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;line-height:1.1;margin-bottom:5px}
+.modal-title em{font-style:italic;color:var(--gold)}
+.modal-sub{font-size:11.5px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--gold-border);padding:12px 20px;font-size:12px;color:var(--gold);z-index:1000;letter-spacing:.04em;transform:translateY(60px);opacity:0;transition:.3s}
+.toast.on{transform:translateY(0);opacity:1}
+.toast.err{border-color:rgba(217,83,79,.35);color:var(--red)}
+.toast.ok{border-color:rgba(79,168,120,.35);color:var(--green)}
+
+@media(max-width:880px){
+  .cfg-grid{grid-template-columns:1fr}
+  .preview-col{min-height:400px}
+  .fin-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">KWBA <em>AI Receptionist</em></div>
+  <div class="tools">
+    <span id="auth-info" style="font-size:10px;color:var(--muted2);letter-spacing:.05em">Not logged in</span>
+    <button class="btn btn-o" onclick="openLoginModal()" id="login-btn">Log In</button>
+    <a href="index.html" class="btn btn-o" style="text-decoration:none">← Back</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="ey">Real AI Receptionist · Multi-Tenant</div>
+    <h1 class="h1">A real AI receptionist <em>for every client.</em></h1>
+    <p class="sub">Configure once, deployed forever. The chatbot learns each client's services, hours, prices, and personality — then handles enquiries 24/7 with <strong>real conversation</strong>, not scripted flows. Every lead drops into KWBA admin automatically.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="setTab('configure',this)">⚡ Create New</button>
+    <button class="tab" onclick="setTab('manage',this)">📋 Manage Existing</button>
+    <button class="tab" onclick="setTab('how',this)">📖 How It Works</button>
+  </div>
+
+  <!-- ═══ CONFIGURE TAB ═══ -->
+  <div class="panel-wrap on" id="panel-configure">
+    <div class="cfg-grid">
+      <div class="cfg-side">
+        <div class="cfg-title">Configure your client's AI receptionist</div>
+        <div class="cfg-sub">Fill in their business details. The AI uses these to answer questions truthfully — it will never invent prices or services.</div>
+
+        <label class="flbl">Business Name *</label>
+        <input type="text" id="f-business_name" class="fin" placeholder="Smith & Sons Electrical">
+
+        <label class="flbl">Niche / Industry</label>
+        <select id="f-niche" class="fin">
+          <option value="">Select niche…</option>
+          <option value="contractor">Contractor (electrician/plumber/builder)</option>
+          <option value="dentist">Dentist / Clinic</option>
+          <option value="garage">Car Garage / MOT</option>
+          <option value="estate-agent">Estate Agent</option>
+          <option value="restaurant">Restaurant / Hospitality</option>
+          <option value="salon">Salon / Beauty</option>
+          <option value="gym">Gym / Fitness</option>
+          <option value="legal">Solicitor / Accountant</option>
+          <option value="general">Other / General</option>
+        </select>
+
+        <div class="fin-row">
+          <div>
+            <label class="flbl">City / Area</label>
+            <input type="text" id="f-city" class="fin" placeholder="Milton Keynes">
+          </div>
+          <div>
+            <label class="flbl">Avatar emoji</label>
+            <input type="text" id="f-avatar" class="fin" maxlength="4" value="💬">
+          </div>
+        </div>
+
+        <div class="fin-row">
+          <div>
+            <label class="flbl">Business Phone</label>
+            <input type="text" id="f-phone" class="fin" placeholder="01908 123456">
+          </div>
+          <div>
+            <label class="flbl">Business Email</label>
+            <input type="email" id="f-email" class="fin" placeholder="hello@business.co.uk">
+          </div>
+        </div>
+
+        <label class="flbl">Accent Colour</label>
+        <div class="color-row">
+          <input type="color" id="f-color" value="#c9a84c">
+          <input type="text" id="f-color-hex" class="fin" value="#c9a84c" style="flex:1">
+        </div>
+
+        <div class="section-divider">Knowledge base</div>
+        <p style="font-size:11px;color:var(--muted);margin:6px 0 12px;line-height:1.6;font-weight:300">This is what makes the AI work. The more accurate this is, the better it sounds. The AI will <strong style="color:var(--gold)">never invent</strong> anything beyond what you put here.</p>
+
+        <label class="flbl">Welcome Message
+          <span class="flbl-help">First message the AI sends. Leave blank for default.</span>
+        </label>
+        <input type="text" id="f-welcome_message" class="fin" placeholder="Hi! I'm the AI assistant for [Business]. How can I help?">
+
+        <label class="flbl">About the Business</label>
+        <textarea id="f-about" class="fin" rows="2" placeholder="Family-run plumbing business since 1995. Gas Safe registered. Specialise in emergency callouts and bathroom installations."></textarea>
+
+        <label class="flbl">Hours</label>
+        <input type="text" id="f-hours" class="fin" placeholder="Mon–Fri 8am–6pm, Sat 9am–1pm. Emergency 24/7.">
+
+        <label class="flbl">Services Offered
+          <span class="flbl-help">Be specific. List every service the AI should know about.</span>
+        </label>
+        <textarea id="f-services" class="fin" rows="4" placeholder="• Emergency plumbing repairs
+• Boiler servicing & repair
+• Bathroom installations
+• Power flushing
+• Leak detection
+• Tap & toilet replacement"></textarea>
+
+        <label class="flbl">Pricing Guidance
+          <span class="flbl-help">Use ranges. AI will quote these as estimates only.</span>
+        </label>
+        <textarea id="f-pricing" class="fin" rows="3" placeholder="Emergency callout: £80–120 (within 1hr)
+Boiler service: £75–95
+Bathroom install: £2,500–6,000
+Tap replacement: from £80"></textarea>
+
+        <label class="flbl">Service Area</label>
+        <input type="text" id="f-service_area" class="fin" placeholder="Milton Keynes, Bedford, Northampton — 30 mile radius">
+
+        <label class="flbl">What you DON'T offer
+          <span class="flbl-help">Helps AI politely decline jobs you can't do.</span>
+        </label>
+        <input type="text" id="f-wont_do" class="fin" placeholder="Commercial work over 50k, new build sites, Northern Ireland">
+
+        <label class="flbl">Booking URL (optional)</label>
+        <input type="url" id="f-booking_url" class="fin" placeholder="https://calendly.com/your-business">
+
+        <label class="flbl">Extra Knowledge / FAQs
+          <span class="flbl-help">Anything else the AI should know — common questions, policies, certifications.</span>
+        </label>
+        <textarea id="f-knowledge_base" class="fin" rows="4" placeholder="Q: Do you cover insurance work? A: Yes — we work with all major UK insurers.
+Q: What's the deposit? A: 30% on jobs over £500.
+Certifications: Gas Safe #123456, NICEIC, Trustmark"></textarea>
+
+        <label class="flbl">Custom Instructions
+          <span class="flbl-help">Override default AI behaviour. e.g. "Always mention our 12-month guarantee."</span>
+        </label>
+        <textarea id="f-system_prompt" class="fin" rows="2" placeholder="Always mention our 12-month workmanship guarantee. Be especially careful around emergency callouts — if the customer mentions gas, immediately say 'For your safety, please call National Gas Emergency on 0800 111 999 first.'"></textarea>
+      </div>
+
+      <div class="preview-col">
+        <div class="preview-empty" id="preview-empty">
+          <div class="ico">⬩</div>
+          <strong style="color:var(--gold);display:block;margin-bottom:8px">Preview your AI receptionist</strong>
+          Click <strong>Create & Preview</strong> below.<br>
+          The chat widget will load here exactly<br>as it appears on a client's website.
+        </div>
+        <iframe id="preview-frame" class="preview-frame" style="display:none" title="Chatbot preview"></iframe>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-g" onclick="createAndPreview()" id="create-btn">⚡ Create & Preview</button>
+      <button class="btn btn-o" onclick="updateExisting()" id="update-btn" style="display:none">Update This Bot</button>
+      <button class="btn btn-o" onclick="resetForm()">↺ Reset</button>
+      <span class="status" id="action-status"></span>
+    </div>
+
+    <!-- Embed code (shown after create) -->
+    <div class="embed-panel" id="embed-panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--ink);letter-spacing:.04em">Embed Code</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">Send this to your client. They paste it into their website before <code style="background:var(--bg);padding:1px 6px;color:var(--gold);border:1px solid var(--border)">&lt;/body&gt;</code>.</div>
+        </div>
+        <div id="public-url" style="font-size:11px;color:var(--blue);font-family:'SF Mono',monospace"></div>
+      </div>
+      <div class="embed-code" id="embed-code">
+        <button class="copy-btn" onclick="copyEmbed()">⎘ Copy</button>
+        <span id="embed-text">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MANAGE TAB ═══ -->
+  <div class="panel-wrap" id="panel-manage">
+    <div class="manage-grid" id="manage-list">
+      <div class="bot-empty">Log in to see your existing AI receptionists.</div>
+    </div>
+  </div>
+
+  <!-- ═══ HOW IT WORKS TAB ═══ -->
+  <div class="panel-wrap" id="panel-how">
+    <div style="background:var(--bg2);padding:36px 32px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border)">
+      <div style="background:var(--bg2);padding:30px 28px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--gold);opacity:.5;line-height:1;margin-bottom:14px">01</div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:8px">Configure the knowledge base</div>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.7;font-weight:300">Fill in business name, services, prices, hours, and anything else the AI should know. Takes 5–10 minutes per client.</p>
+      </div>
+      <div style="background:var(--bg2);padding:30px 28px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--gold);opacity:.5;line-height:1;margin-bottom:14px">02</div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:8px">Send the embed code</div>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.7;font-weight:300">One <code style="font-size:11px;color:var(--gold)">&lt;script&gt;</code> tag. Works on WordPress, Wix, Squarespace, anything. Their developer (or them) pastes it in 30 seconds.</p>
+      </div>
+      <div style="background:var(--bg2);padding:30px 28px">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;color:var(--gold);opacity:.5;line-height:1;margin-bottom:14px">03</div>
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:8px">Leads come into KWBA admin</div>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.7;font-weight:300">Every conversation that captures a name + phone shows up as a brief in your KWBA admin. The full transcript is saved so you can refine the bot over time.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:36px;padding:30px 32px;background:var(--bg2);border:1px solid var(--gold-border)">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--gold);font-weight:400;margin-bottom:8px;font-style:italic">What makes this £500/mo</div>
+      <p style="font-size:13px;color:var(--ink2);line-height:1.8;margin-bottom:14px;font-weight:300">This is not a flow chart with branches. It's a real LLM (Gemini 1.5 Flash) constrained to your client's specific knowledge. When a customer asks "do you do Sunday emergency callouts?" the AI checks the hours you provided, answers truthfully, and starts capturing the lead. When asked something it doesn't know, it says "let me get someone to confirm that" and asks for a callback.</p>
+      <p style="font-size:13px;color:var(--ink2);line-height:1.8;font-weight:300">Compare to Tidio (£29/mo) — scripted decision tree, can't answer freeform questions. Drift (£400/mo) — enterprise-only. ChatGPT widgets — generic, no knowledge of the client's business. Yours is real AI + niche-specific knowledge + UK GBP context + lead capture, configured per client. The £500/mo covers the AI cost (about £1–3/mo per client at typical use), hosting, updates, and support.</p>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-bg" id="login-modal" onclick="if(event.target===this)closeLoginModal()">
+  <div class="modal-box">
+    <div class="modal-title">Connect to <em>KWBA Admin</em></div>
+    <div class="modal-sub">Use your KWBA admin login to create and manage AI receptionists.</div>
+    <label class="flbl">Email</label>
+    <input type="email" id="login-email" class="fin" placeholder="admin@kwba-agency.com">
+    <label class="flbl">Password</label>
+    <input type="password" id="login-pass" class="fin">
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">
+      <button class="btn btn-o" onclick="closeLoginModal()">Cancel</button>
+      <button class="btn btn-g" onclick="doLogin()">Log In →</button>
+    </div>
+    <div id="login-err" style="font-size:11px;color:var(--red);margin-top:12px;line-height:1.5;min-height:16px"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = 'https://kwba-agency.onrender.com';
+let TOKEN = localStorage.getItem('kwba_token') || '';
+let USER_EMAIL = localStorage.getItem('kwba_email') || '';
+let CURRENT_SLUG = null;
+
+// ═══ AUTH ═══
+function authH(extra={}) { return { 'Content-Type':'application/json', 'Authorization': 'Bearer '+TOKEN, ...extra }; }
+function updateAuthUI() {
+  const info = document.getElementById('auth-info');
+  const btn = document.getElementById('login-btn');
+  if (TOKEN && USER_EMAIL) {
+    info.textContent = USER_EMAIL;
+    info.style.color = 'var(--green)';
+    btn.textContent = 'Sign Out';
+    btn.onclick = doLogout;
+  } else {
+    info.textContent = 'Not logged in';
+    info.style.color = 'var(--muted2)';
+    btn.textContent = 'Log In';
+    btn.onclick = openLoginModal;
+  }
+}
+function openLoginModal() { document.getElementById('login-modal').classList.add('on'); setTimeout(()=>document.getElementById('login-email').focus(),100); }
+function closeLoginModal() { document.getElementById('login-modal').classList.remove('on'); }
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-err');
+  err.textContent = '';
+  if (!email || !pass) { err.textContent = 'Email and password required'; return; }
+  try {
+    const r = await fetch(API_BASE+'/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,password:pass}) });
+    if (!r.ok) { err.textContent = 'Login failed — check credentials'; return; }
+    const data = await r.json();
+    TOKEN = data.token; USER_EMAIL = email;
+    localStorage.setItem('kwba_token',TOKEN); localStorage.setItem('kwba_email',USER_EMAIL);
+    closeLoginModal(); updateAuthUI(); loadManageList();
+    toast('Connected','ok');
+  } catch (e) { err.textContent = 'Cannot reach server'; }
+}
+function doLogout() {
+  TOKEN=''; USER_EMAIL='';
+  localStorage.removeItem('kwba_token'); localStorage.removeItem('kwba_email');
+  updateAuthUI(); loadManageList(); toast('Signed out');
+}
+
+// ═══ TABS ═══
+function setTab(t, btn) {
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.panel-wrap').forEach(p=>p.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  document.getElementById('panel-'+t).classList.add('on');
+  if(t==='manage') loadManageList();
+}
+
+// ═══ FORM ═══
+const FIELDS = ['business_name','niche','city','phone','email','color','avatar','knowledge_base','system_prompt','hours','services','pricing','service_area','about','wont_do','booking_url','welcome_message'];
+function gatherForm() {
+  const data = {};
+  FIELDS.forEach(f => {
+    const el = document.getElementById('f-'+f);
+    if(el) data[f] = el.value.trim();
+  });
+  return data;
+}
+function fillForm(data) {
+  FIELDS.forEach(f => {
+    const el = document.getElementById('f-'+f);
+    if(el) el.value = data[f] || '';
+  });
+  // Sync color hex
+  const c = data.color || '#c9a84c';
+  document.getElementById('f-color').value = c;
+  document.getElementById('f-color-hex').value = c;
+}
+function resetForm() {
+  FIELDS.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value = f === 'avatar' ? '💬' : (f === 'color' ? '#c9a84c' : ''); });
+  document.getElementById('f-color').value = '#c9a84c';
+  document.getElementById('f-color-hex').value = '#c9a84c';
+  CURRENT_SLUG = null;
+  document.getElementById('update-btn').style.display = 'none';
+  document.getElementById('create-btn').textContent = '⚡ Create & Preview';
+  document.getElementById('preview-empty').style.display = 'flex';
+  document.getElementById('preview-frame').style.display = 'none';
+  document.getElementById('embed-panel').classList.remove('on');
+  setStatus('');
+}
+
+// Sync colour pickers
+document.getElementById('f-color').oninput = function(){ document.getElementById('f-color-hex').value = this.value; };
+document.getElementById('f-color-hex').oninput = function(){
+  if(/^#[0-9A-Fa-f]{6}$/.test(this.value)) document.getElementById('f-color').value = this.value;
+};
+
+// ═══ CREATE ═══
+async function createAndPreview() {
+  if (!TOKEN) { toast('Log in first','err'); openLoginModal(); return; }
+  const data = gatherForm();
+  if (!data.business_name) { toast('Business name required','err'); return; }
+  const btn = document.getElementById('create-btn');
+  btn.disabled = true; btn.textContent = '⏳ Creating…';
+  setStatus('Creating chatbot…');
+  try {
+    const r = await fetch(API_BASE+'/api/chatbots', { method:'POST', headers:authH(), body:JSON.stringify(data) });
+    if (!r.ok) {
+      const e = await r.text();
+      throw new Error(e || 'Failed');
+    }
+    const result = await r.json();
+    CURRENT_SLUG = result.slug;
+    setStatus('✓ Created — loading preview…','ok');
+    showPreview(result.slug);
+    showEmbedCode(result.slug);
+    document.getElementById('update-btn').style.display = 'inline-flex';
+    document.getElementById('create-btn').textContent = '✓ Created';
+    toast('AI receptionist created','ok');
+  } catch (e) {
+    setStatus('Error: '+e.message,'err');
+    toast(e.message,'err');
+  }
+  btn.disabled = false;
+  if (!CURRENT_SLUG) btn.textContent = '⚡ Create & Preview';
+}
+
+async function updateExisting() {
+  if (!TOKEN || !CURRENT_SLUG) return;
+  const data = gatherForm();
+  const btn = document.getElementById('update-btn');
+  btn.disabled = true; btn.textContent = '⏳ Updating…';
+  try {
+    const r = await fetch(API_BASE+'/api/chatbots/'+CURRENT_SLUG, { method:'PATCH', headers:authH(), body:JSON.stringify(data) });
+    if (!r.ok) throw new Error(await r.text());
+    setStatus('✓ Updated — refreshing preview…','ok');
+    showPreview(CURRENT_SLUG);
+    toast('Updated','ok');
+  } catch (e) { toast(e.message,'err'); setStatus('Error: '+e.message,'err'); }
+  btn.disabled = false; btn.textContent = 'Update This Bot';
+}
+
+function showPreview(slug) {
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+    body{margin:0;padding:0;background:linear-gradient(135deg,#1a1814 0%,#0a0906 100%);min-height:100vh;font-family:-apple-system,system-ui,sans-serif;display:flex;align-items:center;justify-content:center}
+    .mock{text-align:center;color:rgba(255,255,255,.3);font-size:13px;letter-spacing:.04em;line-height:1.8;padding:30px}
+    .mock-ico{font-size:48px;margin-bottom:18px;opacity:.5}
+    .mock strong{color:rgba(255,255,255,.5);font-weight:500;font-size:15px}
+  </style></head><body>
+    <div class="mock">
+      <div class="mock-ico">🌐</div>
+      <strong>Client website preview</strong><br>
+      Click the chat button bottom-right →<br>
+      <span style="font-size:11px;opacity:.7">Real AI conversation. Real responses.</span>
+    </div>
+    <script src="${API_BASE}/chatbot-widget.js" data-slug="${slug}"><\/script>
+  </body></html>`;
+  document.getElementById('preview-frame').srcdoc = html;
+  document.getElementById('preview-frame').style.display = 'block';
+  document.getElementById('preview-empty').style.display = 'none';
+}
+
+function showEmbedCode(slug) {
+  const code = `<!-- KWBA AI Receptionist -->\n<script\n  src="${API_BASE}/chatbot-widget.js"\n  data-slug="${slug}"\n><\/script>`;
+  const html = `<button class="copy-btn" onclick="copyEmbed()">⎘ Copy</button>` +
+    `<span class="tag">&lt;!-- KWBA AI Receptionist --&gt;</span>\n` +
+    `<span class="tag">&lt;script</span>\n` +
+    `  <span class="attr">src</span>="<span class="val">${API_BASE}/chatbot-widget.js</span>"\n` +
+    `  <span class="attr">data-slug</span>="<span class="val">${slug}</span>"\n` +
+    `<span class="tag">&gt;&lt;/script&gt;</span>`;
+  document.getElementById('embed-code').innerHTML = html;
+  document.getElementById('public-url').textContent = `Slug: ${slug}`;
+  document.getElementById('embed-panel').classList.add('on');
+  window._embedCode = code;
+}
+
+function copyEmbed() {
+  if (!window._embedCode) return;
+  navigator.clipboard.writeText(window._embedCode).then(
+    ()=>toast('Embed code copied','ok'),
+    ()=>toast('Copy failed','err')
+  );
+}
+
+function setStatus(msg, type) {
+  const el = document.getElementById('action-status');
+  el.textContent = msg || '';
+  el.className = 'status' + (type ? ' ' + type : '');
+}
+
+// ═══ MANAGE LIST ═══
+async function loadManageList() {
+  const list = document.getElementById('manage-list');
+  if (!TOKEN) {
+    list.innerHTML = '<div class="bot-empty"><strong style="color:var(--gold);display:block;margin-bottom:8px">Log in to see your AI receptionists</strong>Once logged in, all chatbots created on your account will appear here.</div>';
+    return;
+  }
+  try {
+    const r = await fetch(API_BASE+'/api/chatbots', { headers:authH() });
+    if (!r.ok) { list.innerHTML = '<div class="bot-empty">Could not load list</div>'; return; }
+    const bots = await r.json();
+    if (!bots.length) {
+      list.innerHTML = '<div class="bot-empty">No AI receptionists yet. Click <strong style="color:var(--gold)">⚡ Create New</strong> to make your first.</div>';
+      return;
+    }
+    list.innerHTML = bots.map(b => `
+      <div class="bot-row">
+        <div>
+          <div class="bot-name">${esc(b.business_name)}</div>
+          <div class="bot-meta">${esc(b.niche || 'general')}${b.city ? ' · '+esc(b.city) : ''} · slug: <code style="font-size:10px;color:var(--gold)">${esc(b.slug)}</code></div>
+        </div>
+        <div class="bot-stats">
+          <strong>${b.total_conversations||0}</strong> chats<br>
+          <strong>${b.total_leads||0}</strong> leads
+        </div>
+        <button class="btn btn-o" onclick="editBot('${esc(b.slug)}')">Edit</button>
+        <button class="btn btn-o" onclick="copyEmbedFor('${esc(b.slug)}')">⎘ Embed</button>
+      </div>`).join('');
+  } catch (e) { list.innerHTML = '<div class="bot-empty">Error: '+esc(e.message)+'</div>'; }
+}
+
+async function editBot(slug) {
+  if (!TOKEN) return;
+  try {
+    const r = await fetch(API_BASE+'/api/chatbots/'+slug, { headers:authH() });
+    if (!r.ok) throw new Error('Not found');
+    const data = await r.json();
+    fillForm(data);
+    CURRENT_SLUG = slug;
+    setTab('configure', document.querySelector('.tab'));
+    document.querySelector('.tab').classList.add('on');
+    document.getElementById('update-btn').style.display = 'inline-flex';
+    document.getElementById('create-btn').textContent = '⚡ Create New (saves as new)';
+    showPreview(slug);
+    showEmbedCode(slug);
+    toast('Loaded — edit fields and click Update','ok');
+  } catch (e) { toast(e.message,'err'); }
+}
+
+function copyEmbedFor(slug) {
+  const code = `<!-- KWBA AI Receptionist -->\n<script\n  src="${API_BASE}/chatbot-widget.js"\n  data-slug="${slug}"\n><\/script>`;
+  navigator.clipboard.writeText(code).then(
+    ()=>toast('Embed copied for '+slug,'ok'),
+    ()=>toast('Copy failed','err')
+  );
+}
+
+// ═══ UTIL ═══
+function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+let _t;
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast on' + (type==='err'?' err':type==='ok'?' ok':'');
+  clearTimeout(_t);
+  _t = setTimeout(()=>t.classList.remove('on'), 2800);
+}
+
+// Auto-fill the welcome message when business name changes
+document.getElementById('f-business_name').addEventListener('blur', function(){
+  const wmEl = document.getElementById('f-welcome_message');
+  if (this.value && !wmEl.value) {
+    wmEl.value = `Hi! 👋 I'm the AI assistant for ${this.value}. How can I help you today?`;
+  }
+});
+
+// Init
+updateAuthUI();
+if (TOKEN) loadManageList();
+</script>
+</body>
+</html>
