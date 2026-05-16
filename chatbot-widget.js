@@ -184,17 +184,17 @@
         </svg>
       </button>
       <div id="kw-prompt" role="button" tabindex="0">
-        <button id="kw-prompt-x" aria-label="Dismiss">✕</button>
+        <button id="kw-prompt-x" aria-label="Dismiss"></button>
         <span id="kw-prompt-text">Hi! Need help with anything?</span>
       </div>
       <div id="kw-win" role="dialog" aria-label="Chat with ${escHtml(cfg.business_name)}">
         <div id="kw-head">
-          <div id="kw-av">${escHtml(cfg.avatar || '💬')}</div>
+          <div id="kw-av">${escHtml(cfg.avatar || '')}</div>
           <div id="kw-hd">
             <div id="kw-hd-name">${escHtml(cfg.business_name)}</div>
             <div id="kw-hd-status">Online — replies instantly</div>
           </div>
-          <button id="kw-close" aria-label="Close chat">✕</button>
+          <button id="kw-close" aria-label="Close chat"></button>
         </div>
         <div id="kw-msgs" aria-live="polite"></div>
         <div id="kw-quickreplies"></div>

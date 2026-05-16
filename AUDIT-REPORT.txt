@@ -1,0 +1,103 @@
+======================================================================
+KWBA — STATIC INTEGRITY AUDIT
+======================================================================
+
+1. BACKEND ROUTES DEFINED IN server.js
+----------------------------------------------------------------------
+   DELETE  /api/chatbots/:slug
+   DELETE  /staff/:id
+   GET     /activity
+   GET     /analytics
+   GET     /api/chatbot/:slug
+   GET     /api/chatbots
+   GET     /api/chatbots/:slug
+   GET     /api/chatbots/:slug/conversations
+   GET     /api/outreach
+   GET     /briefs
+   GET     /client-portal/data
+   GET     /settings
+   GET     /staff
+   PATCH   /api/chatbots/:slug
+   PATCH   /api/outreach/:id
+   PATCH   /brief/:id/status
+   POST    /api/chatbot/:slug/chat
+   POST    /api/chatbot/:slug/lead
+   POST    /api/chatbots
+   POST    /api/outreach
+   POST    /api/places-search
+   POST    /create-client
+   POST    /create-staff
+   POST    /create-stripe-invoice
+   POST    /login
+   POST    /output
+   POST    /public-audit
+   POST    /public-brief
+   POST    /rate-output
+   POST    /settings
+   POST    /stream-agent
+   POST    /upload
+   USE     /uploads
+
+2. BACKEND CALLS FROM FRONTEND (per page)
+----------------------------------------------------------------------
+
+  admin.html
+      POST    /login                                             ✓
+
+  admin_backup.html
+      POST    /login                                             ✓
+
+  brief.html
+      POST    /public-brief                                      ✓
+
+  chatbot-demo.html
+      GET     /api/chatbots                                      ✓
+      GET     /api/chatbots/                                     ✓
+      PATCH   /api/chatbots/                                     ✗ NOT IN server.js
+      POST    /api/chatbots                                      ✓
+      POST    /login                                             ✓
+
+  client.html
+      POST    /upload                                            ✓
+
+  intake.html
+      POST    /public-brief                                      ✓
+
+  login.html
+      POST    /login                                             ✓
+
+  marketing-brief.html
+      POST    /public-brief                                      ✓
+
+  portal.html
+      GET     /client-portal/data                                ✓
+      POST    /login                                             ✓
+
+3. UNMATCHED CALLS (frontend hits route that server.js does NOT define)
+----------------------------------------------------------------------
+   PATCH   /api/chatbots/
+
+4. MISSING LOCAL RESOURCES (per page)
+----------------------------------------------------------------------
+
+  chatbot-demo.html
+  Missing local resource: ${API_BASE}/chatbot-widget.js
+
+  package-explainer.html
+  Missing local resource: char-explainer.mp4
+
+  portal.html
+  Missing local resource: ${f.url}
+
+  prospector.html
+  Missing local resource: ${esc(lead.website)}
+
+======================================================================
+SUMMARY
+======================================================================
+  HTML files audited:         17
+  Backend routes in server.js: 33
+  Unique frontend API calls:  8
+  Unmatched calls (red flag): 1
+  Missing local resources:    4
+  Files with broken refs:     4

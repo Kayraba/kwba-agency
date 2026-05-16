@@ -3,32 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#070706"/>
 <title>KWBA — Full-Stack Digital Marketing</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0f0e0c;--bg2:#1a1814;--bg3:#252219;--bg4:#1f1c16;
-  --gold:#c9a84c;--gold-light:#d4b86a;--gold-dim:rgba(201,168,76,0.1);--gold-border:rgba(201,168,76,0.35);
-  --ink:#f0ece4;--ink2:#ddd8ce;--muted:#9a9488;--muted2:#6a6460;
-  --border:rgba(201,168,76,0.15);--border2:rgba(201,168,76,0.07);
-  --green:#4caf7d;--green-dim:rgba(76,175,125,0.1);
-  --red:#e05c5c;--red-dim:rgba(224,92,92,0.1);
-  /* Legacy aliases for content classes */
-  --black:var(--bg);--white:var(--ink);--cream:#ede9e0;--mid:var(--muted);
+  --bg:#070706;--bg2:#0f0f0e;--bg3:#171714;--bg4:#1e1e1b;
+  --gold:#c9a84c;--gold2:#e8c96a;--gold-dim:rgba(201,168,76,0.07);--gold-border:rgba(201,168,76,0.28);--gold-strong:rgba(201,168,76,0.55);
+  --ink:#ede9e0;--ink2:#c4bfb4;--muted:#7a7568;--muted2:#3e3c36;
+  --border:rgba(255,255,255,0.055);
 }
 html{scroll-behavior:smooth}
 html,body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 
 /* NAV */
-nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between}
+nav{position:sticky;top:0;z-index:100;background:rgba(7,7,6,0.82);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between}
 .nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);letter-spacing:.04em}
 .nav-logo span{color:var(--gold)}
 .nav-links{display:flex;gap:28px;list-style:none;align-items:center}
 .nav-links a{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);transition:color .2s;text-decoration:none}
 .nav-links a:hover{color:var(--gold)}
-.nav-cta{font-size:10px;letter-spacing:.18em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:10px 22px;font-weight:500;transition:opacity .2s;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
+.nav-cta{font-size:10px;letter-spacing:.18em;text-transform:uppercase;background:var(--gold);color: #fafaf7;padding:10px 22px;font-weight:500;transition:opacity .2s;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
 .nav-cta:hover{opacity:.85}
 
 /* HERO */
@@ -40,7 +37,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
 .hero h1 span{font-style:italic;color:var(--gold)}
 .hero-sub{font-size:15px;color:var(--muted);max-width:560px;line-height:1.75;margin-bottom:36px;font-weight:300}
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.btn-primary{font-size:10px;letter-spacing:.18em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:14px 32px;font-weight:500;border:none;cursor:pointer;transition:opacity .2s;font-family:'DM Sans',sans-serif;border-radius:0}
+.btn-primary{font-size:10px;letter-spacing:.18em;text-transform:uppercase;background:var(--gold);color: #fafaf7;padding:14px 32px;font-weight:500;border:none;cursor:pointer;transition:opacity .2s;font-family:'DM Sans',sans-serif;border-radius:0}
 .btn-primary:hover{opacity:.85}
 .btn-ghost{font-size:10px;letter-spacing:.18em;text-transform:uppercase;background:transparent;color:var(--ink);padding:14px 32px;border:1px solid var(--gold-border);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;border-radius:0}
 .btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
@@ -119,7 +116,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
 .pricing-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:80px 40px}
 .pricing-inner{max-width:1100px;margin:0 auto}
 .pricing-card{border:1px solid var(--gold-border);padding:48px;position:relative;display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center}
-.pricing-card::before{content:'RECOMMENDED';position:absolute;top:-1px;right:40px;background:var(--gold);color:#0f0e0c;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:5px 12px;font-family:'DM Sans',sans-serif;font-weight:500}
+.pricing-card::before{content:'RECOMMENDED';position:absolute;top:-1px;right:40px;background:var(--gold);color: #fafaf7;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:5px 12px;font-family:'DM Sans',sans-serif;font-weight:500}
 .price-tag{text-align:right}
 .price-old{font-size:12px;letter-spacing:.1em;color:var(--muted2);text-decoration:line-through;margin-bottom:4px}
 .price-now{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;color:var(--gold);line-height:1}
@@ -150,8 +147,26 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
 
 @media(max-width:760px){nav{padding:0 20px}.hero{padding:60px 20px 50px}.stats-strip{grid-template-columns:1fr 1fr}.stat-cell{padding:20px}.section{padding:60px 20px}.deliverables-grid{grid-template-columns:1fr}.roi-grid{grid-template-columns:1fr}.pricing-card{grid-template-columns:1fr}.trust-grid{grid-template-columns:1fr}.nav-links{display:none}}
 </style>
+  <link rel="stylesheet" href="/assets/parallax.css"/>
 </head>
 <body>
+<!-- Scroll progress -->
+<div class="scroll-progress" id="sp"></div>
+<!-- Parallax background -->
+<div class="bg-parallax" aria-hidden="true">
+  <div class="bg-layer bg-l1" data-speed="0.15"></div>
+  <div class="bg-layer bg-l2" data-speed="0.25"></div>
+  <div class="bg-layer bg-l3" data-speed="0.18"></div>
+  <div class="bg-layer bg-l4" data-speed="0.22"></div>
+  <div class="bg-layer bg-l5" data-speed="0.16"></div>
+</div>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-noise" aria-hidden="true"></div>
+<div class="watermark wm-1" data-speed="0.08">design</div>
+<div class="watermark wm-2" data-speed="0.06">marketing</div>
+<div class="watermark wm-3" data-speed="0.07">growth</div>
+<div class="watermark wm-4" data-speed="0.05">results</div>
+
 <nav>
   <a href="/index.html" class="nav-logo">KWBA<span>.</span></a>
   <ul class="nav-links">
@@ -177,22 +192,22 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
 
 <div class="ticker">
   <div class="ticker-inner">
-    <span class="ticker-item">COLD OUTREACH <span>✦</span></span>
-    <span class="ticker-item">2,000 EMAILS/MONTH <span>✦</span></span>
-    <span class="ticker-item">LINKEDIN CAMPAIGNS <span>✦</span></span>
-    <span class="ticker-item">SEO CONTENT <span>✦</span></span>
-    <span class="ticker-item">GOOGLE ADS <span>✦</span></span>
-    <span class="ticker-item">AI-PERSONALISED SEQUENCES <span>✦</span></span>
-    <span class="ticker-item">ANALYTICS DASHBOARD <span>✦</span></span>
-    <span class="ticker-item">LEAD LIST BUILDING <span>✦</span></span>
-    <span class="ticker-item">COLD OUTREACH <span>✦</span></span>
-    <span class="ticker-item">2,000 EMAILS/MONTH <span>✦</span></span>
-    <span class="ticker-item">LINKEDIN CAMPAIGNS <span>✦</span></span>
-    <span class="ticker-item">SEO CONTENT <span>✦</span></span>
-    <span class="ticker-item">GOOGLE ADS <span>✦</span></span>
-    <span class="ticker-item">AI-PERSONALISED SEQUENCES <span>✦</span></span>
-    <span class="ticker-item">ANALYTICS DASHBOARD <span>✦</span></span>
-    <span class="ticker-item">LEAD LIST BUILDING <span>✦</span></span>
+    <span class="ticker-item">COLD OUTREACH <span>·</span></span>
+    <span class="ticker-item">2,000 EMAILS/MONTH <span>·</span></span>
+    <span class="ticker-item">LINKEDIN CAMPAIGNS <span>·</span></span>
+    <span class="ticker-item">SEO CONTENT <span>·</span></span>
+    <span class="ticker-item">GOOGLE ADS <span>·</span></span>
+    <span class="ticker-item">AI-PERSONALISED SEQUENCES <span>·</span></span>
+    <span class="ticker-item">ANALYTICS DASHBOARD <span>·</span></span>
+    <span class="ticker-item">LEAD LIST BUILDING <span>·</span></span>
+    <span class="ticker-item">COLD OUTREACH <span>·</span></span>
+    <span class="ticker-item">2,000 EMAILS/MONTH <span>·</span></span>
+    <span class="ticker-item">LINKEDIN CAMPAIGNS <span>·</span></span>
+    <span class="ticker-item">SEO CONTENT <span>·</span></span>
+    <span class="ticker-item">GOOGLE ADS <span>·</span></span>
+    <span class="ticker-item">AI-PERSONALISED SEQUENCES <span>·</span></span>
+    <span class="ticker-item">ANALYTICS DASHBOARD <span>·</span></span>
+    <span class="ticker-item">LEAD LIST BUILDING <span>·</span></span>
   </div>
 </div>
 
@@ -208,11 +223,11 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
   <div class="section-title">EVERY CHANNEL.<br>ONE TEAM.</div>
   <p class="section-sub">Most agencies charge £1,500–£3,500/month for half of this. KWBA builds and runs the full engine — from first contact to booked call.</p>
   <div class="deliverables-grid">
-    <div class="deliv-card"><div class="deliv-num">01</div><div class="deliv-icon">✉</div><div class="deliv-title">Cold outreach campaigns</div><div class="deliv-desc">Industry-specific lead list building. Validated, targeted contacts in your exact market. Multi-step follow-up sequences written to get replies, not flagged as spam.</div><div class="deliv-tag">2,000 CONTACTS/MO</div></div>
+    <div class="deliv-card"><div class="deliv-num">01</div><div class="deliv-icon"></div><div class="deliv-title">Cold outreach campaigns</div><div class="deliv-desc">Industry-specific lead list building. Validated, targeted contacts in your exact market. Multi-step follow-up sequences written to get replies, not flagged as spam.</div><div class="deliv-tag">2,000 CONTACTS/MO</div></div>
     <div class="deliv-card"><div class="deliv-num">02</div><div class="deliv-icon">◈</div><div class="deliv-title">AI-personalised email sequences</div><div class="deliv-desc">Every email tailored per recipient using AI — name, business type, pain point. Not mail merge. Actual personalisation that reads like a human wrote it specifically for them.</div><div class="deliv-tag">REPLY RATE 3–8%</div></div>
     <div class="deliv-card"><div class="deliv-num">03</div><div class="deliv-icon">◉</div><div class="deliv-title">LinkedIn outreach campaigns</div><div class="deliv-desc">Connection requests, message sequences, and content amplification targeting decision-makers. B2B's highest-intent channel, fully managed and tracked.</div><div class="deliv-tag">DECISION-MAKER TARGETING</div></div>
     <div class="deliv-card"><div class="deliv-num">04</div><div class="deliv-icon">▲</div><div class="deliv-title">Google Ads management</div><div class="deliv-desc">Search campaigns targeting bottom-of-funnel keywords. Exact and phrase match only. Weekly negative keyword pruning. Bidding optimised for leads, not clicks.</div><div class="deliv-tag">INTENT-BASED TRAFFIC</div></div>
-    <div class="deliv-card"><div class="deliv-num">05</div><div class="deliv-icon">✦</div><div class="deliv-title">SEO content — 2 posts/month</div><div class="deliv-desc">Long-form, keyword-targeted blog content written to rank and convert. Each post built around a search term your buyers are actually using, with internal linking and meta optimisation.</div><div class="deliv-tag">RANKS IN 60–90 DAYS</div></div>
+    <div class="deliv-card"><div class="deliv-num">05</div><div class="deliv-icon"></div><div class="deliv-title">SEO content — 2 posts/month</div><div class="deliv-desc">Long-form, keyword-targeted blog content written to rank and convert. Each post built around a search term your buyers are actually using, with internal linking and meta optimisation.</div><div class="deliv-tag">RANKS IN 60–90 DAYS</div></div>
     <div class="deliv-card"><div class="deliv-num">06</div><div class="deliv-icon">⬡</div><div class="deliv-title">Content calendar + strategy</div><div class="deliv-desc">A 30-day content plan covering what to post, when, and why. Aligned to your sales cycle, audience pain points, and seasonal opportunities.</div><div class="deliv-tag">MONTHLY DELIVERY</div></div>
     <div class="deliv-card"><div class="deliv-num">07</div><div class="deliv-icon">◑</div><div class="deliv-title">Lead list building + validation</div><div class="deliv-desc">Every prospect verified before a single email sends. Domain warm-up, bounce rate management, and deliverability monitoring. Your sender reputation protected at every step.</div><div class="deliv-tag">ZERO-BOUNCE GUARANTEE</div></div>
     <div class="deliv-card"><div class="deliv-num">08</div><div class="deliv-icon">◎</div><div class="deliv-title">Full analytics dashboard</div><div class="deliv-desc">Live reporting across every channel. Open rates, click rates, reply rates, Google Ads CPL, ranking positions, and pipeline value — all in one place. You own the data.</div><div class="deliv-tag">REAL-TIME ACCESS</div></div>
@@ -236,16 +251,16 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
           </tr>
         </thead>
         <tbody>
-          <tr><td>Cold outreach + lead lists</td><td><span class="maybe">Sometimes</span></td><td><span class="cross">✗</span></td><td class="kwba-td"><span class="tick">✓</span> 2,000/mo</td></tr>
-          <tr><td>AI-personalised sequences</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td class="kwba-td"><span class="tick">✓</span> Per recipient</td></tr>
-          <tr><td>LinkedIn outreach</td><td><span class="maybe">Add-on cost</span></td><td><span class="maybe">Sometimes</span></td><td class="kwba-td"><span class="tick">✓</span> Included</td></tr>
-          <tr><td>Google Ads management</td><td><span class="maybe">+£500–£800/mo</span></td><td><span class="maybe">Sometimes</span></td><td class="kwba-td"><span class="tick">✓</span> Included</td></tr>
-          <tr><td>SEO blog content</td><td><span class="maybe">+£400–£800/mo</span></td><td><span class="maybe">1 post/mo</span></td><td class="kwba-td"><span class="tick">✓</span> 2 posts/mo</td></tr>
-          <tr><td>Content calendar + strategy</td><td><span class="tick">✓</span></td><td><span class="cross">✗</span></td><td class="kwba-td"><span class="tick">✓</span> Monthly</td></tr>
-          <tr><td>Domain warm-up + deliverability</td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td class="kwba-td"><span class="tick">✓</span> Managed</td></tr>
-          <tr><td>Live analytics dashboard</td><td><span class="maybe">Basic PDF report</span></td><td><span class="cross">✗</span></td><td class="kwba-td"><span class="tick">✓</span> Real-time</td></tr>
-          <tr><td>Monthly strategy call</td><td><span class="maybe">Sometimes</span></td><td><span class="cross">✗</span></td><td class="kwba-td"><span class="tick">✓</span> 60 mins</td></tr>
-          <tr><td>Retainer / lock-in contract</td><td><span class="cross">✗</span> 3–12 months</td><td><span class="cross">✗</span> Ongoing</td><td class="kwba-td"><span class="tick">✓</span> None. Ever.</td></tr>
+          <tr><td>Cold outreach + lead lists</td><td><span class="maybe">Sometimes</span></td><td><span class="cross"></span></td><td class="kwba-td"><span class="tick"></span> 2,000/mo</td></tr>
+          <tr><td>AI-personalised sequences</td><td><span class="cross"></span></td><td><span class="cross"></span></td><td class="kwba-td"><span class="tick"></span> Per recipient</td></tr>
+          <tr><td>LinkedIn outreach</td><td><span class="maybe">Add-on cost</span></td><td><span class="maybe">Sometimes</span></td><td class="kwba-td"><span class="tick"></span> Included</td></tr>
+          <tr><td>Google Ads management</td><td><span class="maybe">+£500–£800/mo</span></td><td><span class="maybe">Sometimes</span></td><td class="kwba-td"><span class="tick"></span> Included</td></tr>
+          <tr><td>SEO blog content</td><td><span class="maybe">+£400–£800/mo</span></td><td><span class="maybe">1 post/mo</span></td><td class="kwba-td"><span class="tick"></span> 2 posts/mo</td></tr>
+          <tr><td>Content calendar + strategy</td><td><span class="tick"></span></td><td><span class="cross"></span></td><td class="kwba-td"><span class="tick"></span> Monthly</td></tr>
+          <tr><td>Domain warm-up + deliverability</td><td><span class="cross"></span></td><td><span class="cross"></span></td><td class="kwba-td"><span class="tick"></span> Managed</td></tr>
+          <tr><td>Live analytics dashboard</td><td><span class="maybe">Basic PDF report</span></td><td><span class="cross"></span></td><td class="kwba-td"><span class="tick"></span> Real-time</td></tr>
+          <tr><td>Monthly strategy call</td><td><span class="maybe">Sometimes</span></td><td><span class="cross"></span></td><td class="kwba-td"><span class="tick"></span> 60 mins</td></tr>
+          <tr><td>Retainer / lock-in contract</td><td><span class="cross"></span> 3–12 months</td><td><span class="cross"></span> Ongoing</td><td class="kwba-td"><span class="tick"></span> None. Ever.</td></tr>
           <tr><td>Average annual cost</td><td style="color:#ef4444">£18,000–£42,000</td><td style="color:#f59e0b">£6,000–£14,400</td><td class="kwba-td" style="color:#4ade80">One-time fee</td></tr>
         </tbody>
       </table>
@@ -313,14 +328,14 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
 
     <!-- NICHE SELECTOR -->
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:36px;justify-content:center" id="niche-tabs">
-      <button class="niche-tab on" onclick="setNiche('contractor',this)">🔧 Contractors</button>
-      <button class="niche-tab" onclick="setNiche('dentist',this)">🦷 Dentists</button>
-      <button class="niche-tab" onclick="setNiche('garage',this)">🚗 Garages</button>
-      <button class="niche-tab" onclick="setNiche('estate',this)">🏠 Estate Agents</button>
-      <button class="niche-tab" onclick="setNiche('restaurant',this)">🍽 Restaurants</button>
-      <button class="niche-tab" onclick="setNiche('salon',this)">💅 Salons</button>
-      <button class="niche-tab" onclick="setNiche('gym',this)">💪 Gyms</button>
-      <button class="niche-tab" onclick="setNiche('legal',this)">⚖ Legal</button>
+      <button class="niche-tab on" onclick="setNiche('contractor',this)">Contractors</button>
+      <button class="niche-tab" onclick="setNiche('dentist',this)">Dentists</button>
+      <button class="niche-tab" onclick="setNiche('garage',this)">Garages</button>
+      <button class="niche-tab" onclick="setNiche('estate',this)">Estate Agents</button>
+      <button class="niche-tab" onclick="setNiche('restaurant',this)">Restaurants</button>
+      <button class="niche-tab" onclick="setNiche('salon',this)">Salons</button>
+      <button class="niche-tab" onclick="setNiche('gym',this)">Gyms</button>
+      <button class="niche-tab" onclick="setNiche('legal',this)">Legal</button>
     </div>
 
     <!-- NICHE HEADLINE + PROBLEM -->
@@ -336,7 +351,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
       <div style="background:var(--dark);padding:28px 24px">
         <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);margin-bottom:10px">Try it first</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;color:var(--white);margin-bottom:4px" id="t1-name">Paid Demo</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--gold);font-weight:300;margin-bottom:6px">£150<span style="font-size:16px;color:var(--mid)"> one-off</span></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--gold);font-weight:300;margin-bottom:6px">£150<span style="font-size:16px;color:var(--mid)">one-off</span></div>
         <div style="font-size:11px;color:var(--mid);margin-bottom:20px;font-style:italic" id="t1-tagline">14-day fully working chatbot trial</div>
         <div style="list-style:none;padding:0;margin:0 0 20px" id="t1-features"></div>
         <button class="btn-dark" onclick="window.location.href='chatbot-demo.html'" style="width:100%;padding:12px;font-size:12px">Start the demo</button>
@@ -344,7 +359,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
 
       <!-- TIER 2 — highlighted (AI Receptionist £500/mo) -->
       <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.3);padding:28px 24px;position:relative">
-        <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0a0906;font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:4px 14px;font-weight:600;white-space:nowrap">Most Popular</div>
+        <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:4px 14px;font-weight:600;white-space:nowrap">Most Popular</div>
         <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Recurring</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;color:var(--white);margin-bottom:4px" id="t2-name">AI Receptionist</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:38px;color:var(--gold);font-weight:300;margin-bottom:6px">£500<span style="font-size:16px;color:var(--mid)">/mo</span></div>
@@ -366,7 +381,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.92);backdrop-fi
 
     <!-- CHATBOT CALLOUT -->
     <div style="border:1px solid rgba(201,168,76,0.3);background:rgba(201,168,76,0.05);padding:24px 28px;margin-bottom:24px;display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
-      <div style="font-size:28px">🤖</div>
+      <div style="font-size:28px"></div>
       <div style="flex:1;min-width:240px">
         <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--white);margin-bottom:5px">Niche-trained AI chatbot — included in every package</div>
         <div style="font-size:12.5px;color:var(--mid);line-height:1.7" id="chatbot-desc">Your chatbot isn't a generic bot. It's trained specifically for trades — it asks "what job do you need?", estimates urgency, collects contact details, and books the slot directly into your calendar. While you're on a job, it's handling the next one.</div>
@@ -505,7 +520,7 @@ setNiche('contractor', document.querySelector('.niche-tab.on'));
           </div>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <a href="chatbot-demo.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:#0a0906;padding:14px 28px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;transition:.2s;text-decoration:none">Try the Demo →</a>
+          <a href="chatbot-demo.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:#fff;padding:14px 28px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;transition:.2s;text-decoration:none">Try the Demo →</a>
           <a href="brief.html" style="display:inline-flex;align-items:center;gap:8px;color:var(--mid);padding:14px 22px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;border:1px solid var(--border);transition:.2s;text-decoration:none">Get it for my client</a>
         </div>
       </div>
@@ -557,5 +572,6 @@ function calcROI(){
 }
 calcROI();
 </script>
+<script src="/assets/parallax.js"></script>
 </body>
 </html>

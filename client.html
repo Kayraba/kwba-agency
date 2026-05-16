@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/api-config.js"></script>
   <!-- API: auto-detects local vs Render backend -->
-  <script>
-    window.API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-      ? ""
-      : "https://YOUR-APP-NAME.onrender.com"; // ← replace with your Render URL
-  </script>
+  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KWBA Agency - Client Portal</title>
@@ -64,29 +61,31 @@
 
             const formData = new FormData();
             formData.append("file", file);
+            formData.append("briefId", briefId);
+            formData.append("tag", tag);
 
             try {
-                const res = await fetch(window.API_BASE + '/client/upload', {
+                // Auth: the /upload endpoint requires a JWT
+                const token = localStorage.getItem('agency_token') || '';
+                const res = await fetch(window.API_BASE + '/upload', {
                     method: "POST",
+                    headers: token ? { 'Authorization': 'Bearer ' + token } : {},
                     body: formData
                 });
+                if (!res.ok){
+                    const body = await res.text();
+                    throw new Error('Server returned ' + res.status + ': ' + body.slice(0,120));
+                }
                 const data = await res.json();
-
-                await fetch(window.API_BASE + '/client/save-file', {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        briefId: briefId,
-                        name: data.name,
-                        url: data.url,
-                        tag: tag
-                    })
-                });
+                if (!data || !data.success){
+                    throw new Error('Upload response missing success flag');
+                }
 
                 status.textContent = "Success! Asset '" + file.name + "' uploaded as '" + tag + "'.";
                 status.className = "success";
             } catch (e) {
-                status.textContent = "Upload failed. Please try again.";
+                status.textContent = "Upload failed: " + (e.message || 'unknown error');
+                status.className = "error";
                 console.error(e);
             }
         }

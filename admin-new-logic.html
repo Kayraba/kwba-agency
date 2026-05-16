@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/api-config.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — KWBA Agency</title>
@@ -162,7 +163,7 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 <!-- LOGIN -->
 <div id="login-screen" class="login-wrap">
   <div class="login-box">
-    <div class="login-icon">🔒</div>
+    <div class="login-icon"></div>
     <h1 class="login-title">KWBA Agency Access</h1>
     <p class="login-sub">Internal dashboard — authorised users only</p>
     <div id="login-error" class="login-error" style="display:none">Incorrect credentials. Try again.</div>
@@ -183,9 +184,9 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
   </nav>
 
   <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('briefs',this)">📋 Client Briefs <span class="tab-badge" id="brief-count-badge">0</span></button>
-    <button class="tab" onclick="switchTab('aihub',this)">🤖 AI Hub</button>
-    <button class="tab" onclick="switchTab('settings',this)">⚙ Settings</button>
+    <button class="tab active" onclick="switchTab('briefs',this)">Client Briefs <span class="tab-badge" id="brief-count-badge">0</span></button>
+    <button class="tab" onclick="switchTab('aihub',this)">AI Hub</button>
+    <button class="tab" onclick="switchTab('settings',this)">Settings</button>
   </div>
 
   <!-- BRIEFS PANEL -->
@@ -259,11 +260,11 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 
         <div class="ai-run-bar">
           <button class="ai-run-btn" id="run-btn" onclick="runAgentLogic(currentAgent)">▶ Run Agent</button>
-          <button class="ai-run-btn" style="background:var(--blue); color:white;" onclick="runAutomationChain()">🚀 Full Agency Run</button>
+          <button class="ai-run-btn" style="background:var(--blue); color:white;" onclick="runAutomationChain()">Full Agency Run</button>
           <button class="ai-copy-btn" onclick="copyOutput()">⎘ Copy</button>
-          <button class="ai-pdf-btn" id="pdf-btn" onclick="exportToPDF()">📄 PDF Report</button>
+          <button class="ai-pdf-btn" id="pdf-btn" onclick="exportToPDF()">PDF Report</button>
           <span class="ai-status" id="ai-status"></span>
-          <button class="ai-clear-btn" onclick="clearOutput()">✕ Clear</button>
+          <button class="ai-clear-btn" onclick="clearOutput()">Clear</button>
         </div>
 
         <div class="ai-output" id="ai-output">
@@ -449,8 +450,8 @@ function renderBriefBody(b, idx) {
   if (b.bizDesc) html += `<div class="brief-full"><label>Description</label><p>${g(b.bizDesc)}</p></div>`;
   
   html += `<div class="brief-actions">
-    <button class="bBtn bBtn-ai" onclick="loadBriefIntoHub(${idx})">🤖 AI Specialist</button>
-    <button class="bBtn bBtn-del" onclick="deleteBrief(${b.id})">✕ Remove</button>
+    <button class="bBtn bBtn-ai" onclick="loadBriefIntoHub(${idx})">AI Specialist</button>
+    <button class="bBtn bBtn-del" onclick="deleteBrief(${b.id})">Remove</button>
   </div>`;
   return html;
 }
@@ -471,16 +472,16 @@ async function deleteBrief(id) {
 
 // ─── AI HUB ────────────────────────────────────────────────────────────────
 const AGENTS = {
-  summary: { icon: '📋', name: 'Brief Summariser', desc: 'Sharp 1-page overview', prompt: (ctx) => `Summarise this brief for KWBA Agency:\n\n${ctx}` },
-  'website-copy': { icon: '✍️', name: 'Website Copywriter', desc: 'Hero & Service page copy', prompt: (ctx) => `Write conversion-focused website copy for:\n\n${ctx}` },
-  'seo-pages': { icon: '🔍', name: 'SEO Page Builder', desc: 'Keyword-optimised landing pages', prompt: (ctx) => `Build an SEO landing page strategy for:\n\n${ctx}` },
-  strategy: { icon: '🎯', name: 'Marketing Strategist', desc: '90-day growth roadmap', prompt: (ctx) => `Create a 90-day marketing strategy for:\n\n${ctx}` },
-  'email-seq': { icon: '📧', name: 'Email Sequence', desc: 'Cold & Nurture emails', prompt: (ctx) => `Write a 5-email sequence for:\n\n${ctx}` },
-  linkedin: { icon: '💼', name: 'LinkedIn Content', desc: 'Ghostwriting service', prompt: (ctx) => `Generate 14 LinkedIn posts for:\n\n${ctx}` },
-  ads: { icon: '📢', name: 'Ad Copy Gen', desc: 'Meta & Google Ads', prompt: (ctx) => `Write ad copy variants for:\n\n${ctx}` },
-  proposal: { icon: '📄', name: 'Proposal Writer', desc: 'Full agency proposals', prompt: (ctx) => `Draft a professional proposal for:\n\n${ctx}` },
-  onboarding: { icon: '🚀', name: 'Onboarding Pack', desc: 'Checklists & Timelines', prompt: (ctx) => `Create an onboarding checklist for:\n\n${ctx}` },
-  faq: { icon: '❓', name: 'FAQ Generator', desc: 'Objection handling', prompt: (ctx) => `Generate a site FAQ based on:\n\n${ctx}` }
+  summary: { icon: '', name: 'Brief Summariser', desc: 'Sharp 1-page overview', prompt: (ctx) => `Summarise this brief for KWBA Agency:\n\n${ctx}` },
+  'website-copy': { icon: '', name: 'Website Copywriter', desc: 'Hero & Service page copy', prompt: (ctx) => `Write conversion-focused website copy for:\n\n${ctx}` },
+  'seo-pages': { icon: '', name: 'SEO Page Builder', desc: 'Keyword-optimised landing pages', prompt: (ctx) => `Build an SEO landing page strategy for:\n\n${ctx}` },
+  strategy: { icon: '', name: 'Marketing Strategist', desc: '90-day growth roadmap', prompt: (ctx) => `Create a 90-day marketing strategy for:\n\n${ctx}` },
+  'email-seq': { icon: '', name: 'Email Sequence', desc: 'Cold & Nurture emails', prompt: (ctx) => `Write a 5-email sequence for:\n\n${ctx}` },
+  linkedin: { icon: '', name: 'LinkedIn Content', desc: 'Ghostwriting service', prompt: (ctx) => `Generate 14 LinkedIn posts for:\n\n${ctx}` },
+  ads: { icon: '', name: 'Ad Copy Gen', desc: 'Meta & Google Ads', prompt: (ctx) => `Write ad copy variants for:\n\n${ctx}` },
+  proposal: { icon: '', name: 'Proposal Writer', desc: 'Full agency proposals', prompt: (ctx) => `Draft a professional proposal for:\n\n${ctx}` },
+  onboarding: { icon: '', name: 'Onboarding Pack', desc: 'Checklists & Timelines', prompt: (ctx) => `Create an onboarding checklist for:\n\n${ctx}` },
+  faq: { icon: '', name: 'FAQ Generator', desc: 'Objection handling', prompt: (ctx) => `Generate a site FAQ based on:\n\n${ctx}` }
 };
 
 function renderAgentSidebar() {

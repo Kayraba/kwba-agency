@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/api-config.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>KWBA Prospector — Real Lead Discovery</title>
@@ -271,7 +272,7 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
   <div class="topright">
     <span class="tauthinfo" id="auth-info">Not connected</span>
     <button class="tpill" onclick="openLoginModal()">Log In</button>
-    <button class="tpill gold" id="bulk-send-all-btn" onclick="bulkSendAll()" style="display:none">⚡ Send All Queued</button>
+    <button class="tpill gold" id="bulk-send-all-btn" onclick="bulkSendAll()" style="display:none">Send All Queued</button>
   </div>
 </header>
 
@@ -279,8 +280,8 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
   <!-- ═══ LEFT PANEL ═══ -->
   <aside class="left">
     <div class="lnav">
-      <button class="ln on" onclick="setLeftTab('search',this)">🔍 Search</button>
-      <button class="ln" onclick="setLeftTab('queue',this)">✉ Outreach Queue</button>
+      <button class="ln on" onclick="setLeftTab('search',this)">Search</button>
+      <button class="ln" onclick="setLeftTab('queue',this)">Outreach Queue</button>
     </div>
 
     <!-- SEARCH TAB -->
@@ -338,7 +339,7 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
           </div>
         </div>
 
-        <button class="sb-run" id="search-btn" onclick="runSearch()">⚡ Find Leads</button>
+        <button class="sb-run" id="search-btn" onclick="runSearch()">Find Leads</button>
         <div class="sb-status" id="search-status"></div>
       </div>
 
@@ -412,8 +413,8 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 
       <div class="dactions">
         <button class="btn btn-o btn-sm" onclick="copyCurrentPane()">⎘ Copy tab</button>
-        <button class="btn btn-o btn-sm" id="run-audit-btn" onclick="runAuditForCurrent()">⚡ Run AI Audit</button>
-        <button class="btn btn-o btn-sm" onclick="markContacted()">✓ Mark Contacted</button>
+        <button class="btn btn-o btn-sm" id="run-audit-btn" onclick="runAuditForCurrent()">Run AI Audit</button>
+        <button class="btn btn-o btn-sm" onclick="markContacted()">Mark Contacted</button>
         <button class="btn btn-g btn-sm" onclick="queueOutreachForCurrent()">→ Queue Outreach</button>
         <span style="margin-left:auto;font-size:9.5px;color:var(--muted2);letter-spacing:.04em" id="d-status"></span>
       </div>
@@ -434,7 +435,7 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
               <option value="5">Day 5</option>
             </select>
           </div>
-          <button class="btn btn-g btn-sm" onclick="sendSelectedDay()">⚡ Approve + Send</button>
+          <button class="btn btn-g btn-sm" onclick="sendSelectedDay()">Approve + Send</button>
           <button class="btn btn-o btn-sm" onclick="skipSelectedDay()">Skip</button>
         </div>
       </div>
@@ -469,7 +470,7 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 // ═══════════════════════════════════════════════════════
 // CONFIG — set your Render URL here
 // ═══════════════════════════════════════════════════════
-const API = 'https://kwba-agency.onrender.com';
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '' : window.location.origin;
 
 // ═══════════════════════════════════════════════════════
 // AUTH
@@ -764,7 +765,7 @@ async function runSearch() {
 
     SELECTED.clear();
     renderLeadList();
-    setStatus(`✓ ${LEADS.length} leads found (${places.length} raw, ${LEADS.length} above gap ${minGap})`);
+    setStatus(` ${LEADS.length} leads found (${places.length} raw, ${LEADS.length} above gap ${minGap})`);
 
     if (LEADS.length > 0) {
       openLead(LEADS[0]);
@@ -801,7 +802,7 @@ function renderLeadList() {
       <div class="ritem-body">
         <div class="ri-name">${esc(l.name)}</div>
         <div class="ri-meta">
-          ${l.rating !== null ? `<span><span class="star">★</span><span class="${l.rating < 4 ? 'low' : ''}">${l.rating.toFixed(1)}</span></span>` : '<span style="color:var(--muted2)">no rating</span>'}
+          ${l.rating !== null ? `<span><span class="star"></span><span class="${l.rating < 4 ? 'low' : ''}">${l.rating.toFixed(1)}</span></span>` : '<span style="color:var(--muted2)">no rating</span>'}
           <span>${l.reviews !== null ? l.reviews + ' reviews' : 'no reviews'}</span>
           ${l.website ? '' : '<span style="color:var(--red)">no site</span>'}
         </div>
@@ -854,7 +855,7 @@ function openLead(lead) {
   gapNum.className = 'dh-gapnum ' + (lead.gapScore >= 60 ? 'hot' : lead.gapScore >= 35 ? 'med' : 'cool');
   document.getElementById('dh-meta').innerHTML = `
     <span>${lead.city ? esc(lead.city) : '—'}</span>
-    <span>${lead.rating !== null ? '★ ' + lead.rating.toFixed(1) : 'no rating'}</span>
+    <span>${lead.rating !== null ? ' ' + lead.rating.toFixed(1) : 'no rating'}</span>
     <span>${lead.reviews !== null ? lead.reviews + ' reviews' : 'no reviews'}</span>
     <span>${lead.phone ? esc(lead.phone) : 'no phone'}</span>
     ${lead.website ? `<a href="${esc(lead.website)}" target="_blank">↗ Website</a>` : '<span style="color:var(--red)">no website</span>'}
@@ -870,7 +871,7 @@ function openLead(lead) {
   renderAgents(lead);
   renderPackage(lead);
   if (lead.auditText) renderAuditCached(lead);
-  else document.getElementById('dp-audit').innerHTML = `<div class="aud-empty">Click <strong style="color:var(--gold)">⚡ Run AI Audit</strong> in the action bar below to generate the full 7-step diagnostic.</div>`;
+  else document.getElementById('dp-audit').innerHTML = `<div class="aud-empty">Click <strong style="color:var(--gold)"> Run AI Audit</strong> in the action bar below to generate the full 7-step diagnostic.</div>`;
   renderOutreachPane(lead);
 
   document.getElementById('d-status').textContent = lead.status !== 'new' ? lead.status : '';
@@ -891,7 +892,7 @@ function renderOverview(lead) {
   const intel = NICHE_INTEL[lead.niche] || NICHE_INTEL.other;
   const signals = lead.gapSignals.map(s => `
     <div class="gsig${s.hit ? ' hit' : ''}">
-      <span class="g-ico">${s.hit ? '⚠' : '○'}</span>
+      <span class="g-ico">${s.hit ? '' : '○'}</span>
       <span class="g-lbl">${esc(s.label)}</span>
       <span class="g-pts">+${s.pts}</span>
     </div>`).join('');
@@ -1010,7 +1011,7 @@ UK tone. Specific to ${CURRENT.name}. Under 130 words per email. Single CTA. No 
 
 function renderAuditCached(lead) {
   document.getElementById('dp-audit').innerHTML = `
-    <div class="aud-status">✓ Audit cached · click ⚡ Run AI Audit to regenerate</div>
+    <div class="aud-status">Audit cached · click Run AI Audit to regenerate</div>
     <div class="audit-wrap">${mdToHtml(lead.auditText)}</div>`;
 }
 
@@ -1107,7 +1108,7 @@ async function generateQuickOutreach() {
       subject: `Quick observation about ${CURRENT.name}`,
       body: `Hi ${fn},
 
-Came across ${CURRENT.name} on Google Maps.${CURRENT.rating !== null && CURRENT.rating >= 4.2 ? ` Strong ${CURRENT.rating.toFixed(1)}★ rating — clearly doing good work.` : ''}
+Came across ${CURRENT.name} on Google Maps.${CURRENT.rating !== null && CURRENT.rating >= 4.2 ? ` Strong ${CURRENT.rating.toFixed(1)} rating — clearly doing good work.` : ''}
 
 One thing stood out: ${mainGap.toLowerCase()}. For a ${intel.label?.split(' ')[0]?.toLowerCase() || 'local business'} in ${city}, that's likely costing somewhere around £${(intel.revenuePerLead * 5).toLocaleString()}-£${(intel.revenuePerLead * 8).toLocaleString()}/month in missed leads.
 
@@ -1272,7 +1273,7 @@ function renderQueueMessages() {
       <span class="seq-badge">${m.day === 1 && m.subject === 'SMS' ? 'SMS' : 'Day ' + m.day}</span>
       ${m.subject && m.subject !== 'SMS' ? `<div class="seq-subj">${esc(m.subject)}</div>` : ''}
       <div class="seq-body">${esc(m.body)}</div>
-      <span class="seq-status ${m.sent ? 'ss-sent' : m.skipped ? 'ss-skipped' : 'ss-pending'}">${m.sent ? '✓ Sent' : m.skipped ? 'Skipped' : 'Pending'}</span>
+      <span class="seq-status ${m.sent ? 'ss-sent' : m.skipped ? 'ss-skipped' : 'ss-pending'}">${m.sent ? ' Sent' : m.skipped ? 'Skipped' : 'Pending'}</span>
     </div>`).join('');
 }
 

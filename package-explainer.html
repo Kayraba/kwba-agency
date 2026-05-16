@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#fafaf7"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --cream:#0f0e0c;--cream2:#1a1814;--cream3:#252219;
-  --gold:#c9a84c;--gold-light:#d4b86a;--gold-dim:rgba(201,168,76,0.12);--gold-border:rgba(201,168,76,0.4);
-  --ink:#f0ece4;--ink2:#ddd8ce;--muted:#9a9488;--muted2:#6a6460;
-  --border:rgba(201,168,76,0.18);--border2:rgba(201,168,76,0.08);
+  --cream: #fafaf7;--cream2:#ffffff;--cream3:#f4f1ea;
+  --gold:#b08a2e;--gold-light:#d4b86a;--gold-dim:rgba(176,138,46,0.12);--gold-border:rgba(176,138,46,0.4);
+  --ink:#1a1814;--ink2:#3a342a;--muted:#7a7468;--muted2:#a8a094;
+  --border:rgba(176,138,46,0.18);--border2:rgba(176,138,46,0.08);
 }
 html,body{overflow:hidden;height:100%;margin:0;background:var(--cream);}
 .root{background:var(--cream);font-family:'Montserrat',sans-serif;color:var(--ink);width:100%;display:flex;flex-direction:column;height:100vh;}
@@ -44,11 +45,11 @@ html,body{overflow:hidden;height:100%;margin:0;background:var(--cream);}
 .two-col.flip>*{direction:ltr;}
 
 /* Buttons */
-.btn-dark{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:11px 22px;border:none;border-radius:0;cursor:pointer;transition:opacity .2s;}
+.btn-dark{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color: #fafaf7;padding:11px 22px;border:none;border-radius:0;cursor:pointer;transition:opacity .2s;}
 .btn-dark:hover{opacity:.82;}
 .btn-line{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:transparent;color:var(--muted);padding:11px 22px;border:1px solid var(--border);border-radius:0;cursor:pointer;transition:all .2s;}
 .btn-line:hover{border-color:var(--gold);color:var(--ink);}
-.btn-gold{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:11px 22px;border:none;border-radius:0;cursor:pointer;transition:opacity .2s;}
+.btn-gold{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color: #fafaf7;padding:11px 22px;border:none;border-radius:0;cursor:pointer;transition:opacity .2s;}
 .btn-gold:hover{opacity:.88;}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px;}
 
@@ -63,7 +64,7 @@ html,body{overflow:hidden;height:100%;margin:0;background:var(--cream);}
 .vid-slot{
   width:100%;
   aspect-ratio:9/16;
-  background:#1a1814;
+  background:#ffffff;
   overflow:hidden;
   position:relative;
 }
@@ -73,7 +74,7 @@ html,body{overflow:hidden;height:100%;margin:0;background:var(--cream);}
   height:100%;
   display:block;
   object-fit:cover;
-  background:#1a1814;
+  background:#ffffff;
 }
 .vid-label-row{margin-top:8px;display:flex;justify-content:space-between;align-items:center;padding:0 2px;}
 .vid-label-row .site{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
@@ -87,9 +88,9 @@ html,body{overflow:hidden;height:100%;margin:0;background:var(--cream);}
 .hstat-sep{width:1px;background:var(--border);align-self:stretch;}
 
 /* Package cards */
-.pkg{background:#1a1814;border:1px solid var(--border);padding:24px 20px;position:relative;transition:border-color .25s;cursor:pointer;}
+.pkg{background:#ffffff;border:1px solid var(--border);padding:24px 20px;position:relative;transition:border-color .25s;cursor:pointer;}
 .pkg:hover{border-color:var(--gold-border);}
-.pkg.featured{border-color:var(--gold);background:#1f1c16;}
+.pkg.featured{border-color:var(--gold);background:#f4f1ea;}
 .pkg-pop{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-family:'Montserrat',sans-serif;font-size:7px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;padding:3px 12px;white-space:nowrap;}
 .pkg-tier{font-size:7.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);font-weight:400;margin-bottom:6px;}
 .pkg-price{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--ink);line-height:1;margin-bottom:3px;display:flex;align-items:flex-start;}
@@ -105,7 +106,7 @@ html,body{overflow:hidden;height:100%;margin:0;background:var(--cream);}
 .feat-li li.off::before{background:var(--border);}
 .pkg-btn-wrap{margin-top:16px;}
 .pkg-cta{width:100%;font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:11px 0;border:1px solid var(--gold-border);background:transparent;color:var(--ink);cursor:pointer;transition:all .22s;}
-.pkg-cta:hover,.pkg.featured .pkg-cta{background:var(--gold);color:#0f0e0c;}
+.pkg-cta:hover,.pkg.featured .pkg-cta{background:var(--gold);color: #fafaf7;}
 .three-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;}
 .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);margin-top:20px;}
 .stat{padding:16px 0;text-align:center;position:relative;}
@@ -129,12 +130,30 @@ html,body{overflow:hidden;height:100%;margin:0;background:var(--cream);}
 .pause-btn svg{flex-shrink:0;}
 
 /* Find your fit quick-choice cards */
-.choice-card{cursor:pointer;border:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px;transition:border-color .2s;background:#1a1814;}
+.choice-card{cursor:pointer;border:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px;transition:border-color .2s;background:#ffffff;}
 .choice-card:hover{border-color:var(--gold-border);}
 .choice-card.popular{border-color:var(--gold);position:relative;}
 </style>
+  <link rel="stylesheet" href="/assets/parallax.css"/>
 </head>
 <body>
+<!-- Scroll progress -->
+<div class="scroll-progress" id="sp"></div>
+<!-- Parallax background -->
+<div class="bg-parallax" aria-hidden="true">
+  <div class="bg-layer bg-l1" data-speed="0.15"></div>
+  <div class="bg-layer bg-l2" data-speed="0.25"></div>
+  <div class="bg-layer bg-l3" data-speed="0.18"></div>
+  <div class="bg-layer bg-l4" data-speed="0.22"></div>
+  <div class="bg-layer bg-l5" data-speed="0.16"></div>
+</div>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-noise" aria-hidden="true"></div>
+<div class="watermark wm-1" data-speed="0.08">design</div>
+<div class="watermark wm-2" data-speed="0.06">marketing</div>
+<div class="watermark wm-3" data-speed="0.07">growth</div>
+<div class="watermark wm-4" data-speed="0.05">results</div>
+
 <div class="root">
 
   <div class="slides" id="sw">
@@ -406,7 +425,7 @@ html,body{overflow:hidden;height:100%;margin:0;background:var(--cream);}
 <!-- Master video lives here — JS moves it into slots -->
 <video id="masterVideo"
   playsinline
-  style="width:100%;height:100%;display:block;object-fit:cover;background:#1a1814;"
+  style="width:100%;height:100%;display:block;object-fit:cover;background:#ffffff;"
   src="char-explainer.mp4"></video>
 
 <script>
@@ -555,5 +574,6 @@ vid.play().catch(() => {
 
 function openLink(url) { window.open(url, '_blank'); }
 </script>
+<script src="/assets/parallax.js"></script>
 </body>
 </html>

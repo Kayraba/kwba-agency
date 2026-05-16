@@ -11,6 +11,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const fetch = require("node-fetch");
 const nodemailer = require("nodemailer");
+const { mountAgentV2 } = require("./agent_v2");
 
 const app = express();
 app.use(express.json());
@@ -134,7 +135,7 @@ const initDb = async () => {
       phone TEXT,
       email TEXT,
       color TEXT DEFAULT '#c9a84c',
-      avatar TEXT DEFAULT '💬',
+      avatar TEXT DEFAULT '',
       knowledge_base TEXT,
       system_prompt TEXT,
       hours TEXT,
@@ -735,7 +736,7 @@ app.get("/api/chatbot/:slug", async (req, res) => {
       niche: c.niche,
       city: c.city,
       color: c.color || '#c9a84c',
-      avatar: c.avatar || '💬',
+      avatar: c.avatar || '',
       welcome_message: c.welcome_message || `Hi! I'm the AI receptionist for ${c.business_name}. How can I help you today?`,
       phone: c.phone || null,
       email: c.email || null,
@@ -931,7 +932,7 @@ app.post("/api/chatbots", authenticate, async (req, res) => {
       'knowledge_base','system_prompt','hours','services','pricing','service_area','about',
       'wont_do','booking_url','lead_threshold','welcome_message','tone','owner_user_id'];
     const values = [slug, b.business_name, b.niche || null, b.city || null, b.phone || null,
-      b.email || null, b.color || '#c9a84c', b.avatar || '💬', b.knowledge_base || null,
+      b.email || null, b.color || '#c9a84c', b.avatar || '', b.knowledge_base || null,
       b.system_prompt || null, b.hours || null, b.services || null, b.pricing || null,
       b.service_area || null, b.about || null, b.wont_do || null, b.booking_url || null,
       b.lead_threshold || 3, b.welcome_message || null, b.tone || 'warm-professional',
@@ -1015,6 +1016,15 @@ app.post("/upload", authenticate, upload.single("file"), async (req, res) => {
 
 app.use("/uploads", express.static("uploads"));
 app.use(express.static("."));
+
+// ── Agent V2: production-grade infrastructure (RAG, tools, memory, observability, safety, agentic loops)
+// Adds: /agent-v2/run, /agent-v2/save-output, /agent-v2/telemetry, /agent-v2/safety-flags, /agent-v2/tools-status
+// Does NOT remove the legacy /stream-agent — admin can use either while you transition.
+try {
+  mountAgentV2(app, db, isProduction, authenticate);
+} catch (e) {
+  console.error("Agent V2 failed to mount:", e.message);
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`KWBA Pro OS running on port ${PORT}`));

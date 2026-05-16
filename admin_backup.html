@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>window.API_BASE=(window.location.hostname==="localhost"||window.location.hostname==="127.0.0.1")?"":"https://kwba-agency.onrender.com";</script>
+<script src="/assets/api-config.js"></script>
+  
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — KWBA Agency OS v2</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -211,16 +212,16 @@ a{color:inherit;text-decoration:none}button{cursor:pointer;font-family:'DM Sans'
   </header>
   <nav class="sidenav">
     <div class="navlabel">Overview</div>
-    <button class="navitem on" onclick="goto('dashboard',this)"><span class="ni">📊</span>Dashboard</button>
-    <button class="navitem" onclick="goto('briefs',this)"><span class="ni">📋</span>Client Briefs<span class="nb" id="bnav">0</span></button>
+    <button class="navitem on" onclick="goto('dashboard',this)"><span class="ni"></span>Dashboard</button>
+    <button class="navitem" onclick="goto('briefs',this)"><span class="ni"></span>Client Briefs<span class="nb" id="bnav">0</span></button>
     <div class="navlabel">AI Workspace</div>
-    <button class="navitem" onclick="goto('aihub',this)"><span class="ni">🤖</span>AI Specialists</button>
-    <button class="navitem" onclick="goto('pipelines',this)"><span class="ni">⚡</span>Pipelines</button>
+    <button class="navitem" onclick="goto('aihub',this)"><span class="ni"></span>AI Specialists</button>
+    <button class="navitem" onclick="goto('pipelines',this)"><span class="ni"></span>Pipelines</button>
     <div class="navlabel">Reporting</div>
-    <button class="navitem" onclick="goto('analytics',this)"><span class="ni">📈</span>Analytics</button>
-    <button class="navitem" onclick="goto('activity',this)"><span class="ni">🕒</span>Activity Log</button>
+    <button class="navitem" onclick="goto('analytics',this)"><span class="ni"></span>Analytics</button>
+    <button class="navitem" onclick="goto('activity',this)"><span class="ni"></span>Activity Log</button>
     <div class="navlabel">System</div>
-    <button class="navitem" onclick="goto('settings',this)"><span class="ni">⚙</span>Settings</button>
+    <button class="navitem" onclick="goto('settings',this)"><span class="ni"></span>Settings</button>
     <div class="navbot">KWBA OS v2 · 26 Agents</div>
   </nav>
   <main class="maincontent">
@@ -238,7 +239,7 @@ a{color:inherit;text-decoration:none}button{cursor:pointer;font-family:'DM Sans'
       </div>
     </div>
     <div class="panel" id="panel-briefs">
-      <div class="pghead"><div><h1 class="pgtitle">Client <em>Briefs</em></h1><p class="pgsub" id="bsub">Loading…</p></div><div class="pgactions"><button class="btn btn-o btn-sm" onclick="loadBriefs()">↻ Refresh</button><button class="btn btn-g btn-sm" onclick="goto('aihub',document.querySelectorAll('.navitem')[3])">🤖 AI Hub</button></div></div>
+      <div class="pghead"><div><h1 class="pgtitle">Client <em>Briefs</em></h1><p class="pgsub" id="bsub">Loading…</p></div><div class="pgactions"><button class="btn btn-o btn-sm" onclick="loadBriefs()">↻ Refresh</button><button class="btn btn-g btn-sm" onclick="goto('aihub',document.querySelectorAll('.navitem')[3])">AI Hub</button></div></div>
       <div class="fbar">
         <button class="fc on" onclick="setF('all',this)">All</button>
         <button class="fc" onclick="setF('new',this)">New</button>
@@ -257,8 +258,8 @@ a{color:inherit;text-decoration:none}button{cursor:pointer;font-family:'DM Sans'
         <div class="hubside">
           <div class="hubsidehead">
             <div class="hubsidetitle">Quick Pipelines</div>
-            <button class="pipebtn pbcore" onclick="runCore()">⚡ Core Pipeline (6)</button>
-            <button class="pipebtn pball" onclick="runAll()">🚀 All 26 Agents</button>
+            <button class="pipebtn pbcore" onclick="runCore()">Core Pipeline (6)</button>
+            <button class="pipebtn pball" onclick="runAll()">All 26 Agents</button>
           </div>
           <div class="agscroll" id="aglist"></div>
         </div>
@@ -288,9 +289,9 @@ a{color:inherit;text-decoration:none}button{cursor:pointer;font-family:'DM Sans'
           <div class="runbar">
             <button class="runbtn" id="rbtn" onclick="runAgent()">▶ Run Agent</button>
             <button class="cpybtn" onclick="cpyOut()">⎘ Copy</button>
-            <button class="pdfbtn" id="pdfbtn" onclick="expPDF()">📄 PDF</button>
+            <button class="pdfbtn" id="pdfbtn" onclick="expPDF()">PDF</button>
             <span class="aistat" id="aistat"></span>
-            <button class="clrbtn" onclick="clrOut()">✕ Clear</button>
+            <button class="clrbtn" onclick="clrOut()">Clear</button>
           </div>
           <div class="otabs" id="otabs" style="display:none"></div>
           <div class="output" id="output">
@@ -349,37 +350,37 @@ a{color:inherit;text-decoration:none}button{cursor:pointer;font-family:'DM Sans'
     </div>
   </main>
 </div>
-<div class="toast" id="tst"><span class="ticon" id="ticon">✓</span><span id="tmsg"></span></div>
+<div class="toast" id="tst"><span class="ticon" id="ticon"></span><span id="tmsg"></span></div>
 <script>
 let AB=[],CA='summariser',CB=null,CT='professional',AT=localStorage.getItem('agency_token'),PO={};
 const TONES={professional:'Tone: authoritative and precise. Use clear business language.',bold:'Tone: bold and direct. Make strong recommendations. No hedging.',friendly:'Tone: warm and approachable. Expert but conversational.',luxury:'Tone: refined and premium. Speak to exceptional quality and high standards.'};
 function BP(role,goal,fmt,cons){return(ctx,tone)=>`You are ${role} at KWBA Agency, a premium UK digital marketing agency.\n\nGOAL: ${goal}\n\nOUTPUT FORMAT:\n${fmt}\n\nCONSTRAINTS:\n${cons}\n- Every line must be specific to this client — no generic advice.\n- ${TONES[tone]||TONES.professional}\n- Minimum 600 words. Use markdown (## H2, ### H3, **bold**, bullets, tables).\n- End with ## Next Steps (3 prioritised actions).\n\n=== CLIENT BRIEF ===\n${ctx}`}
 const AG={
-summariser:{i:'📋',n:'The Summariser',d:'1-page internal project overview',t:['Strategy','Use first','~30s'],p:BP('The Summariser — senior account director','Produce a tight executive-level internal brief any team member can act on immediately.','## Business Snapshot\n## The Offer & Audience\n## Project Goals & KPIs\n## Key Constraints & Risks\n## Recommended Next 3 Steps','- 2-sentence elevator pitch at top\n- Flag red flags or missing info')},
-strategist:{i:'🎯',n:'The Strategist',d:'90-day growth roadmap',t:['Strategy','High value','~45s'],p:BP('The Strategist — growth consultant 10+ years','Build a realistic, detailed 90-day growth plan.','## Positioning & Differentiation\n## Channel Strategy (prioritised)\n## Month 1 — Foundation\n## Month 2 — Growth\n## Month 3 — Scale\n## KPIs & Measurement Framework','- Specific platforms, tactics, expected outcomes\n- Realistic budget ranges per channel')},
-deal_maker:{i:'🤝',n:'The Deal Maker',d:'Proposal that closes',t:['Strategy','Revenue critical','~45s'],p:BP('The Deal Maker — senior BD director','Write a compelling proposal that moves the prospect to a signed contract.','## Executive Summary\n## Your Situation\n## Our Recommended Solution\n## Scope of Work & Deliverables\n## Project Timeline\n## Investment Options (3 tiers)\n## Why KWBA\n## Next Steps','- "You" language throughout — about them, not us\n- 3 investment tiers: Starter, Growth, Elite\n- Time-limited CTA')},
-ops_manager:{i:'🚀',n:'The Ops Manager',d:'Onboarding & delivery plan',t:['Operations','~35s'],p:BP('The Ops Manager — meticulous project manager','Create a complete onboarding and delivery pack.','## Kickoff Checklist (agency side)\n## Client Welcome Email Draft\n## Assets Required from Client\n## Project Milestones & Dates\n## Communication Protocol\n## Handoff & Sign-off Process','- Specific file formats and access requirements\n- Every tool/login the client must share')},
-market_researcher:{i:'🔬',n:'The Market Researcher',d:'Competitive landscape & gaps',t:['Research','~40s'],p:BP('The Market Researcher — data-driven strategist','Competitive intelligence and market opportunity analysis.','## Market Overview & Size\n## Top 5 Competitors (table)\n## Competitor Weaknesses to Exploit\n## Underserved Segments\n## Market Entry Angles\n## Recommended Positioning Gap','- Comparison table for competitors\n- 3 specific opportunities the client can own')},
-financial_modeller:{i:'💷',n:'The Financial Modeller',d:'Budget scenarios & ROI',t:['Finance','~35s'],p:BP('The Financial Modeller — performance marketing CFO','Build 3 realistic budget scenarios with projected ROI.','## Scenario 1 — Conservative\n## Scenario 2 — Moderate\n## Scenario 3 — Aggressive\n## Assumptions & Benchmarks\n## Break-Even Analysis\n## 12-Month Revenue Projection','- Industry-standard conversion rates for their niche\n- CPL, CPA, ROAS assumptions\n- Honest timelines')},
-seo_lead:{i:'🔍',n:'The SEO Lead',d:'Full keyword & on-page strategy',t:['SEO','~40s'],p:BP('The SEO Lead — technical and content SEO specialist','Comprehensive SEO strategy and keyword map.','## SEO Opportunity Assessment\n## Primary Keywords (money pages)\n## Secondary Keywords\n## Page-by-Page Optimisation Plan\n## Meta Title & Description Templates\n## Content Gap Analysis\n## 6-Month SEO Roadmap','- Search intent per keyword cluster\n- 5 specific page URLs with H1 recommendations\n- Internal linking strategy')},
-backlink_builder:{i:'🔗',n:'The Backlink Builder',d:'Link acquisition & PR outreach',t:['SEO','~35s'],p:BP('The Backlink Builder — digital PR specialist','Link-building and digital PR plan with outreach templates.','## Link Opportunity Analysis\n## Top 10 Target Site Types\n## 3 Linkable Asset Ideas\n## Outreach Email 1 (journalist)\n## Outreach Email 2 (resource pages)\n## Outreach Email 3 (partnerships)\n## 90-Day Outreach Calendar','- Subject line for each email\n- Focus on DR 20-60 opportunities')},
-local_seo:{i:'📍',n:'The Local SEO Pro',d:'Google Maps & local pack',t:['SEO','~35s'],p:BP('The Local SEO Pro — local search specialist','Complete local SEO action plan.','## GBP Optimisation Checklist\n## Category & Attribute Strategy\n## Local Keyword Map\n## Citation Building Plan (top 20)\n## Review Acquisition Strategy\n## Local Content Plan (geo-pages)\n## NAP Consistency Audit','- GBP post templates\n- Review request email/SMS templates\n- Exact directory names')},
-technical_auditor:{i:'⚙️',n:'The Technical Auditor',d:'Speed, crawl & Core Web Vitals',t:['SEO','~35s'],p:BP('The Technical Auditor — senior technical SEO engineer','Technical SEO audit framework and priority fix list.','## Technical Health Overview\n## Core Web Vitals Action Plan\n## Crawlability & Indexation Issues\n## Structured Data Recommendations\n## Site Architecture\n## Speed Optimisation Checklist\n## Priority Fix List (P1/P2/P3)','- P1/P2/P3 classification for all issues\n- Tools to use for each audit area')},
-copywriter:{i:'✍️',n:'The Copywriter',d:'Full website conversion copy',t:['Creative','High value','~50s'],p:BP('The Copywriter — direct-response copywriter 15 years','Write complete website copy that converts visitors into enquiries.','## Hero Section (headline + subheadline + CTA)\n## Trust Bar / Social Proof Strip\n## Services Section (3 services)\n## About / Our Approach\n## Results & Proof Section\n## FAQ (5 Q&As)\n## Final CTA Section\n## Footer Tagline','- Every section has a clear job\n- Power words, eliminate passive voice\n- Min 80 words per section')},
-brand_guide:{i:'🎨',n:'The Brand Guide',d:'Identity, voice & messaging pillars',t:['Creative','~40s'],p:BP('The Brand Guide — brand strategist and creative director','Define brand identity, voice, and messaging system.','## Brand Essence (1 sentence)\n## Brand Personality (5 traits)\n## Voice & Tone Guide\n## Messaging Pillars (3-4 themes)\n## Language Do/Don\'t\n## Colour & Visual Direction\n## Typography Notes\n## Brand Story','- Voice guide with examples\n- "We are / we are not" statements')},
-ux_architect:{i:'🧭',n:'The UX Architect',d:'User journeys & wireframe logic',t:['Creative','~40s'],p:BP('The UX Architect — senior UX strategist','Design optimal user experience and site architecture.','## Primary User Personas (2-3)\n## Core User Journeys\n## Recommended Site Structure\n## Page-by-Page Section Breakdown\n## Conversion Optimisation Points\n## Mobile UX Considerations\n## CTA Strategy & Placement','- Realistic personas based on niche\n- Map each journey from first touch to conversion')},
-scriptwriter:{i:'🎬',n:'The Scriptwriter',d:'VSL, explainer & ad scripts',t:['Creative','~45s'],p:BP('The Scriptwriter — direct-response video scriptwriter','Write high-converting video scripts.','## VSL / Hero Video (60-90s)\n## 30-Second Brand Ad\n## 3× 15-Second Social Ads\n## YouTube Pre-Roll (5s + 30s)\n## Founder Talking Head (90s)','- Pattern-interrupting hook in first 3 seconds\n- [VISUAL DIRECTION] notes in brackets\n- Contractions and natural rhythm')},
-tagline_specialist:{i:'✨',n:'The Tagline Specialist',d:'Taglines, USPs & naming',t:['Creative','~30s'],p:BP('The Tagline Specialist — brand naming expert','Distinctive taglines, USP statements, and positioning lines.','## 3 Headline Taglines (with rationale)\n## 5 USP One-Liners\n## 10 Short Social Bio Options\n## 3 Email Subject Frameworks\n## Value Proposition Statement\n## 30-Second Elevator Pitch','- No clichés ("passionate", "dedicated")\n- Under 8 words per tagline\n- Explain the strategic angle')},
-linkedin_ghost:{i:'💼',n:'The LinkedIn Ghost',d:'Founder authority content',t:['Content','~45s'],p:BP('The LinkedIn Ghost — ghostwriter for B2B founder content','30-day LinkedIn plan and 5 full posts.','## Content Strategy & Pillars\n## 30-Day Content Calendar\n## Post 1 — Origin Story\n## Post 2 — Contrarian Take\n## Post 3 — Case Study\n## Post 4 — Educational Thread\n## Post 5 — Direct Offer/CTA','- First person as the founder\n- 150-300 words per post\n- Hook line that stops the scroll')},
-viral_editor:{i:'🎥',n:'The Viral Editor',d:'Reels, TikTok & Shorts hooks',t:['Content','~35s'],p:BP('The Viral Editor — short-form video strategist','10 video concepts for Reels, TikTok, Shorts.','## Platform Strategy\n## Content Pillars\n## 10 Video Concepts (hook + format + outline + audio)\n## Hook Formula Library (10 lines)\n## Posting Schedule','- First 3 words on screen must stop the scroll\n- Each concept achievable with a phone\n- Trending audio direction per concept')},
-blog_manager:{i:'📝',n:'The Blog Manager',d:'SEO blog content strategy',t:['Content','~40s'],p:BP('The Blog Manager — content strategist and SEO editor','6-month blog strategy with fully outlined articles.','## Content Strategy Overview\n## 6-Month Editorial Calendar\n## Article 1 — Full Outline\n## Article 2 — Full Outline\n## Article 3 — Full Outline\n## Internal Linking Map\n## Content Upgrade Ideas\n## Distribution Plan','- Each outline: title, keyword, meta desc, H2s, word count\n- BOFU/MOFU content first')},
-community_manager:{i:'💬',n:'The Community Manager',d:'Engagement templates',t:['Content','~30s'],p:BP('The Community Manager — social engagement specialist','Complete library of on-brand reply templates.','## Brand Voice Quick Reference\n## Comment Reply Templates (10 scenarios)\n## DM Response Templates\n## Review Response Templates\n## 10 Story Poll/Question Ideas\n## 5 Engagement Post Templates\n## Crisis Response Protocol','- All in brand voice\n- Include [NAME] and [PRODUCT] placeholders\n- Negative reviews must de-escalate')},
-thread_architect:{i:'🧵',n:'The Thread Architect',d:'X/Threads long-form posts',t:['Content','~35s'],p:BP('The Thread Architect — X/Threads content specialist','3 high-performing educational threads.','## Thread 1 — Educational (10-12 posts)\n## Thread 2 — Contrarian (8-10 posts)\n## Thread 3 — Case Study (8-10 posts)\n## Promotion Strategy\n## Posting Times','- Post 1 must be a standalone scroll-stopper\n- Number each post (1/, 2/...)\n- End with soft CTA')},
-ads_specialist:{i:'📢',n:'The Ads Specialist',d:'Meta & Google ad copy',t:['Paid','High value','~45s'],p:BP('The Ads Specialist — Meta & Google certified','Complete paid advertising copy pack.','## Campaign Strategy\n## Meta Ads — Cold (5 variants)\n## Meta Ads — Retargeting (3 variants)\n## Google Search — 3 RSAs (15 headlines + 4 descriptions each)\n## Performance Max Assets\n## A/B Testing Framework\n## Budget Allocation','- Address pain points not features\n- 2 creative angles per platform\n- Google headlines <30 chars')},
-email_writer:{i:'📧',n:'The Email Writer',d:'Cold + nurture sequences',t:['Paid','~50s'],p:BP('The Email Writer — direct-response email copywriter','Complete email sequences.','## Cold Outreach Sequence (5 emails)\n## Welcome Sequence (3 emails)\n## Nurture Sequence (4 emails)\n## Re-engagement Email\n## Subject Line Swipe File (20 options)','- Subject + preview text + body per email\n- Cold emails <150 words\n- ONE CTA per email')},
-sms_marketer:{i:'📱',n:'The SMS Marketer',d:'SMS broadcast templates',t:['Paid','~25s'],p:BP('The SMS Marketer — mobile marketing specialist','Compliant, high-converting SMS templates.','## Welcome SMS\n## Offer/Promo SMS (5 variants)\n## Abandoned Enquiry (3 variants)\n## Appointment Reminders (2)\n## Review Request\n## Event/Launch (2)\n## Re-engagement','- Under 160 chars\n- Always include STOP opt-out\n- Business name in every message')},
-retargeting:{i:'🔁',n:'The Retargeting Expert',d:'Warm audience & abandoned leads',t:['Paid','~35s'],p:BP('The Retargeting Expert — CRO specialist','Complete retargeting strategy.','## Audience Segmentation Strategy\n## Website Visitor Retargeting (7/30/90 day)\n## Video View Retargeting\n## Abandoned Enquiry Sequence\n## Lookalike Audience Strategy\n## Retargeting Ad Copy (5 variants)\n## Frequency & Budget','- Specific audience window sizes and exclusions\n- Copy references previous touchpoint')},
-help_desk:{i:'❓',n:'The Help Desk (FAQ)',d:'Objection-busting FAQ copy',t:['Retention','~30s'],p:BP('The Help Desk — customer success specialist','FAQ that pre-handles every objection.','## Pricing & Value FAQs (4)\n## Process & Timeline FAQs (4)\n## Results & Guarantees FAQs (3)\n## Technical FAQs (3)\n## Trust & Credibility FAQs (3)\n## Getting Started FAQs (3)','- No "it depends" without follow-up\n- Turn objections into opportunities\n- 60-80 words per answer')},
+summariser:{i:'',n:'The Summariser',d:'1-page internal project overview',t:['Strategy','Use first','~30s'],p:BP('The Summariser — senior account director','Produce a tight executive-level internal brief any team member can act on immediately.','## Business Snapshot\n## The Offer & Audience\n## Project Goals & KPIs\n## Key Constraints & Risks\n## Recommended Next 3 Steps','- 2-sentence elevator pitch at top\n- Flag red flags or missing info')},
+strategist:{i:'',n:'The Strategist',d:'90-day growth roadmap',t:['Strategy','High value','~45s'],p:BP('The Strategist — growth consultant 10+ years','Build a realistic, detailed 90-day growth plan.','## Positioning & Differentiation\n## Channel Strategy (prioritised)\n## Month 1 — Foundation\n## Month 2 — Growth\n## Month 3 — Scale\n## KPIs & Measurement Framework','- Specific platforms, tactics, expected outcomes\n- Realistic budget ranges per channel')},
+deal_maker:{i:'',n:'The Deal Maker',d:'Proposal that closes',t:['Strategy','Revenue critical','~45s'],p:BP('The Deal Maker — senior BD director','Write a compelling proposal that moves the prospect to a signed contract.','## Executive Summary\n## Your Situation\n## Our Recommended Solution\n## Scope of Work & Deliverables\n## Project Timeline\n## Investment Options (3 tiers)\n## Why KWBA\n## Next Steps','- "You" language throughout — about them, not us\n- 3 investment tiers: Starter, Growth, Elite\n- Time-limited CTA')},
+ops_manager:{i:'',n:'The Ops Manager',d:'Onboarding & delivery plan',t:['Operations','~35s'],p:BP('The Ops Manager — meticulous project manager','Create a complete onboarding and delivery pack.','## Kickoff Checklist (agency side)\n## Client Welcome Email Draft\n## Assets Required from Client\n## Project Milestones & Dates\n## Communication Protocol\n## Handoff & Sign-off Process','- Specific file formats and access requirements\n- Every tool/login the client must share')},
+market_researcher:{i:'',n:'The Market Researcher',d:'Competitive landscape & gaps',t:['Research','~40s'],p:BP('The Market Researcher — data-driven strategist','Competitive intelligence and market opportunity analysis.','## Market Overview & Size\n## Top 5 Competitors (table)\n## Competitor Weaknesses to Exploit\n## Underserved Segments\n## Market Entry Angles\n## Recommended Positioning Gap','- Comparison table for competitors\n- 3 specific opportunities the client can own')},
+financial_modeller:{i:'',n:'The Financial Modeller',d:'Budget scenarios & ROI',t:['Finance','~35s'],p:BP('The Financial Modeller — performance marketing CFO','Build 3 realistic budget scenarios with projected ROI.','## Scenario 1 — Conservative\n## Scenario 2 — Moderate\n## Scenario 3 — Aggressive\n## Assumptions & Benchmarks\n## Break-Even Analysis\n## 12-Month Revenue Projection','- Industry-standard conversion rates for their niche\n- CPL, CPA, ROAS assumptions\n- Honest timelines')},
+seo_lead:{i:'',n:'The SEO Lead',d:'Full keyword & on-page strategy',t:['SEO','~40s'],p:BP('The SEO Lead — technical and content SEO specialist','Comprehensive SEO strategy and keyword map.','## SEO Opportunity Assessment\n## Primary Keywords (money pages)\n## Secondary Keywords\n## Page-by-Page Optimisation Plan\n## Meta Title & Description Templates\n## Content Gap Analysis\n## 6-Month SEO Roadmap','- Search intent per keyword cluster\n- 5 specific page URLs with H1 recommendations\n- Internal linking strategy')},
+backlink_builder:{i:'',n:'The Backlink Builder',d:'Link acquisition & PR outreach',t:['SEO','~35s'],p:BP('The Backlink Builder — digital PR specialist','Link-building and digital PR plan with outreach templates.','## Link Opportunity Analysis\n## Top 10 Target Site Types\n## 3 Linkable Asset Ideas\n## Outreach Email 1 (journalist)\n## Outreach Email 2 (resource pages)\n## Outreach Email 3 (partnerships)\n## 90-Day Outreach Calendar','- Subject line for each email\n- Focus on DR 20-60 opportunities')},
+local_seo:{i:'',n:'The Local SEO Pro',d:'Google Maps & local pack',t:['SEO','~35s'],p:BP('The Local SEO Pro — local search specialist','Complete local SEO action plan.','## GBP Optimisation Checklist\n## Category & Attribute Strategy\n## Local Keyword Map\n## Citation Building Plan (top 20)\n## Review Acquisition Strategy\n## Local Content Plan (geo-pages)\n## NAP Consistency Audit','- GBP post templates\n- Review request email/SMS templates\n- Exact directory names')},
+technical_auditor:{i:'',n:'The Technical Auditor',d:'Speed, crawl & Core Web Vitals',t:['SEO','~35s'],p:BP('The Technical Auditor — senior technical SEO engineer','Technical SEO audit framework and priority fix list.','## Technical Health Overview\n## Core Web Vitals Action Plan\n## Crawlability & Indexation Issues\n## Structured Data Recommendations\n## Site Architecture\n## Speed Optimisation Checklist\n## Priority Fix List (P1/P2/P3)','- P1/P2/P3 classification for all issues\n- Tools to use for each audit area')},
+copywriter:{i:'',n:'The Copywriter',d:'Full website conversion copy',t:['Creative','High value','~50s'],p:BP('The Copywriter — direct-response copywriter 15 years','Write complete website copy that converts visitors into enquiries.','## Hero Section (headline + subheadline + CTA)\n## Trust Bar / Social Proof Strip\n## Services Section (3 services)\n## About / Our Approach\n## Results & Proof Section\n## FAQ (5 Q&As)\n## Final CTA Section\n## Footer Tagline','- Every section has a clear job\n- Power words, eliminate passive voice\n- Min 80 words per section')},
+brand_guide:{i:'',n:'The Brand Guide',d:'Identity, voice & messaging pillars',t:['Creative','~40s'],p:BP('The Brand Guide — brand strategist and creative director','Define brand identity, voice, and messaging system.','## Brand Essence (1 sentence)\n## Brand Personality (5 traits)\n## Voice & Tone Guide\n## Messaging Pillars (3-4 themes)\n## Language Do/Don\'t\n## Colour & Visual Direction\n## Typography Notes\n## Brand Story','- Voice guide with examples\n- "We are / we are not" statements')},
+ux_architect:{i:'',n:'The UX Architect',d:'User journeys & wireframe logic',t:['Creative','~40s'],p:BP('The UX Architect — senior UX strategist','Design optimal user experience and site architecture.','## Primary User Personas (2-3)\n## Core User Journeys\n## Recommended Site Structure\n## Page-by-Page Section Breakdown\n## Conversion Optimisation Points\n## Mobile UX Considerations\n## CTA Strategy & Placement','- Realistic personas based on niche\n- Map each journey from first touch to conversion')},
+scriptwriter:{i:'',n:'The Scriptwriter',d:'VSL, explainer & ad scripts',t:['Creative','~45s'],p:BP('The Scriptwriter — direct-response video scriptwriter','Write high-converting video scripts.','## VSL / Hero Video (60-90s)\n## 30-Second Brand Ad\n## 3× 15-Second Social Ads\n## YouTube Pre-Roll (5s + 30s)\n## Founder Talking Head (90s)','- Pattern-interrupting hook in first 3 seconds\n- [VISUAL DIRECTION] notes in brackets\n- Contractions and natural rhythm')},
+tagline_specialist:{i:'',n:'The Tagline Specialist',d:'Taglines, USPs & naming',t:['Creative','~30s'],p:BP('The Tagline Specialist — brand naming expert','Distinctive taglines, USP statements, and positioning lines.','## 3 Headline Taglines (with rationale)\n## 5 USP One-Liners\n## 10 Short Social Bio Options\n## 3 Email Subject Frameworks\n## Value Proposition Statement\n## 30-Second Elevator Pitch','- No clichés ("passionate", "dedicated")\n- Under 8 words per tagline\n- Explain the strategic angle')},
+linkedin_ghost:{i:'',n:'The LinkedIn Ghost',d:'Founder authority content',t:['Content','~45s'],p:BP('The LinkedIn Ghost — ghostwriter for B2B founder content','30-day LinkedIn plan and 5 full posts.','## Content Strategy & Pillars\n## 30-Day Content Calendar\n## Post 1 — Origin Story\n## Post 2 — Contrarian Take\n## Post 3 — Case Study\n## Post 4 — Educational Thread\n## Post 5 — Direct Offer/CTA','- First person as the founder\n- 150-300 words per post\n- Hook line that stops the scroll')},
+viral_editor:{i:'',n:'The Viral Editor',d:'Reels, TikTok & Shorts hooks',t:['Content','~35s'],p:BP('The Viral Editor — short-form video strategist','10 video concepts for Reels, TikTok, Shorts.','## Platform Strategy\n## Content Pillars\n## 10 Video Concepts (hook + format + outline + audio)\n## Hook Formula Library (10 lines)\n## Posting Schedule','- First 3 words on screen must stop the scroll\n- Each concept achievable with a phone\n- Trending audio direction per concept')},
+blog_manager:{i:'',n:'The Blog Manager',d:'SEO blog content strategy',t:['Content','~40s'],p:BP('The Blog Manager — content strategist and SEO editor','6-month blog strategy with fully outlined articles.','## Content Strategy Overview\n## 6-Month Editorial Calendar\n## Article 1 — Full Outline\n## Article 2 — Full Outline\n## Article 3 — Full Outline\n## Internal Linking Map\n## Content Upgrade Ideas\n## Distribution Plan','- Each outline: title, keyword, meta desc, H2s, word count\n- BOFU/MOFU content first')},
+community_manager:{i:'',n:'The Community Manager',d:'Engagement templates',t:['Content','~30s'],p:BP('The Community Manager — social engagement specialist','Complete library of on-brand reply templates.','## Brand Voice Quick Reference\n## Comment Reply Templates (10 scenarios)\n## DM Response Templates\n## Review Response Templates\n## 10 Story Poll/Question Ideas\n## 5 Engagement Post Templates\n## Crisis Response Protocol','- All in brand voice\n- Include [NAME] and [PRODUCT] placeholders\n- Negative reviews must de-escalate')},
+thread_architect:{i:'',n:'The Thread Architect',d:'X/Threads long-form posts',t:['Content','~35s'],p:BP('The Thread Architect — X/Threads content specialist','3 high-performing educational threads.','## Thread 1 — Educational (10-12 posts)\n## Thread 2 — Contrarian (8-10 posts)\n## Thread 3 — Case Study (8-10 posts)\n## Promotion Strategy\n## Posting Times','- Post 1 must be a standalone scroll-stopper\n- Number each post (1/, 2/...)\n- End with soft CTA')},
+ads_specialist:{i:'',n:'The Ads Specialist',d:'Meta & Google ad copy',t:['Paid','High value','~45s'],p:BP('The Ads Specialist — Meta & Google certified','Complete paid advertising copy pack.','## Campaign Strategy\n## Meta Ads — Cold (5 variants)\n## Meta Ads — Retargeting (3 variants)\n## Google Search — 3 RSAs (15 headlines + 4 descriptions each)\n## Performance Max Assets\n## A/B Testing Framework\n## Budget Allocation','- Address pain points not features\n- 2 creative angles per platform\n- Google headlines <30 chars')},
+email_writer:{i:'',n:'The Email Writer',d:'Cold + nurture sequences',t:['Paid','~50s'],p:BP('The Email Writer — direct-response email copywriter','Complete email sequences.','## Cold Outreach Sequence (5 emails)\n## Welcome Sequence (3 emails)\n## Nurture Sequence (4 emails)\n## Re-engagement Email\n## Subject Line Swipe File (20 options)','- Subject + preview text + body per email\n- Cold emails <150 words\n- ONE CTA per email')},
+sms_marketer:{i:'',n:'The SMS Marketer',d:'SMS broadcast templates',t:['Paid','~25s'],p:BP('The SMS Marketer — mobile marketing specialist','Compliant, high-converting SMS templates.','## Welcome SMS\n## Offer/Promo SMS (5 variants)\n## Abandoned Enquiry (3 variants)\n## Appointment Reminders (2)\n## Review Request\n## Event/Launch (2)\n## Re-engagement','- Under 160 chars\n- Always include STOP opt-out\n- Business name in every message')},
+retargeting:{i:'',n:'The Retargeting Expert',d:'Warm audience & abandoned leads',t:['Paid','~35s'],p:BP('The Retargeting Expert — CRO specialist','Complete retargeting strategy.','## Audience Segmentation Strategy\n## Website Visitor Retargeting (7/30/90 day)\n## Video View Retargeting\n## Abandoned Enquiry Sequence\n## Lookalike Audience Strategy\n## Retargeting Ad Copy (5 variants)\n## Frequency & Budget','- Specific audience window sizes and exclusions\n- Copy references previous touchpoint')},
+help_desk:{i:'',n:'The Help Desk (FAQ)',d:'Objection-busting FAQ copy',t:['Retention','~30s'],p:BP('The Help Desk — customer success specialist','FAQ that pre-handles every objection.','## Pricing & Value FAQs (4)\n## Process & Timeline FAQs (4)\n## Results & Guarantees FAQs (3)\n## Technical FAQs (3)\n## Trust & Credibility FAQs (3)\n## Getting Started FAQs (3)','- No "it depends" without follow-up\n- Turn objections into opportunities\n- 60-80 words per answer')},
 review_miner:{i:'⭐',n:'The Review Miner',d:'Testimonials & social proof',t:['Retention','~30s'],p:BP('The Review Miner — social proof specialist','Complete social proof strategy and testimonial assets.','## Review Acquisition Strategy\n## Review Request Templates (email + SMS + in-person)\n## 5 Testimonial Frameworks\n## Case Study Template\n## Before/After Story Structure\n## Proof Points for Website\n## Video Testimonial Brief','- Questions that yield compelling testimonials\n- Before→After transformation framing')}
 };
 const DG=[
@@ -393,12 +394,12 @@ const DG=[
 const CORE=['summariser','strategist','copywriter','ads_specialist','seo_lead','email_writer'];
 const ALL=DG.flatMap(g=>g.k);
 const PIPES=[
-{i:'⚡',n:'Core Pipeline',d:'Essential 6-agent flow for every new client',a:CORE,c:'var(--blue)'},
-{i:'✍️',n:'Content Engine',d:'Copy, blog, social, scripts — full content strategy',a:['copywriter','blog_manager','linkedin_ghost','viral_editor','thread_architect'],c:'var(--purple)'},
-{i:'📢',n:'Paid Media Pack',d:'Ads, email, SMS, retargeting — complete campaign',a:['ads_specialist','email_writer','sms_marketer','retargeting','financial_modeller'],c:'var(--orange)'},
-{i:'🔍',n:'SEO Full Stack',d:'Technical to links — complete SEO strategy',a:['seo_lead','local_seo','backlink_builder','technical_auditor','blog_manager'],c:'var(--green)'},
-{i:'🤝',n:'Proposal Ready',d:'Everything to close a client deal',a:['summariser','deal_maker','financial_modeller','ops_manager','help_desk'],c:'var(--gold)'},
-{i:'🎨',n:'Brand Sprint',d:'Full brand identity and creative direction',a:['brand_guide','copywriter','tagline_specialist','ux_architect','scriptwriter'],c:'var(--purple)'}
+{i:'',n:'Core Pipeline',d:'Essential 6-agent flow for every new client',a:CORE,c:'var(--blue)'},
+{i:'',n:'Content Engine',d:'Copy, blog, social, scripts — full content strategy',a:['copywriter','blog_manager','linkedin_ghost','viral_editor','thread_architect'],c:'var(--purple)'},
+{i:'',n:'Paid Media Pack',d:'Ads, email, SMS, retargeting — complete campaign',a:['ads_specialist','email_writer','sms_marketer','retargeting','financial_modeller'],c:'var(--orange)'},
+{i:'',n:'SEO Full Stack',d:'Technical to links — complete SEO strategy',a:['seo_lead','local_seo','backlink_builder','technical_auditor','blog_manager'],c:'var(--green)'},
+{i:'',n:'Proposal Ready',d:'Everything to close a client deal',a:['summariser','deal_maker','financial_modeller','ops_manager','help_desk'],c:'var(--gold)'},
+{i:'',n:'Brand Sprint',d:'Full brand identity and creative direction',a:['brand_guide','copywriter','tagline_specialist','ux_architect','scriptwriter'],c:'var(--purple)'}
 ];
 // AUTH
 async function doLogin(){
@@ -471,9 +472,9 @@ function renderBriefs(){
         </div>
         ${b.bizDesc?`<div class="bfull"><label>Description</label><p>${esc(b.bizDesc)}</p></div>`:''}
         <div class="bactions">
-          <button class="btn btn-g btn-sm" onclick="openHub(${idx})">🤖 Open in AI Hub</button>
-          ${b.contactEmail?`<button class="btn btn-o btn-sm" onclick="window.open('mailto:${b.contactEmail}')">✉ Email</button>`:''}
-          <button class="btn btn-o btn-sm" onclick="openHub(${idx});setTimeout(runCore,400)">⚡ Run Core Pipeline</button>
+          <button class="btn btn-g btn-sm" onclick="openHub(${idx})">Open in AI Hub</button>
+          ${b.contactEmail?`<button class="btn btn-o btn-sm" onclick="window.open('mailto:${b.contactEmail}')">Email</button>`:''}
+          <button class="btn btn-o btn-sm" onclick="openHub(${idx});setTimeout(runCore,400)">Run Core Pipeline</button>
         </div>
       </div>
     </div>`;
@@ -540,10 +541,10 @@ async function runAgent(){
       catch(e){ft+=ck;so.innerHTML=md(ft);}
     }
     document.querySelector('.cursor')?.remove();
-    document.getElementById('aistat').textContent='✓ Complete';
+    document.getElementById('aistat').textContent=' Complete';
     document.getElementById('pdfbtn').style.display='inline-flex';
     await AF(window.API_BASE+'/output',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({briefId:CB.id,agent:CA,output:ft})});
-    const ni=ALL.indexOf(CA)+1;if(ni<ALL.length)document.getElementById('aistat').textContent=`✓ Done — try: ${AG[ALL[ni]].n}`;
+    const ni=ALL.indexOf(CA)+1;if(ni<ALL.length)document.getElementById('aistat').textContent=` Done — try: ${AG[ALL[ni]].n}`;
   }catch(e){document.getElementById('output').innerHTML='<div class="oempty" style="color:var(--red)">Error connecting to backend. Is your Render server running?</div>';}
   rb.disabled=false;rb.innerHTML='▶ Run Agent';
 }
@@ -600,7 +601,7 @@ async function loadAnalytics(){
 async function loadActivity(){
   try{
     const r=await AF(window.API_BASE+'/activity');const d=await r.json();
-    const IC={brief_created:'📋',status_updated:'✏️',ai_run:'🤖',login:'🔐',file_uploaded:'📁'};
+    const IC={brief_created:'',status_updated:'',ai_run:'',login:'',file_uploaded:''};
     document.getElementById('alog').innerHTML=d.map(a=>`<div class="arow"><div class="aico">${IC[a.action?.toLowerCase()]||'●'}</div><div class="abod"><div class="ameta">${new Date(a.createdAt).toLocaleString('en-GB')} · ${esc(a.userEmail||'System')}</div><div class="atxt"><strong>${esc(a.action)}</strong> on ${esc(a.entityType)} #${a.entityId}${a.details?' — '+esc(a.details):''}</div></div></div>`).join('')||'<p style="color:var(--muted2);font-size:12px;padding:16px 0">No activity yet.</p>';
   }catch(e){document.getElementById('alog').innerHTML='<p style="color:var(--muted2);font-size:12px;padding:16px 0">Could not load activity.</p>';}
 }
@@ -632,7 +633,7 @@ function md(t){
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function cpyOut(){navigator.clipboard.writeText(document.getElementById('output').innerText);toast('Copied','s');}
 function clrOut(){document.getElementById('output').innerHTML='<div class="oempty">Ready.</div>';document.getElementById('pdfbtn').style.display='none';document.getElementById('aistat').textContent='';document.getElementById('otabs').style.display='none';document.getElementById('ppbar').classList.remove('on');PO={};}
-function toast(msg,type='s'){const t=document.getElementById('tst');document.getElementById('ticon').textContent=type==='e'?'✕':type==='i'?'🔔':'✓';document.getElementById('tmsg').textContent=msg;t.style.borderColor=type==='e'?'rgba(217,83,79,.4)':type==='i'?'rgba(74,127,212,.4)':'var(--gold-border)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+function toast(msg,type='s'){const t=document.getElementById('tst');document.getElementById('ticon').textContent=type==='e'?'':type==='i'?'':'';document.getElementById('tmsg').textContent=msg;t.style.borderColor=type==='e'?'rgba(217,83,79,.4)':type==='i'?'rgba(74,127,212,.4)':'var(--gold-border)';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 if(AT)initApp();
 </script>
 </body>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KWBA — System Diagnostic</title>
+<script src="/assets/api-config.js"></script>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070706;--bg2:#0f0f0e;--bg3:#171714;
+  --gold:#c9a84c;--gold-dim:rgba(201,168,76,0.08);
+  --ink:#ede9e0;--ink2:#c4bfb4;--muted:#7a7568;
+  --green:#5ec272;--red:#e25c5c;--amber:#e0a93d;
+  --border:rgba(255,255,255,0.06);
+}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Inter,sans-serif;padding:40px 20px;min-height:100vh;line-height:1.5;font-weight:400}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-family:Georgia,serif;font-weight:400;font-size:32px;margin-bottom:6px;letter-spacing:-.02em}
+h1 em{font-style:italic;color:var(--gold)}
+.sub{font-size:13px;color:var(--muted);margin-bottom:32px;letter-spacing:.02em}
+.env{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:32px;padding:18px 20px;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--gold)}
+.env-row{font-size:12px;line-height:1.7}
+.env-key{color:var(--muted);text-transform:uppercase;letter-spacing:.14em;font-size:10px;margin-bottom:2px}
+.env-val{color:var(--ink);font-family:'SF Mono',Monaco,monospace;font-size:11.5px;word-break:break-all}
+.section{margin-bottom:36px}
+.section-title{font-family:Georgia,serif;font-size:18px;font-weight:400;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px;letter-spacing:-.01em}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.check{background:var(--bg2);border:1px solid var(--border);padding:14px 18px;margin-bottom:6px;display:flex;align-items:center;gap:14px;transition:border-color .2s}
+.check-status{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;transition:all .25s}
+.check-status.pending{background:rgba(255,255,255,0.04);color:var(--muted)}
+.check-status.running{background:var(--gold-dim);color:var(--gold);animation:spin 1s linear infinite}
+.check-status.ok{background:rgba(94,194,114,0.15);color:var(--green)}
+.check-status.fail{background:rgba(226,92,92,0.15);color:var(--red)}
+.check-status.warn{background:rgba(224,169,61,0.15);color:var(--amber)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.check-body{flex:1;min-width:0}
+.check-label{font-weight:500;color:var(--ink);font-size:14px;letter-spacing:-.005em}
+.check-detail{font-size:11.5px;color:var(--muted);margin-top:3px;font-family:'SF Mono',Monaco,monospace;word-break:break-word;line-height:1.55}
+.check.ok{border-color:rgba(94,194,114,0.25)}
+.check.fail{border-color:rgba(226,92,92,0.4)}
+.check.warn{border-color:rgba(224,169,61,0.3)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 0}
+button{background:var(--gold);color:#0f0e0c;border:none;padding:11px 22px;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;font-family:inherit;transition:opacity .2s}
+button:hover{opacity:.85}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--border)}
+button.ghost:hover{border-color:var(--gold);color:var(--gold);opacity:1}
+button:disabled{opacity:.4;cursor:wait}
+.summary{margin-top:32px;padding:20px;background:var(--bg2);border:1px solid var(--border);font-size:13px;display:none}
+.summary.show{display:block}
+.summary.summary-ok{border-left:2px solid var(--green)}
+.summary.summary-fail{border-left:2px solid var(--red)}
+.summary h3{font-family:Georgia,serif;font-weight:400;font-size:18px;margin-bottom:8px}
+.summary p{color:var(--muted);font-size:12.5px;line-height:1.7}
+.summary p code{background:var(--bg3);padding:2px 6px;color:var(--gold);font-size:11.5px;border-radius:2px}
+.copy-btn{font-size:9px;letter-spacing:.16em;padding:4px 9px;background:rgba(201,168,76,0.1);color:var(--gold);cursor:pointer;border:1px solid var(--gold-dim);text-transform:uppercase;margin-left:8px;display:inline-block;font-family:inherit}
+.copy-btn:hover{background:var(--gold-dim)}
+@media (max-width:600px){body{padding:24px 16px}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>System <em>Diagnostic</em></h1>
+  <p class="sub">Real-time check of every connection between this frontend and the Render backend</p>
+
+  <!-- Environment summary -->
+  <div class="env">
+    <div class="env-row">
+      <div class="env-key">Frontend Origin</div>
+      <div class="env-val" id="env-origin">—</div>
+    </div>
+    <div class="env-row">
+      <div class="env-key">Backend API</div>
+      <div class="env-val" id="env-api">—</div>
+    </div>
+    <div class="env-row">
+      <div class="env-key">Auth Token</div>
+      <div class="env-val" id="env-token">—</div>
+    </div>
+    <div class="env-row">
+      <div class="env-key">Time</div>
+      <div class="env-val" id="env-time">—</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="runBtn" onclick="runAll()">▶  Run all checks</button>
+    <button class="ghost" onclick="clearChecks()">Reset</button>
+    <button class="ghost" onclick="window.location.href='/'">← Home</button>
+  </div>
+
+  <!-- Static asset checks -->
+  <div class="section">
+    <div class="section-title">Static Frontend (Netlify)</div>
+    <div id="checks-frontend"></div>
+  </div>
+
+  <!-- Backend connectivity -->
+  <div class="section">
+    <div class="section-title">Backend API (Render)</div>
+    <div id="checks-backend"></div>
+  </div>
+
+  <!-- CORS + Auth -->
+  <div class="section">
+    <div class="section-title">CORS & Authentication</div>
+    <div id="checks-auth"></div>
+  </div>
+
+  <!-- Public endpoints -->
+  <div class="section">
+    <div class="section-title">Public Endpoints</div>
+    <div id="checks-public"></div>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+</div>
+
+<script>
+const ASSET_CHECKS = [
+  { label: 'Homepage HTML',         url: '/' },
+  { label: 'Brand mark SVG',        url: '/assets/brand/primary-gold.svg' },
+  { label: 'Parallax CSS',          url: '/assets/parallax.css' },
+  { label: 'Parallax JS',           url: '/assets/parallax.js' },
+  { label: 'API config JS',         url: '/assets/api-config.js' },
+  { label: 'Favicon',               url: '/favicon.ico' },
+  { label: 'OG image',              url: '/og-image.png' },
+  { label: 'Ad video',              url: '/assets/kwba-ad.mp4' },
+  { label: 'Blog index',            url: '/blog.html' },
+  { label: 'Login page',            url: '/login.html' },
+  { label: 'Admin page',            url: '/admin.html' },
+];
+
+const BACKEND_CHECKS = [
+  { label: 'Backend reachable',     path: '/',           method: 'GET',  expect: [200, 404] },
+  { label: 'Server returns JSON',   path: '/login',      method: 'POST', expect: [400, 401, 200], body: {email:'',password:''} },
+];
+
+const AUTH_CHECKS = [
+  { label: 'CORS preflight (OPTIONS /login)', method: 'OPTIONS', path: '/login', expectCors: true },
+  { label: 'Login with default admin creds',  method: 'POST',    path: '/login', body: {email:'admin@kwba-agency.com',password:'admin123'}, expect: [200,401] },
+];
+
+const PUBLIC_CHECKS = [
+  { label: 'POST /public-brief (lightweight ping)', method: 'POST', path: '/public-brief', body: {ping:true}, expect: [200,400,500] },
+];
+
+let totalRun = 0, totalPass = 0, totalFail = 0, totalWarn = 0;
+
+function buildCheck(label, hostId){
+  const host = document.getElementById(hostId);
+  const div = document.createElement('div');
+  div.className = 'check';
+  div.innerHTML = `
+    <div class="check-status pending">·</div>
+    <div class="check-body">
+      <div class="check-label">${label}</div>
+      <div class="check-detail">Not yet run</div>
+    </div>`;
+  host.appendChild(div);
+  return div;
+}
+
+function setStatus(node, status, detail){
+  const cls = ['pending','running','ok','fail','warn'];
+  cls.forEach(c => node.classList.remove(c));
+  node.classList.add(status);
+  const ind = node.querySelector('.check-status');
+  ind.classList.remove(...cls);
+  ind.classList.add(status);
+  const glyph = {pending:'·',running:'⟳',ok:'✓',fail:'✕',warn:'!'}[status] || '·';
+  ind.textContent = glyph;
+  if (detail !== undefined){
+    node.querySelector('.check-detail').textContent = detail;
+  }
+}
+
+async function runAssetCheck(node, check){
+  setStatus(node, 'running', 'Fetching ' + check.url);
+  try {
+    const t0 = performance.now();
+    const r = await fetch(check.url, { method: 'HEAD' });
+    const ms = Math.round(performance.now() - t0);
+    if (r.ok){
+      totalPass++;
+      setStatus(node, 'ok', `${r.status} OK · ${ms}ms · ${check.url}`);
+    } else {
+      totalFail++;
+      setStatus(node, 'fail', `HTTP ${r.status} on ${check.url}`);
+    }
+  } catch(e){
+    totalFail++;
+    setStatus(node, 'fail', e.message || 'Network error · ' + check.url);
+  }
+  totalRun++;
+}
+
+async function runBackendCheck(node, check){
+  const url = window.API_BASE + check.path;
+  setStatus(node, 'running', check.method + ' ' + url);
+  try {
+    const t0 = performance.now();
+    const opts = { method: check.method };
+    if (check.body){
+      opts.headers = { 'Content-Type': 'application/json' };
+      opts.body = JSON.stringify(check.body);
+    }
+    const r = await fetch(url, opts);
+    const ms = Math.round(performance.now() - t0);
+    const passed = check.expect ? check.expect.includes(r.status) : r.ok;
+    if (passed){
+      totalPass++;
+      setStatus(node, 'ok', `${r.status} · ${ms}ms · ${check.method} ${url}`);
+    } else {
+      totalFail++;
+      let body = '';
+      try { body = (await r.text()).slice(0,150); } catch(_){}
+      setStatus(node, 'fail', `HTTP ${r.status} · ${check.method} ${url}\n${body}`);
+    }
+  } catch(e){
+    totalFail++;
+    setStatus(node, 'fail', `${e.message || 'Network error'} · ${check.method} ${url}`);
+  }
+  totalRun++;
+}
+
+async function runCorsPreflight(node, check){
+  const url = window.API_BASE + check.path;
+  setStatus(node, 'running', 'Sending preflight to ' + url);
+  // Browsers automatically issue OPTIONS preflight when an Authorization header
+  // is present on a cross-origin request. We can simulate this by triggering one.
+  try {
+    const t0 = performance.now();
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Diagnostic': '1',  // forces preflight
+      },
+      body: JSON.stringify({email:'cors-probe',password:''})
+    });
+    const ms = Math.round(performance.now() - t0);
+    if (r.ok || r.status === 401 || r.status === 400){
+      totalPass++;
+      setStatus(node, 'ok', `CORS preflight passed · ${ms}ms`);
+    } else {
+      totalWarn++;
+      setStatus(node, 'warn', `Unexpected status ${r.status} but reached the server`);
+    }
+  } catch(e){
+    totalFail++;
+    const msg = e.message || 'CORS error';
+    setStatus(node, 'fail', `${msg}\nCheck Render env var: FRONTEND_URL=${window.location.origin}`);
+  }
+  totalRun++;
+}
+
+async function runLoginCheck(node, check){
+  const url = window.API_BASE + check.path;
+  setStatus(node, 'running', 'POST ' + url);
+  try {
+    const t0 = performance.now();
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(check.body)
+    });
+    const ms = Math.round(performance.now() - t0);
+    if (r.ok){
+      totalPass++;
+      const data = await r.json();
+      setStatus(node, 'ok', `Login succeeded · ${ms}ms · role: ${data.role || 'unknown'}`);
+    } else if (r.status === 401){
+      totalWarn++;
+      setStatus(node, 'warn', `Server reachable & responding but credentials wrong (401). Try a real password.`);
+    } else {
+      totalFail++;
+      const body = await r.text();
+      setStatus(node, 'fail', `HTTP ${r.status} · ${body.slice(0,150)}`);
+    }
+  } catch(e){
+    totalFail++;
+    setStatus(node, 'fail', e.message || 'Network error');
+  }
+  totalRun++;
+}
+
+async function runAll(){
+  document.getElementById('runBtn').disabled = true;
+  clearChecks();
+  totalRun = 0; totalPass = 0; totalFail = 0; totalWarn = 0;
+  document.getElementById('summary').classList.remove('show');
+
+  // Build all check nodes
+  const fchecks = ASSET_CHECKS.map(c => ({...c, node: buildCheck(c.label, 'checks-frontend')}));
+  const bchecks = BACKEND_CHECKS.map(c => ({...c, node: buildCheck(c.label, 'checks-backend')}));
+  const achecks = AUTH_CHECKS.map(c => ({...c, node: buildCheck(c.label, 'checks-auth')}));
+  const pchecks = PUBLIC_CHECKS.map(c => ({...c, node: buildCheck(c.label, 'checks-public')}));
+
+  // Run them sequentially so the UI updates live
+  for (const c of fchecks)  await runAssetCheck(c.node, c);
+  for (const c of bchecks)  await runBackendCheck(c.node, c);
+  for (const c of achecks){
+    if (c.method === 'OPTIONS') await runCorsPreflight(c.node, c);
+    else                       await runLoginCheck(c.node, c);
+  }
+  for (const c of pchecks)  await runBackendCheck(c.node, c);
+
+  document.getElementById('runBtn').disabled = false;
+  showSummary();
+}
+
+function showSummary(){
+  const s = document.getElementById('summary');
+  s.className = 'summary show ' + (totalFail === 0 ? 'summary-ok' : 'summary-fail');
+  let html = '';
+  if (totalFail === 0){
+    html = `<h3>✓ All systems operational</h3>
+      <p><strong>${totalPass}/${totalRun}</strong> checks passed. Your frontend (this page) successfully reached the backend (<code>${window.API_BASE}</code>) and CORS is correctly configured.</p>`;
+    if (totalWarn) html += `<p style="margin-top:8px"><strong>${totalWarn}</strong> warning(s) — usually just "wrong password" which is expected if you ran with default creds and they were changed.</p>`;
+  } else {
+    html = `<h3>${totalFail} failure(s) detected</h3>
+      <p><strong>${totalPass}/${totalRun}</strong> passed, <strong>${totalFail}</strong> failed.</p>
+      <p style="margin-top:10px">Common fixes:</p>
+      <p>• If <strong>backend checks failed</strong> → your Render service may be sleeping/down. Wake it: visit <code>${window.API_BASE}</code> in a new tab.</p>
+      <p>• If <strong>CORS preflight failed</strong> → on Render, set environment variable <code>FRONTEND_URL=${window.location.origin}</code> and redeploy.</p>
+      <p>• If <strong>asset checks failed</strong> → Netlify may not have the latest build. Re-deploy.</p>`;
+  }
+  s.innerHTML = html;
+}
+
+function clearChecks(){
+  ['checks-frontend','checks-backend','checks-auth','checks-public'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+  document.getElementById('summary').classList.remove('show');
+}
+
+// Populate environment info
+function initEnv(){
+  document.getElementById('env-origin').textContent = window.location.origin;
+  document.getElementById('env-api').textContent = window.API_BASE || '(same-origin)';
+  const token = (function(){ try { return localStorage.getItem('agency_token'); } catch(_){ return null; }})();
+  document.getElementById('env-token').textContent = token ? token.slice(0,18) + '…' : '(none)';
+  document.getElementById('env-time').textContent = new Date().toLocaleString();
+}
+initEnv();
+</script>
+
+</body>
+</html>

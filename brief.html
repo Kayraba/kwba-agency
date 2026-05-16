@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/api-config.js"></script>
   <!-- API: auto-detects local vs Render backend -->
-  <script>
-    window.API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-      ? ""
-      : "https://YOUR-APP-NAME.onrender.com"; // ← replace with your Render URL
-  </script>
+  
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#070706"/>
 <title>Website Brief — KWBA Agency</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0f0e0c;--bg2:#1a1814;--bg3:#252219;--gold:#c9a84c;--gold-dim:rgba(201,168,76,0.1);--gold-border:rgba(201,168,76,0.35);--ink:#f0ece4;--ink2:#ddd8ce;--muted:#9a9488;--muted2:#6a6460;--border:rgba(201,168,76,0.15);--border2:rgba(201,168,76,0.07);--green:#4caf7d;--green-dim:rgba(76,175,125,0.12)}
+:root{
+  --bg:#070706;--bg2:#0f0f0e;--bg3:#171714;--bg4:#1e1e1b;
+  --gold:#c9a84c;--gold2:#e8c96a;--gold-dim:rgba(201,168,76,0.07);--gold-border:rgba(201,168,76,0.28);--gold-strong:rgba(201,168,76,0.55);
+  --ink:#ede9e0;--ink2:#c4bfb4;--muted:#7a7568;--muted2:#3e3c36;
+  --border:rgba(255,255,255,0.055);
+}
 html,body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
-nav{position:sticky;top:0;z-index:100;background:rgba(15,14,12,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between}
+nav{position:sticky;top:0;z-index:100;background:rgba(7,7,6,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between}
 .nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;letter-spacing:.04em}
 .nav-logo span{color:var(--gold)}
 .nav-tag{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2)}
 
 /* Progress */
-.prog-bar-wrap{position:sticky;top:68px;z-index:90;background:rgba(15,14,12,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border2);padding:13px 40px 11px}
+.prog-bar-wrap{position:sticky;top:68px;z-index:90;background:rgba(7,7,6,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border2);padding:13px 40px 11px}
 .prog-inner{max-width:760px;margin:0 auto}
 .prog-track{height:2px;background:var(--border2);margin-bottom:9px}
 .prog-fill{height:100%;background:var(--gold);width:0%;transition:width .5s cubic-bezier(.4,0,.2,1)}
@@ -105,7 +108,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.65}
 .btn-b{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:transparent;border:1px solid var(--border);padding:13px 26px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:8px}
 .btn-b:hover{border-color:var(--gold-border);color:var(--ink2)}
 .btn-b svg,.btn-n svg{flex-shrink:0}
-.btn-n{font-size:10px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color:#0f0e0c;padding:13px 34px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity .2s;display:flex;align-items:center;gap:8px}
+.btn-n{font-size:10px;letter-spacing:.2em;text-transform:uppercase;background:var(--gold);color: #fafaf7;padding:13px 34px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:opacity .2s;display:flex;align-items:center;gap:8px}
 .btn-n:hover{opacity:.88}
 .btn-n:disabled{opacity:.4;cursor:not-allowed}
 .sctr{font-size:11px;color:var(--muted2);letter-spacing:.06em}
@@ -128,8 +131,26 @@ textarea{resize:vertical;min-height:100px;line-height:1.65}
   .snav{flex-wrap:wrap;gap:12px}
 }
 </style>
+  <link rel="stylesheet" href="/assets/parallax.css"/>
 </head>
 <body>
+<!-- Scroll progress -->
+<div class="scroll-progress" id="sp"></div>
+<!-- Parallax background -->
+<div class="bg-parallax" aria-hidden="true">
+  <div class="bg-layer bg-l1" data-speed="0.15"></div>
+  <div class="bg-layer bg-l2" data-speed="0.25"></div>
+  <div class="bg-layer bg-l3" data-speed="0.18"></div>
+  <div class="bg-layer bg-l4" data-speed="0.22"></div>
+  <div class="bg-layer bg-l5" data-speed="0.16"></div>
+</div>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-noise" aria-hidden="true"></div>
+<div class="watermark wm-1" data-speed="0.08">design</div>
+<div class="watermark wm-2" data-speed="0.06">marketing</div>
+<div class="watermark wm-3" data-speed="0.07">growth</div>
+<div class="watermark wm-4" data-speed="0.05">results</div>
+
 <nav>
   <a href="/" class="nav-logo">KW<span>B</span>A</a>
   <span class="nav-tag">Website Brief</span>
@@ -406,7 +427,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.65}
       <label>Upload Logo Files<span class="hint">SVG, AI, EPS, or PNG with transparent background preferred</span></label>
       <div class="uz" id="z-logo">
         <input type="file" id="f-logo" accept=".svg,.ai,.eps,.png,.pdf,.jpg,.jpeg,.zip" multiple onchange="hu(this,'logo')">
-        <div class="ui">🖼</div><div class="ut">Click to upload or drag &amp; drop logo files</div>
+        <div class="ui"></div><div class="ut">Click to upload or drag &amp; drop logo files</div>
         <div class="us">SVG · AI · EPS · PNG · PDF · ZIP</div>
       </div>
       <div id="ll" class="fl"></div>
@@ -417,7 +438,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.65}
       <label>Upload Photos &amp; Images<span class="hint">Team, premises, completed work — real photos beat stock every time</span></label>
       <div class="uz" id="z-photos">
         <input type="file" id="f-photos" accept=".jpg,.jpeg,.png,.webp,.gif,.heic" multiple onchange="hu(this,'photos')">
-        <div class="ui">📷</div><div class="ut">Click to upload or drag &amp; drop photos</div>
+        <div class="ui"></div><div class="ut">Click to upload or drag &amp; drop photos</div>
         <div class="us">JPG · PNG · WebP · HEIC — min 1200px wide recommended</div>
       </div>
       <div id="lp" class="fl"></div>
@@ -433,7 +454,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.65}
       <label>Other Brand Files<span class="hint">Brand guidelines, certificates, award logos, marketing materials</span></label>
       <div class="uz" id="z-docs">
         <input type="file" id="f-docs" accept=".pdf,.ai,.psd,.zip,.docx,.svg,.eps,.png" multiple onchange="hu(this,'docs')">
-        <div class="ui">📄</div><div class="ut">Click to upload brand docs &amp; other files</div>
+        <div class="ui"></div><div class="ut">Click to upload brand docs &amp; other files</div>
         <div class="us">PDF · AI · PSD · ZIP · DOCX</div>
       </div>
       <div id="ld" class="fl"></div>
@@ -572,7 +593,7 @@ textarea{resize:vertical;min-height:100px;line-height:1.65}
 
 <!-- SUCCESS -->
 <div class="succ-wrap" id="sw">
-  <div class="succ-icon">✓</div>
+  <div class="succ-icon"></div>
   <h2>Brief <em>received</em></h2>
   <p>Your website brief has been submitted. We'll review everything and contact you within 24 hours to confirm the project timeline.</p>
   <a href="/" class="back-btn">Back to Home</a>
@@ -720,5 +741,6 @@ async function sub(){
   }
 }
 </script>
+<script src="/assets/parallax.js"></script>
 </body>
 </html>

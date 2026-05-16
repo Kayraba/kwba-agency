@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="/assets/api-config.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>KWBA AI Receptionist — Create & Preview</title>
+<script>
+// Subscriber gate: redirect to login if no auth token present.
+(function(){
+  try {
+    var token = localStorage.getItem('agency_token');
+    if (!token){
+      sessionStorage.setItem('post_login_redirect', '/chatbot-demo.html');
+      location.replace('/login.html?gated=chatbot-demo');
+    }
+  } catch(_){ location.replace('/login.html?gated=chatbot-demo'); }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap">
@@ -137,9 +150,9 @@ select.fin{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xm
   </div>
 
   <div class="tabs">
-    <button class="tab on" onclick="setTab('configure',this)">⚡ Create New</button>
-    <button class="tab" onclick="setTab('manage',this)">📋 Manage Existing</button>
-    <button class="tab" onclick="setTab('how',this)">📖 How It Works</button>
+    <button class="tab on" onclick="setTab('configure',this)">Create New</button>
+    <button class="tab" onclick="setTab('manage',this)">Manage Existing</button>
+    <button class="tab" onclick="setTab('how',this)">How It Works</button>
   </div>
 
   <!-- ═══ CONFIGURE TAB ═══ -->
@@ -173,7 +186,7 @@ select.fin{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xm
           </div>
           <div>
             <label class="flbl">Avatar emoji</label>
-            <input type="text" id="f-avatar" class="fin" maxlength="4" value="💬">
+            <input type="text" id="f-avatar" class="fin" maxlength="4" value="">
           </div>
         </div>
 
@@ -262,7 +275,7 @@ Certifications: Gas Safe #123456, NICEIC, Trustmark"></textarea>
     </div>
 
     <div class="action-bar">
-      <button class="btn btn-g" onclick="createAndPreview()" id="create-btn">⚡ Create & Preview</button>
+      <button class="btn btn-g" onclick="createAndPreview()" id="create-btn">Create & Preview</button>
       <button class="btn btn-o" onclick="updateExisting()" id="update-btn" style="display:none">Update This Bot</button>
       <button class="btn btn-o" onclick="resetForm()">↺ Reset</button>
       <span class="status" id="action-status"></span>
@@ -339,7 +352,7 @@ Certifications: Gas Safe #123456, NICEIC, Trustmark"></textarea>
 <div class="toast" id="toast"></div>
 
 <script>
-const API_BASE = 'https://kwba-agency.onrender.com';
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? '' : window.location.origin;
 let TOKEN = localStorage.getItem('kwba_token') || '';
 let USER_EMAIL = localStorage.getItem('kwba_email') || '';
 let CURRENT_SLUG = null;
@@ -415,12 +428,12 @@ function fillForm(data) {
   document.getElementById('f-color-hex').value = c;
 }
 function resetForm() {
-  FIELDS.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value = f === 'avatar' ? '💬' : (f === 'color' ? '#c9a84c' : ''); });
+  FIELDS.forEach(f => { const el=document.getElementById('f-'+f); if(el) el.value = f === 'avatar' ? '' : (f === 'color' ? '#c9a84c' : ''); });
   document.getElementById('f-color').value = '#c9a84c';
   document.getElementById('f-color-hex').value = '#c9a84c';
   CURRENT_SLUG = null;
   document.getElementById('update-btn').style.display = 'none';
-  document.getElementById('create-btn').textContent = '⚡ Create & Preview';
+  document.getElementById('create-btn').textContent = ' Create & Preview';
   document.getElementById('preview-empty').style.display = 'flex';
   document.getElementById('preview-frame').style.display = 'none';
   document.getElementById('embed-panel').classList.remove('on');
@@ -449,18 +462,18 @@ async function createAndPreview() {
     }
     const result = await r.json();
     CURRENT_SLUG = result.slug;
-    setStatus('✓ Created — loading preview…','ok');
+    setStatus(' Created — loading preview…','ok');
     showPreview(result.slug);
     showEmbedCode(result.slug);
     document.getElementById('update-btn').style.display = 'inline-flex';
-    document.getElementById('create-btn').textContent = '✓ Created';
+    document.getElementById('create-btn').textContent = ' Created';
     toast('AI receptionist created','ok');
   } catch (e) {
     setStatus('Error: '+e.message,'err');
     toast(e.message,'err');
   }
   btn.disabled = false;
-  if (!CURRENT_SLUG) btn.textContent = '⚡ Create & Preview';
+  if (!CURRENT_SLUG) btn.textContent = ' Create & Preview';
 }
 
 async function updateExisting() {
@@ -471,7 +484,7 @@ async function updateExisting() {
   try {
     const r = await fetch(API_BASE+'/api/chatbots/'+CURRENT_SLUG, { method:'PATCH', headers:authH(), body:JSON.stringify(data) });
     if (!r.ok) throw new Error(await r.text());
-    setStatus('✓ Updated — refreshing preview…','ok');
+    setStatus(' Updated — refreshing preview…','ok');
     showPreview(CURRENT_SLUG);
     toast('Updated','ok');
   } catch (e) { toast(e.message,'err'); setStatus('Error: '+e.message,'err'); }
@@ -486,7 +499,7 @@ function showPreview(slug) {
     .mock strong{color:rgba(255,255,255,.5);font-weight:500;font-size:15px}
   </style></head><body>
     <div class="mock">
-      <div class="mock-ico">🌐</div>
+      <div class="mock-ico"></div>
       <strong>Client website preview</strong><br>
       Click the chat button bottom-right →<br>
       <span style="font-size:11px;opacity:.7">Real AI conversation. Real responses.</span>
@@ -499,7 +512,7 @@ function showPreview(slug) {
 }
 
 function showEmbedCode(slug) {
-  const code = `<!-- KWBA AI Receptionist -->\n<script\n  src="${API_BASE}/chatbot-widget.js"\n  data-slug="${slug}"\n><\/script>`;
+  const code = `<!-- KWBA AI Receptionist -->\n<script\n src="${API_BASE}/chatbot-widget.js"\n data-slug="${slug}"\n><\/script>`;
   const html = `<button class="copy-btn" onclick="copyEmbed()">⎘ Copy</button>` +
     `<span class="tag">&lt;!-- KWBA AI Receptionist --&gt;</span>\n` +
     `<span class="tag">&lt;script</span>\n` +
@@ -538,7 +551,7 @@ async function loadManageList() {
     if (!r.ok) { list.innerHTML = '<div class="bot-empty">Could not load list</div>'; return; }
     const bots = await r.json();
     if (!bots.length) {
-      list.innerHTML = '<div class="bot-empty">No AI receptionists yet. Click <strong style="color:var(--gold)">⚡ Create New</strong> to make your first.</div>';
+      list.innerHTML = '<div class="bot-empty">No AI receptionists yet. Click <strong style="color:var(--gold)"> Create New</strong> to make your first.</div>';
       return;
     }
     list.innerHTML = bots.map(b => `
@@ -568,7 +581,7 @@ async function editBot(slug) {
     setTab('configure', document.querySelector('.tab'));
     document.querySelector('.tab').classList.add('on');
     document.getElementById('update-btn').style.display = 'inline-flex';
-    document.getElementById('create-btn').textContent = '⚡ Create New (saves as new)';
+    document.getElementById('create-btn').textContent = ' Create New (saves as new)';
     showPreview(slug);
     showEmbedCode(slug);
     toast('Loaded — edit fields and click Update','ok');
@@ -576,7 +589,7 @@ async function editBot(slug) {
 }
 
 function copyEmbedFor(slug) {
-  const code = `<!-- KWBA AI Receptionist -->\n<script\n  src="${API_BASE}/chatbot-widget.js"\n  data-slug="${slug}"\n><\/script>`;
+  const code = `<!-- KWBA AI Receptionist -->\n<script\n src="${API_BASE}/chatbot-widget.js"\n data-slug="${slug}"\n><\/script>`;
   navigator.clipboard.writeText(code).then(
     ()=>toast('Embed copied for '+slug,'ok'),
     ()=>toast('Copy failed','err')
@@ -598,7 +611,7 @@ function toast(msg, type) {
 document.getElementById('f-business_name').addEventListener('blur', function(){
   const wmEl = document.getElementById('f-welcome_message');
   if (this.value && !wmEl.value) {
-    wmEl.value = `Hi! 👋 I'm the AI assistant for ${this.value}. How can I help you today?`;
+    wmEl.value = `Hi!  I'm the AI assistant for ${this.value}. How can I help you today?`;
   }
 });
 

@@ -1,56 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- API: auto-detects local vs Render backend -->
-  <script>
-    window.API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-      ? ""
-      : "https://YOUR-APP-NAME.onrender.com"; // ← replace with your Render URL
-  </script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login — KWBA Agency</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap">
-<style>
-:root{--bg:#0f0e0c;--bg2:#1a1814;--gold:#c9a84c;--ink:#f0ece4;--muted:#9a9488;--border:rgba(201,168,76,0.15)}
-body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
-.box{width:100%;max-width:360px;padding:40px;background:var(--bg2);border:1px solid var(--border);text-align:center}
-h1{font-family:'Cormorant Garamond',serif;font-weight:400;margin-bottom:10px;font-size:32px}
-p{font-size:14px;color:var(--muted);margin-bottom:30px}
-input{width:100%;background:var(--bg);border:1px solid var(--border);color:white;padding:14px;margin-bottom:12px;box-sizing:border-box;font-family:inherit;outline:none}
-input:focus{border-color:var(--gold)}
-button{width:100%;background:var(--gold);color:black;border:none;padding:14px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.1em;font-size:11px}
-.error{color:#e05c5c;font-size:13px;margin-bottom:15px;display:none}
-</style>
+<script src="/assets/api-config.js"></script>
+  <!-- API: localhost -> same origin (relative); deployed -> same origin -->
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070706"/>
+  <title>Login — KWBA Agency</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=DM+Sans:wght@300;400;500&display=swap">
+  <style>
+    :root{
+  --bg:#070706;--bg2:#0f0f0e;--bg3:#171714;--bg4:#1e1e1b;
+  --gold:#c9a84c;--gold2:#e8c96a;--gold-dim:rgba(201,168,76,0.07);--gold-border:rgba(201,168,76,0.28);--gold-strong:rgba(201,168,76,0.55);
+  --ink:#ede9e0;--ink2:#c4bfb4;--muted:#7a7568;--muted2:#3e3c36;
+  --border:rgba(255,255,255,0.055);
+}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      background:var(--bg);
+      color:var(--ink);
+      font-family:'DM Sans',sans-serif;
+      display:flex;align-items:center;justify-content:center;
+      min-height:100vh;padding:20px;
+      background-image:
+        radial-gradient(circle at 20% 10%, rgba(201,168,76,0.08), transparent 45%),
+        radial-gradient(circle at 80% 90%, rgba(201,168,76,0.06), transparent 45%);
+    }
+    .box{
+      width:100%;max-width:380px;padding:44px 36px;
+      background:var(--bg2);border:1px solid var(--border);
+      box-shadow:0 22px 60px -28px rgba(0,0,0,0.72),0 4px 18px -8px rgba(201,168,76,0.12);
+      text-align:center;position:relative;
+    }
+    .box::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(201,168,76,0.55),transparent);
+    }
+    .badge{
+      font-size:9px;letter-spacing:.32em;text-transform:uppercase;
+      color:var(--gold);margin-bottom:18px;
+      display:inline-flex;align-items:center;gap:10px;
+    }
+    .badge::before,.badge::after{
+      content:'';display:block;width:18px;height:1px;background:var(--gold);opacity:.5;
+    }
+    h1{
+      font-family:'Cormorant Garamond',serif;font-weight:400;
+      font-size:34px;line-height:1.05;margin-bottom:8px;letter-spacing:-.02em;
+    }
+    h1 em{font-style:italic;color:var(--gold)}
+    p.sub{font-size:13px;color:var(--muted);margin-bottom:30px;font-weight:300}
+    label{
+      display:block;text-align:left;font-size:9px;
+      letter-spacing:.22em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:6px;margin-top:14px;
+    }
+    label:first-of-type{margin-top:0}
+    input{
+      width:100%;background:#fafaf7;
+      border:1px solid var(--border);
+      color:var(--ink);padding:13px 14px;
+      font-family:inherit;font-size:14px;font-weight:300;
+      outline:none;transition:border-color .2s;
+    }
+    input:focus{border-color:var(--gold)}
+    button{
+      width:100%;background:var(--gold);color:#fff;
+      border:none;padding:15px;margin-top:22px;
+      font-weight:500;cursor:pointer;text-transform:uppercase;
+      letter-spacing:.22em;font-size:10px;
+      font-family:inherit;transition:opacity .2s;
+    }
+    button:hover{opacity:.9}
+    button:disabled{opacity:.5;cursor:wait}
+    .msg{
+      font-size:12px;margin-top:16px;padding:10px 12px;
+      display:none;text-align:left;
+      border:1px solid;line-height:1.5;
+    }
+    .msg.err{display:block;color:#a13030;border-color:rgba(161,48,48,0.25);background:rgba(161,48,48,0.04)}
+    .msg.ok{display:block;color:#356b3d;border-color:rgba(53,107,61,0.25);background:rgba(53,107,61,0.04)}
+    .hint{font-size:11px;color:var(--muted);margin-top:24px;line-height:1.6}
+    .hint code{background:rgba(201,168,76,0.07);padding:1px 5px;font-size:10.5px;border-radius:2px}
+  </style>
 </head>
 <body>
-<div class="box">
+  <div class="box">
+    <a href="/" aria-label="KWBA Agency — Home" style="display:block;margin:0 auto 24px;max-width:96px">
+      <img src="/assets/brand/primary-gold.svg" alt="KWBA Agency" style="width:100%;height:auto;display:block">
+    </a>
     <h1>Agency <em>Access</em></h1>
-    <p>Client Portal & AI Hub Login</p>
-    <div id="err" class="error">Invalid email or password</div>
-    <input type="email" id="email" placeholder="Email Address">
-    <input type="password" id="pass" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
-    <button onclick="login()">Enter Agency OS</button>
-</div>
+    <p class="sub">Client Portal &amp; AI Hub Login</p>
+
+    <label for="email">Email Address</label>
+    <input type="email" id="email" autocomplete="email" placeholder="admin@kwba-agency.com">
+
+    <label for="pass">Password</label>
+    <input type="password" id="pass" autocomplete="current-password" placeholder="Your password" onkeydown="if(event.key==='Enter')login()">
+
+    <button id="loginBtn" onclick="login()">Enter Agency OS</button>
+
+    <div id="msg" class="msg"></div>
+
+    <p class="hint">Default admin: <code>admin@kwba-agency.com</code> / <code>admin123</code> &mdash; change after first login.</p>
+  </div>
 
 <script>
-async function login() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('pass').value;
-    const res = await fetch(window.API_BASE + '/login', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-    });
-    if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('agency_token', data.token);
-        if(data.role === 'admin') location.href = '/admin.html';
-        else location.href = '/portal.html';
-    } else {
-        document.getElementById('err').style.display = 'block';
-    }
+function showMsg(text, kind){
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = 'msg ' + (kind === 'ok' ? 'ok' : 'err');
 }
+
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('pass').value;
+  const btn = document.getElementById('loginBtn');
+
+  if (!email || !password) {
+    showMsg('Enter both email and password.', 'err');
+    return;
+  }
+
+  btn.disabled = true;
+  const origLabel = btn.textContent;
+  btn.textContent = 'Signing in...';
+
+  try {
+    const res = await fetch(window.API_BASE + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (!data || !data.token) {
+        showMsg('Login response was missing a token. Contact support.', 'err');
+        return;
+      }
+      localStorage.setItem('agency_token', data.token);
+      showMsg('Signed in. Redirecting...', 'ok');
+      const target = data.role === 'admin' ? '/admin.html' : '/portal.html';
+      setTimeout(() => { location.href = target; }, 250);
+    } else if (res.status === 401) {
+      showMsg('Invalid email or password.', 'err');
+    } else {
+      let body = '';
+      try { body = await res.text(); } catch(_) {}
+      showMsg('Server returned ' + res.status + (body ? ': ' + body.slice(0, 120) : ''), 'err');
+    }
+  } catch (err) {
+    showMsg('Could not reach the login server. Check your connection or try again. (' + (err.message || 'network error') + ')', 'err');
+    console.error('Login error:', err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origLabel;
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const last = localStorage.getItem('last_login_email');
+  if (last) document.getElementById('email').value = last;
+});
+
+document.getElementById('email').addEventListener('blur', e => {
+  if (e.target.value) localStorage.setItem('last_login_email', e.target.value);
+});
 </script>
 </body>
 </html>
