@@ -22,45 +22,44 @@
   status = 200
 
 [[redirects]]
-  from = "/client"
-  to = "/client.html"
-  status = 200
-
-[[redirects]]
-  from = "/intake"
-  to = "/intake.html"
-  status = 200
-
-[[redirects]]
   from = "/brief"
   to = "/brief.html"
   status = 200
 
 [[redirects]]
-  from = "/marketing"
-  to = "/marketing.html"
+  from = "/client"
+  to = "/client.html"
   status = 200
 
 [[redirects]]
-  from = "/marketing-brief"
-  to = "/marketing-brief.html"
+  from = "/api/*"
+  to = "https://kwba-agency.onrender.com/api/:splat"
   status = 200
+  force = true
 
 [[redirects]]
-  from = "/package-explainer"
-  to = "/package-explainer.html"
+  from = "/public-brief"
+  to = "https://kwba-agency.onrender.com/public-brief"
   status = 200
+  force = true
 
 [[redirects]]
-  from = "/admin-new-logic"
-  to = "/admin-new-logic.html"
+  from = "/login"
+  to = "https://kwba-agency.onrender.com/login"
   status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404
 
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
+    X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
 
 [[headers]]
   for = "/assets/*"
