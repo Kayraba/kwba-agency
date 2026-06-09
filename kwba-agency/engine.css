@@ -1,0 +1,378 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   KWBA Ad Engine — shared CSS
+   Every ad imports this + a per-platform aspect ratio override.
+   Design system mirrors the main site: Inter Tight + deep gold on cream.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Design tokens (matches the main site exactly) ─────────────────────── */
+:root{
+  --bg:#fafaf7;
+  --ink:#1a1814;
+  --ink-soft:#2d2924;
+  --muted:#7a7468;
+  --tertiary:#a8a094;
+  --gold:#b08a2e;
+  --gold-hover:#967729;
+  --gold-glow:rgba(176,138,46,0.25);
+  --gold-dim:rgba(176,138,46,0.08);
+  --gold-border:rgba(176,138,46,0.28);
+  --border:rgba(26,24,20,0.10);
+  --surface:#fff;
+  --surface-elev:#ffffff;
+  --shadow:0 18px 50px -20px rgba(26,24,20,0.22);
+  --shadow-lg:0 30px 80px -25px rgba(176,138,46,0.25);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:#000;  /* letterbox shows through if aspect mismatches */
+}
+
+body{
+  font-family:'Inter','-apple-system',BlinkMacSystemFont,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ── The stage — sized by platform aspect ratio file ─────────────────── */
+.stage{
+  position:relative;
+  background:var(--bg);
+  overflow:hidden;
+  isolation:isolate;
+  /* Width/height set by the platform CSS */
+}
+
+/* ── Ambient gradient orbs that drift across all scenes ──────────────── */
+.stage::before{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(176,138,46,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 35% at 80% 90%, rgba(176,138,46,0.07) 0%, transparent 65%);
+  filter:blur(20px);
+}
+.stage::after{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(rgba(176,138,46,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176,138,46,0.025) 1px, transparent 1px);
+  background-size:48px 48px;
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 30%, transparent 80%);
+  mask-image:radial-gradient(ellipse at center,#000 30%, transparent 80%);
+  opacity:.6;
+}
+
+/* ── Scene system ────────────────────────────────────────────────────── */
+.scene{
+  position:absolute;inset:0;z-index:5;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  opacity:0;visibility:hidden;
+  transition:opacity .35s cubic-bezier(.4,0,.2,1), visibility 0s linear .35s;
+  padding:6%;
+}
+.scene.active{opacity:1;visibility:visible;transition-delay:0s}
+
+/* Each scene has padding-safe content */
+.scene-content{
+  position:relative;z-index:2;width:100%;max-width:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:clamp(12px, 2vh, 28px);
+}
+
+/* ── Typography utilities ────────────────────────────────────────────── */
+.eyebrow{
+  font-family:'Inter','-apple-system',sans-serif;
+  font-size:clamp(10px, 1.6vmin, 14px);
+  font-weight:500;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--gold);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.eyebrow::before{
+  content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 8px var(--gold);
+}
+
+.headline{
+  font-family:'Inter Tight','Inter',sans-serif;
+  font-weight:700;letter-spacing:-0.035em;line-height:1.02;
+  color:var(--ink);
+  font-size:clamp(38px, 9vmin, 96px);
+  text-align:center;
+}
+.headline em{font-style:italic;color:var(--gold);font-weight:600}
+
+.headline-lg{
+  font-family:'Inter Tight','Inter',sans-serif;
+  font-weight:800;letter-spacing:-0.045em;line-height:0.95;
+  color:var(--ink);
+  font-size:clamp(52px, 14vmin, 140px);
+  text-align:center;
+}
+
+.subline{
+  font-family:'Inter',sans-serif;
+  font-size:clamp(14px, 2.2vmin, 22px);font-weight:400;line-height:1.5;
+  color:var(--muted);
+  text-align:center;max-width:80%;
+}
+
+.tag{
+  display:inline-block;
+  font-family:'Inter',sans-serif;
+  font-size:clamp(10px, 1.4vmin, 13px);font-weight:500;
+  letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--gold);
+  padding:6px 14px;
+  background:var(--gold-dim);
+  border:1px solid var(--gold-border);
+  border-radius:999px;
+}
+
+/* ── CTA button — used in closing scenes ─────────────────────────────── */
+.cta{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:'Inter',sans-serif;
+  font-size:clamp(13px, 2vmin, 16px);font-weight:600;
+  padding:clamp(12px, 2vmin, 18px) clamp(22px, 3vmin, 32px);
+  background:var(--gold);color:#fff;
+  border-radius:8px;
+  box-shadow:0 12px 28px -10px var(--gold-glow);
+  letter-spacing:0.01em;
+}
+
+/* ── Logo / brand mark ───────────────────────────────────────────────── */
+.brand-stack{
+  display:flex;flex-direction:column;align-items:center;
+  font-family:'Inter Tight',sans-serif;font-weight:700;
+  letter-spacing:-0.04em;line-height:1;
+  color:var(--ink);
+}
+.brand-stack .row{font-size:clamp(40px, 11vmin, 110px)}
+.brand-stack .dot{
+  width:clamp(6px, 1vmin, 10px);height:clamp(6px, 1vmin, 10px);
+  background:var(--gold);border-radius:50%;
+  margin:clamp(4px, .8vmin, 8px) 0;
+}
+.brand-stack .agency{
+  font-family:'Inter',sans-serif;font-weight:500;
+  font-size:clamp(8px, 1.3vmin, 12px);letter-spacing:0.35em;
+  margin-top:clamp(10px, 1.5vmin, 16px);
+  color:var(--gold);opacity:0.75;
+}
+
+.brand-row{
+  display:flex;align-items:center;gap:14px;
+  font-family:'Inter Tight',sans-serif;font-weight:700;
+  font-size:clamp(28px, 5.5vmin, 56px);
+  letter-spacing:-0.035em;color:var(--ink);
+}
+.brand-row .dot{
+  width:clamp(6px, 1.1vmin, 11px);height:clamp(6px, 1.1vmin, 11px);
+  background:var(--gold);border-radius:50%;
+}
+.brand-row .agency{
+  font-family:'Inter',sans-serif;font-weight:500;
+  font-size:clamp(9px, 1.4vmin, 13px);letter-spacing:0.32em;
+  color:var(--gold);opacity:0.75;
+  text-transform:uppercase;
+}
+
+/* ── Numbers (stats, prices) ─────────────────────────────────────────── */
+.stat{
+  font-family:'Inter Tight',sans-serif;
+  font-weight:800;letter-spacing:-0.045em;line-height:1;
+  color:var(--gold);
+  font-size:clamp(70px, 18vmin, 180px);
+  font-variant-numeric:tabular-nums;
+}
+.stat-label{
+  font-family:'Inter',sans-serif;
+  font-size:clamp(11px, 1.5vmin, 14px);font-weight:500;
+  letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--muted);margin-top:8px;
+}
+
+/* ── Mockup containers (phone, laptop) ───────────────────────────────── */
+.mockup-phone{
+  position:relative;
+  width:clamp(180px, 30vmin, 320px);
+  aspect-ratio:9/19;
+  background:linear-gradient(180deg,#1a1814,#0d0c0a);
+  border-radius:clamp(20px, 3vmin, 38px);
+  padding:clamp(8px, 1.2vmin, 14px);
+  box-shadow:var(--shadow-lg);
+  overflow:hidden;
+}
+.mockup-phone-screen{
+  width:100%;height:100%;
+  background:var(--surface);
+  border-radius:clamp(14px, 2.4vmin, 28px);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+
+.mockup-laptop{
+  position:relative;
+  width:clamp(280px, 60vmin, 720px);
+  aspect-ratio:16/10;
+  background:linear-gradient(180deg,#1a1814,#0d0c0a);
+  border-radius:clamp(10px, 1.5vmin, 18px);
+  padding:clamp(8px, 1.2vmin, 16px);
+  box-shadow:var(--shadow-lg);
+}
+.mockup-laptop-screen{
+  width:100%;height:100%;
+  background:var(--surface);
+  border-radius:clamp(4px, .8vmin, 8px);
+  overflow:hidden;
+  position:relative;
+}
+
+/* ── Animation primitives — used by individual scenes ────────────────── */
+@keyframes fade-up{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fade-down{
+  from{opacity:0;transform:translateY(-24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fade-in{
+  from{opacity:0}to{opacity:1}
+}
+@keyframes scale-in{
+  from{opacity:0;transform:scale(0.92)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes slide-right{
+  from{opacity:0;transform:translateX(-40px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes count-up{
+  from{transform:translateY(40px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+@keyframes pulse-dot{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.4);opacity:0.6}
+}
+@keyframes typing-cursor{
+  0%,49%{opacity:1}
+  50%,100%{opacity:0}
+}
+
+.scene.active .anim-up    {animation:fade-up .6s cubic-bezier(.2,.7,.3,1) both}
+.scene.active .anim-down  {animation:fade-down .6s cubic-bezier(.2,.7,.3,1) both}
+.scene.active .anim-in    {animation:fade-in .55s ease-out both}
+.scene.active .anim-scale {animation:scale-in .65s cubic-bezier(.2,.7,.3,1) both}
+.scene.active .anim-right {animation:slide-right .55s cubic-bezier(.2,.7,.3,1) both}
+.scene.active .anim-count {animation:count-up .55s cubic-bezier(.2,.7,.3,1) both}
+.scene.active .anim-pulse {animation:pulse-dot 1.6s ease-in-out infinite}
+
+.delay-1{animation-delay:.10s !important}
+.delay-2{animation-delay:.22s !important}
+.delay-3{animation-delay:.36s !important}
+.delay-4{animation-delay:.50s !important}
+.delay-5{animation-delay:.65s !important}
+.delay-6{animation-delay:.80s !important}
+
+/* ── Pricing tier card (used in pricing & web design ads) ─────────────── */
+.tier-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:clamp(18px, 2.5vmin, 32px);
+  display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+  min-width:clamp(160px, 22vmin, 240px);
+  box-shadow:var(--shadow);
+  position:relative;
+}
+.tier-card.featured{
+  border-color:var(--gold-border);
+  background:linear-gradient(180deg,var(--surface) 0%,#fdfbf5 100%);
+}
+.tier-card.featured::before{
+  content:'Most popular';position:absolute;top:-10px;left:18px;
+  background:var(--gold);color:#fff;
+  font-family:'Inter',sans-serif;font-size:10px;font-weight:600;
+  letter-spacing:0.06em;
+  padding:4px 10px;border-radius:5px;
+}
+.tier-card .tier-name{
+  font-family:'Inter',sans-serif;font-size:clamp(11px, 1.4vmin, 13px);font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);
+}
+.tier-card .tier-price{
+  font-family:'Inter Tight',sans-serif;font-weight:700;
+  font-size:clamp(28px, 4.5vmin, 52px);letter-spacing:-0.03em;
+  color:var(--ink);line-height:1;
+}
+.tier-card .tier-meta{
+  font-family:'Inter',sans-serif;font-size:clamp(10px, 1.3vmin, 12px);
+  color:var(--muted);
+}
+
+/* ── iMessage-style chat bubble (for AI chatbot ads) ─────────────────── */
+.chat-msg{
+  max-width:78%;
+  padding:10px 14px;
+  border-radius:18px;
+  font-family:'Inter',sans-serif;
+  font-size:clamp(11px, 1.5vmin, 14px);line-height:1.4;
+  position:relative;
+}
+.chat-msg.them{
+  background:#e9e8e4;color:var(--ink);align-self:flex-start;
+  border-bottom-left-radius:5px;
+}
+.chat-msg.us{
+  background:var(--gold);color:#fff;align-self:flex-end;
+  border-bottom-right-radius:5px;
+}
+.chat-msg.typing{
+  background:#e9e8e4;align-self:flex-start;
+  display:flex;gap:4px;align-items:center;padding:14px 16px;
+  border-bottom-left-radius:5px;
+}
+.chat-msg.typing span{
+  width:6px;height:6px;background:var(--muted);border-radius:50%;
+  animation:typing-bounce 1.2s ease-in-out infinite;
+}
+.chat-msg.typing span:nth-child(2){animation-delay:.15s}
+.chat-msg.typing span:nth-child(3){animation-delay:.30s}
+@keyframes typing-bounce{
+  0%,60%,100%{transform:translateY(0);opacity:.5}
+  30%{transform:translateY(-4px);opacity:1}
+}
+
+/* ── Replay UI (visible only after ad ends, low z) ───────────────────── */
+.replay{
+  position:absolute;bottom:18px;right:18px;z-index:50;
+  background:rgba(26,24,20,0.85);color:var(--bg);
+  padding:8px 16px;border-radius:999px;
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:500;
+  letter-spacing:0.08em;text-transform:uppercase;
+  cursor:pointer;border:none;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+}
+.replay.show{opacity:1;pointer-events:auto}
+.replay:hover{background:var(--ink)}
+
+/* ── Bottom progress bar showing scene timing ────────────────────────── */
+.progress{
+  position:absolute;bottom:0;left:0;right:0;height:3px;z-index:60;
+  background:rgba(26,24,20,0.08);
+}
+.progress-fill{
+  height:100%;background:var(--gold);
+  width:0%;transition:width .12s linear;
+}
+
+/* ── Reduce motion respect ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce){
+  .scene{transition:opacity .15s linear}
+  .scene.active *{animation-duration:.001s !important}
+}
