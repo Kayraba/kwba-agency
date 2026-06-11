@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/assets/api-config.js"></script>
+  <!-- API: auto-detects local vs Render backend -->
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KWBA Agency - Client Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+          --bg:#fafaf7;--bg2:#f0ede7;--bg3:#e8e5de;--bg4:#dedad2;
+          --surface-1:#f0ede7;--surface-2:#e8e5de;
+          --gold:#b08a2e;--gold-deep:#8d6f24;--gold-hover:#967729;
+          --gold-border:rgba(176,138,46,0.30);--gold-strong:rgba(176,138,46,0.55);
+          --ink:#1a1814;--ink2:#5a554d;
+          --text-primary:#1a1814;--text-secondary:#5a554d;--text-tertiary:#8a857a;--text-disabled:#b5b1a4;
+          --muted:#8a857a;--muted2:#b5b1a4;
+          --border:rgba(26,24,20,0.08);--border2:rgba(26,24,20,0.05);--border-strong:rgba(26,24,20,0.18);
+          --red:#c0392b;--green:#27ae60;--blue:#2980b9;
+          --shadow-sm:0 1px 3px rgba(26,24,20,0.06),0 1px 2px rgba(26,24,20,0.04);
+          --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif;
+          --font-display:'Inter Tight','Inter',-apple-system,system-ui,sans-serif;
+        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body { background: var(--bg); color: var(--text-primary); font-family: 'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; line-height: 1.6; font-weight: 300; -webkit-font-smoothing: antialiased; }
+        h1 { font-size: 22px; font-weight: 400; margin-bottom: 8px; color: var(--text-primary); }
+        p { color: var(--text-secondary); margin-bottom: 16px; font-size: 14px; }
+        .upload-card { border: 2px dashed var(--border-strong); padding: 40px; text-align: center; cursor: pointer; background: var(--bg2); transition: border-color .2s, background .2s; }
+        .upload-card:hover { border-color: var(--gold-border); background: var(--bg3); }
+        #status { margin-top: 20px; padding: 10px 14px; display: none; font-size: 13px; }
+        .success { background: rgba(39,174,96,0.07); color: var(--green); border: 1px solid rgba(39,174,96,0.25); }
+        .error { background: rgba(192,57,43,0.07); color: var(--red); border: 1px solid rgba(192,57,43,0.25); }
+        select { padding: 10px 12px; width: 100%; margin-bottom: 20px; background: var(--bg2); border: 1px solid var(--border); color: var(--text-primary); font-family: inherit; font-size: 14px; outline: none; }
+        select:focus { border-color: var(--gold-border); }
+    </style>
+</head>
+<body>
+<nav style="position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(26,24,20,0.08);padding:0 40px;height:64px;display:flex;align-items:center;">
+  <a href="/" style="display:flex;align-items:center;text-decoration:none;">
+    <img src="/assets/brand/logo-nav.svg" alt="KWBA Agency" style="height:22px;width:auto;display:block;">
+  </a>
+</nav>
+    <h1>KWBA Agency Client Portal</h1>
+    <p>Please upload logos, brand guidelines, or ad assets for your campaign.</p>
+
+    <select id="asset-tag">
+        <option value="logo">Logo</option>
+        <option value="brand">Brand Guidelines / Font</option>
+        <option value="ads">Ad Image / Creative</option>
+        <option value="other">Other Asset</option>
+    </select>
+
+    <div class="upload-card" onclick="document.getElementById('fileInput').click()" id="dropZone">
+        <p>Click or Drag & Drop to upload</p>
+        <input type="file" id="fileInput" style="display:none" onchange="handleFile(this.files[0])">
+    </div>
+
+    <div id="status"></div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const briefId = urlParams.get('id');
+
+        if (!briefId) {
+            document.body.innerHTML = "<h1>Error</h1><p>No Brief ID provided. Please use the link sent by your agency.</p>";
+        }
+
+        const dropZone = document.getElementById("dropZone");
+        dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.style.background = "#eee"; });
+        dropZone.addEventListener("dragleave", () => { dropZone.style.background = "transparent"; });
+        dropZone.addEventListener("drop", e => {
+            e.preventDefault();
+            dropZone.style.background = "transparent";
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        async function handleFile(file) {
+            if (!file) return;
+            const tag = document.getElementById("asset-tag").value;
+            const status = document.getElementById("status");
+            status.style.display = "block";
+            status.textContent = "Uploading " + file.name + "...";
+            status.className = "";
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("briefId", briefId);
+            formData.append("tag", tag);
+
+            try {
+                // Auth: the /upload endpoint requires a JWT
+                const token = localStorage.getItem('agency_token') || '';
+                const res = await fetch(window.API_BASE + '/upload', {
+                    method: "POST",
+                    headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+                    body: formData
+                });
+                if (!res.ok){
+                    const body = await res.text();
+                    throw new Error('Server returned ' + res.status + ': ' + body.slice(0,120));
+                }
+                const data = await res.json();
+                if (!data || !data.success){
+                    throw new Error('Upload response missing success flag');
+                }
+
+                status.textContent = "Success! Asset '" + file.name + "' uploaded as '" + tag + "'.";
+                status.className = "success";
+            } catch (e) {
+                status.textContent = "Upload failed: " + (e.message || 'unknown error');
+                status.className = "error";
+                console.error(e);
+            }
+        }
+    </script>
+</body>
+</html>

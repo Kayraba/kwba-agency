@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /client.html
+Disallow: /portal.html
+Disallow: /prospector.html
+Disallow: /kpi.html
+Disallow: /docs.html
+Disallow: /login.html
+
+Sitemap: https://kwba-agency.com/sitemap.xml

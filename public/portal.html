@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/assets/api-config.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fafaf7">
+<title>Client Portal — KWBA Agency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fafaf7;--surface-1:#ffffff;--surface-2:#f4f1ea;
+  --text-primary:#1a1814;--text-secondary:#5a554d;--text-tertiary:#8a857a;--text-disabled:#b5b1a4;
+  --gold:#b08a2e;--gold-deep:#8d6f24;--gold-hover:#967729;
+  --gold-dim:rgba(176,138,46,0.08);--gold-border:rgba(176,138,46,0.30);
+  --border:rgba(26,24,20,0.08);--border-strong:rgba(26,24,20,0.14);
+  --shadow-sm:0 1px 3px rgba(26,24,20,0.05);
+  --shadow:0 8px 24px -8px rgba(26,24,20,0.08);
+  --radius:12px;--radius-sm:8px;
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --font-display:'Inter Tight','Inter',-apple-system,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(250,250,247,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo img{height:22px;width:auto;display:block}
+.nav-right{display:flex;align-items:center;gap:16px}
+.nav-user{font-size:13px;color:var(--text-tertiary)}
+.nav-user span{color:var(--text-primary);font-weight:500}
+.btn-signout{font-size:13px;font-weight:500;color:var(--text-secondary);background:transparent;border:1px solid var(--border-strong);border-radius:6px;padding:7px 14px;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-signout:hover{border-color:var(--gold);color:var(--text-primary)}
+
+/* ── LAYOUT ── */
+.page{max-width:960px;margin:0 auto;padding:48px 24px;animation:fadeUp .5s cubic-bezier(0.4,0,0.2,1) both}
+
+/* ── PAGE HEADER ── */
+.page-header{margin-bottom:40px}
+.page-eyebrow{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.page-eyebrow::before{content:'';width:18px;height:1px;background:var(--gold)}
+.page-title{font-family:var(--font-display);font-size:clamp(26px,4vw,36px);font-weight:600;letter-spacing:-.025em;color:var(--text-primary);margin-bottom:6px}
+.page-sub{font-size:14px;color:var(--text-secondary)}
+
+/* ── STATUS CARD ── */
+.status-card{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius);padding:28px 32px;margin-bottom:24px;box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.status-info{}
+.status-biz{font-family:var(--font-display);font-size:20px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px}
+.status-desc{font-size:13.5px;color:var(--text-secondary);max-width:480px}
+.status-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:100px;border:1px solid var(--gold-border);color:var(--gold);background:var(--gold-dim);white-space:nowrap}
+.status-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold)}
+
+/* ── SECTION ── */
+.section{margin-bottom:32px}
+.section-label{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+
+/* ── DELIVERABLE CARDS ── */
+.deliverables{display:flex;flex-direction:column;gap:12px}
+.deliverable{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:24px;box-shadow:var(--shadow-sm);transition:border-color .2s}
+.deliverable:hover{border-color:var(--gold-border)}
+.deliverable-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.deliverable-tag{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold-border)}
+.deliverable-date{font-size:12px;color:var(--text-disabled);margin-left:auto}
+.deliverable-body{font-size:14px;color:var(--text-secondary);line-height:1.75;white-space:pre-wrap}
+
+/* ── FILES GRID ── */
+.files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.file-card{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;text-align:center;transition:all .2s;cursor:pointer}
+.file-card:hover{border-color:var(--gold-border);transform:translateY(-2px);box-shadow:var(--shadow)}
+.file-icon{width:40px;height:40px;border-radius:8px;background:var(--gold-dim);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:var(--gold)}
+.file-tag{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.file-name{font-size:12px;color:var(--text-secondary);word-break:break-word;line-height:1.4}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:48px 24px;color:var(--text-tertiary)}
+.empty-icon{width:48px;height:48px;border-radius:12px;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--text-disabled)}
+.empty p{font-size:14px;line-height:1.6}
+
+/* ── LOADING ── */
+.loading{text-align:center;padding:80px 24px;color:var(--text-tertiary)}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo" aria-label="KWBA Agency — Home">
+    <img src="/assets/brand/logo-nav.svg" alt="KWBA Agency">
+  </a>
+  <div class="nav-right">
+    <div class="nav-user" id="nav-user"></div>
+    <button class="btn-signout" onclick="signOut()">Sign out</button>
+  </div>
+</nav>
+
+<main class="page" id="portal-view" style="display:none">
+
+  <div class="page-header">
+    <div class="page-eyebrow">Client Portal</div>
+    <div class="page-title" id="biz-name">Your Project</div>
+    <div class="page-sub" id="biz-desc"></div>
+  </div>
+
+  <div class="status-card">
+    <div class="status-info">
+      <div class="status-biz" id="status-biz">—</div>
+      <div class="status-desc">Your project is underway. Deliverables appear below as they're approved.</div>
+    </div>
+    <div class="status-badge" id="status-badge">In progress</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Approved Deliverables</div>
+    <div id="outputs-list" class="deliverables">
+      <div class="empty">
+        <div class="empty-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
+        <p>Your approved reports and deliverables<br>will appear here once ready.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Brand Assets &amp; Files</div>
+    <div id="files-list">
+      <div class="empty">
+        <div class="empty-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg></div>
+        <p>Brand assets and project files<br>will appear here once uploaded.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<main class="page" id="loading-view">
+  <div class="loading">
+    <div class="spinner"></div>
+    <p>Loading your portal…</p>
+  </div>
+</main>
+
+<script>
+var token = localStorage.getItem('agency_token');
+
+if (!token) {
+  location.href = '/login.html';
+}
+
+async function loadPortal() {
+  try {
+    const res = await fetch(window.API_BASE + '/client-portal/data', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+
+    if (res.status === 403 || res.status === 401) { signOut(); return; }
+    if (!res.ok) throw new Error('Server error');
+
+    const data = await res.json();
+
+    // Check role — admins should not be here
+    let payload;
+    try {
+      payload = JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      signOut(); return;
+    }
+    if (payload.role === 'admin') { location.href = '/admin.html'; return; }
+
+    document.getElementById('nav-user').innerHTML = 'Signed in as <span>' + (payload.email || '') + '</span>';
+    document.getElementById('biz-name').textContent = (data.brief && data.brief.bizName) || 'Your Project';
+    document.getElementById('status-biz').textContent = (data.brief && data.brief.bizName) || 'Your Project';
+    document.getElementById('biz-desc').textContent = (data.brief && data.brief.bizDesc) || '';
+
+    if (data.brief && data.brief.status) {
+      document.getElementById('status-badge').textContent = data.brief.status;
+    }
+
+    if (data.outputs && data.outputs.length) {
+      document.getElementById('outputs-list').innerHTML = data.outputs.map(function(o) {
+        return '<div class="deliverable">' +
+          '<div class="deliverable-header">' +
+            '<span class="deliverable-tag">' + (o.agent || 'Report') + '</span>' +
+            (o.createdAt ? '<span class="deliverable-date">' + new Date(o.createdAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) + '</span>' : '') +
+          '</div>' +
+          '<div class="deliverable-body">' + escHtml(o.output || '') + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    if (data.files && data.files.length) {
+      document.getElementById('files-list').innerHTML = '<div class="files-grid">' +
+        data.files.map(function(f) {
+          return '<a href="' + f.url + '" target="_blank" class="file-card">' +
+            '<div class="file-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>' +
+            '<div class="file-tag">' + (f.tag || 'File') + '</div>' +
+            '<div class="file-name">' + escHtml(f.name || 'Download') + '</div>' +
+          '</a>';
+        }).join('') + '</div>';
+    }
+
+    document.getElementById('loading-view').style.display = 'none';
+    document.getElementById('portal-view').style.display = 'block';
+
+  } catch(e) {
+    document.getElementById('loading-view').innerHTML = '<div class="loading"><p style="color:#c0392b">Could not load your portal. Please try refreshing.</p></div>';
+  }
+}
+
+function signOut() {
+  localStorage.removeItem('agency_token');
+  location.href = '/login.html';
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+if (token) loadPortal();
+
+// Refresh portal data every 60 seconds
+setInterval(function() {
+  loadPortal && loadPortal();
+}, 60000);
+</script>
+</body>
+</html>
