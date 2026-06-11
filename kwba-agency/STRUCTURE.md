@@ -1,6 +1,8 @@
 # KWBA Agency — File Structure
 
-Everything in this repo is **one Render deployment** at `kwba-agency.onrender.com`. But functionally, it's **four products** sharing one backend. This doc tells you which file does what.
+Everything in this repo is **one Render deployment** at `kwba-agency.onrender.com`. But functionally, it's **five products** sharing one backend. This doc tells you which file does what.
+
+**Layout rule:** everything in `public/` is served to the web; everything in the repo root (`server.js`, `agent_v2.js`, `package.json`, `render.yaml`) is server-side and unreachable from a browser. All file references below live in `public/` unless stated otherwise.
 
 ---
 
@@ -14,8 +16,6 @@ The public-facing site that prospects visit. Sells your services, explains packa
 | `marketing.html` | Marketing services page with niche-specific packages (8 niches × 3 tiers) |
 | `package-explainer.html` | Slideshow that walks through the three retainer tiers |
 | `brief.html` | Generic brief intake form for new prospects |
-| `marketing-brief.html` | Marketing-specific intake form |
-| `intake.html` | Existing client intake form |
 | `blog.html` + `blog/` | Blog index + posts |
 | `404.html` | Error page |
 
@@ -82,13 +82,32 @@ Internal team tool. Briefs/leads kanban, client management, AI agents, settings,
 | File | What it is |
 |---|---|
 | `admin.html` | The full admin dashboard |
-| `admin-new-logic.html` | Older version (kept for reference, not deployed-linked) |
-| `admin_backup.html` | Older backup (kept for reference) |
 | `client.html` | Single-client view |
 | `portal.html` | Client-facing portal |
 | `login.html` | Login page (used by all admin tools) |
 
 **Public URL pattern:** `kwba-agency.onrender.com/admin.html` (login required)
+
+---
+
+## Product 5 — Internal Ops Tools (KPI Centre + Document Hub)
+
+Standalone single-file tools, linked from the admin sidenav under "Tools". Both work in two modes: **Synced** (logged in — data lives in the backend database, shared across devices) or **Local** (no server — data lives in browser localStorage only).
+
+| File | What it is |
+|---|---|
+| `kpi.html` | KPI Command Centre — monthly KPI tracking with targets, direction-aware progress rings (higher-is-better vs lower-is-better), month-over-month deltas, 12-month sparklines, quick logging, starter KPI pack, CSV export |
+| `docs.html` | Document Hub — tracker for proposals, contracts, briefs, invoices, SOPs, reports and assets. Status workflow (draft → review → approved → sent → signed), due dates with overdue flagging, pin-to-top, tags, client filtering, search, archive, CSV export |
+
+**API endpoints (all require auth):**
+- `GET/POST/PATCH/DELETE /api/kpis` — manage KPI definitions
+- `POST /api/kpis/:id/entries` — log/update a monthly value (upserts per period)
+- `DELETE /api/kpi-entries/:id` — remove a logged value
+- `GET/POST/PATCH/DELETE /api/documents` — manage document records (`?archived=1` for archive view)
+
+**Database tables:** `kpis`, `kpi_entries`, `documents` — auto-created by `initDb()` on server start; no migration needed when deploying.
+
+**Public URLs:** `kwba-agency.onrender.com/kpi.html` and `/docs.html`
 
 ---
 

@@ -11,9 +11,11 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const fetch = require("node-fetch");
 const nodemailer = require("nodemailer");
+const compression = require("compression");
 const { mountAgentV2 } = require("./agent_v2");
 
 const app = express();
+app.use(compression());
 app.use(express.json());
 // CORS: open locally, locked to your Netlify URL in production
 app.use(cors({
@@ -30,7 +32,9 @@ app.use(cors({
       "https://kayraba.github.io",
       ...explicit
     ].filter(Boolean);
-    if (!origin || allowed.includes(origin)) return callback(null, true);
+    // Always allow same-machine dev origins (server serves its own frontend on any port)
+    const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin || '');
+    if (!origin || allowed.includes(origin) || (isLocal && process.env.NODE_ENV !== 'production')) return callback(null, true);
     callback(new Error("Not allowed by CORS: " + origin));
   },
   credentials: true
@@ -52,7 +56,53 @@ app.use((req, res, next) => {
   next();
 });
 
-const JWT_SECRET = process.env.JWT_SECRET || "kwba-agency-jwt-secret-2024-xK9mP3nQ7rL2vB8w";
+// ── Rate limiting ─────────────────────────────────────────────
+// In-memory, per-IP sliding window (same approach as the login limiter).
+// Two tiers:
+//   • general: all dynamic /api + auth routes — generous, stops abuse/scraping
+//   • ai:      public Gemini-backed endpoints — strict, protects the API bill
+function makeLimiter(max, windowMs, label) {
+  const hits = new Map();
+  // sweep stale entries every 10 min so memory can't grow unbounded
+  setInterval(() => {
+    const cutoff = Date.now() - windowMs;
+    for (const [k, arr] of hits) {
+      const fresh = arr.filter(t => t > cutoff);
+      if (fresh.length) hits.set(k, fresh); else hits.delete(k);
+    }
+  }, 10 * 60 * 1000).unref();
+  return (req, res, next) => {
+    const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+    const now = Date.now();
+    const arr = (hits.get(ip) || []).filter(t => now - t < windowMs);
+    if (arr.length >= max) {
+      return res.status(429).json({ error: `Too many requests (${label}). Please slow down and try again shortly.` });
+    }
+    arr.push(now);
+    hits.set(ip, arr);
+    next();
+  };
+}
+const generalLimiter = makeLimiter(300, 15 * 60 * 1000, "general");
+const aiLimiter = makeLimiter(30, 10 * 60 * 1000, "ai");
+
+// Apply the general limiter to dynamic routes only — static pages/assets are exempt
+const LIMITED_PREFIXES = ["/api/", "/login", "/stream-agent", "/public-audit", "/rate-output", "/agent-v2"];
+app.use((req, res, next) => {
+  if (LIMITED_PREFIXES.some(p => req.path === p.replace(/\/$/, "") || req.path.startsWith(p))) {
+    return generalLimiter(req, res, next);
+  }
+  next();
+});
+
+// JWT secret: required in production. Local dev gets an ephemeral random secret
+// (tokens won't survive a restart locally, which is fine and safe).
+const JWT_SECRET = process.env.JWT_SECRET || (() => {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("FATAL: JWT_SECRET environment variable is required in production.");
+  }
+  return require("crypto").randomBytes(32).toString("hex");
+})();
 
 // --- DATABASE SETUP (Hybrid: Postgres for Production, SQLite for Local) ---
 let db;
@@ -181,6 +231,41 @@ const initDb = async () => {
       visitor_meta TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS kpis (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      category TEXT DEFAULT 'growth',
+      unit TEXT DEFAULT 'number',
+      target REAL DEFAULT 0,
+      direction TEXT DEFAULT 'up',
+      sort_order INTEGER DEFAULT 0,
+      archived INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS kpi_entries (
+      id SERIAL PRIMARY KEY,
+      kpi_id INTEGER NOT NULL,
+      period TEXT NOT NULL,
+      value REAL NOT NULL,
+      note TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
+    `CREATE TABLE IF NOT EXISTS documents (
+      id SERIAL PRIMARY KEY,
+      title TEXT NOT NULL,
+      client TEXT,
+      doc_type TEXT DEFAULT 'general',
+      status TEXT DEFAULT 'draft',
+      tags TEXT,
+      url TEXT,
+      notes TEXT,
+      owner TEXT,
+      due_date TEXT,
+      pinned INTEGER DEFAULT 0,
+      archived INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`
   ];
 
@@ -189,9 +274,24 @@ const initDb = async () => {
     await db.query(q).catch(e => console.log("Init Table Error:", e.message));
   }
 
+  // Performance indexes (no-ops if they already exist; valid in both Postgres and SQLite)
+  const indexes = [
+    "CREATE INDEX IF NOT EXISTS idx_kpi_entries_kpi ON kpi_entries (kpi_id)",
+    "CREATE INDEX IF NOT EXISTS idx_kpi_entries_period ON kpi_entries (period)",
+    "CREATE INDEX IF NOT EXISTS idx_documents_client ON documents (client)",
+    "CREATE INDEX IF NOT EXISTS idx_documents_archived ON documents (archived)",
+  ];
+  for (const q of indexes) {
+    await db.query(q).catch(e => console.log("Init Index Error:", e.message));
+  }
+
   const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync("admin123", salt);
-  const adminEmail = "admin@kwba-agency.com";
+  const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+  if (process.env.ADMIN_PASSWORD == null) {
+    console.warn("⚠️  ADMIN_PASSWORD not set — seeding default password 'admin123'. Set ADMIN_PASSWORD in your environment and change it after first login.");
+  }
+  const hash = bcrypt.hashSync(adminPassword, salt);
+  const adminEmail = process.env.ADMIN_EMAIL || "admin@kwba-agency.com";
   
   if (isProduction) {
     await db.query("INSERT INTO users (email, password, role) VALUES ($1, $2, 'admin') ON CONFLICT (email) DO NOTHING", [adminEmail, hash]);
@@ -337,7 +437,7 @@ app.post("/stream-agent", authenticate, async (req, res) => {
   res.setHeader('Connection', 'keep-alive');
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=${geminiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=${geminiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -445,7 +545,7 @@ app.post("/public-audit", async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=${geminiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=${geminiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -745,6 +845,166 @@ app.patch("/api/outreach/:id", authenticate, async (req, res) => {
 });
 
 // =====================================================================
+// KPI COMMAND CENTRE — define KPIs, log monthly values, track vs target
+// Used by kpi.html. All endpoints require login.
+// =====================================================================
+
+// List all KPIs with their full entry history
+app.get("/api/kpis", authenticate, async (req, res) => {
+  try {
+    const kpiResult = await db.query("SELECT * FROM kpis WHERE archived = 0 ORDER BY sort_order, id");
+    const kpis = kpiResult.rows || [];
+    const entryResult = await db.query("SELECT * FROM kpi_entries ORDER BY period");
+    const entries = entryResult.rows || [];
+    const byKpi = {};
+    for (const e of entries) { (byKpi[e.kpi_id] = byKpi[e.kpi_id] || []).push(e); }
+    res.send(kpis.map(k => ({ ...k, entries: byKpi[k.id] || [] })));
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// Create a KPI definition
+app.post("/api/kpis", authenticate, async (req, res) => {
+  const { name, category, unit, target, direction, sort_order } = req.body;
+  if (!name || !String(name).trim()) return res.status(400).send("name required");
+  try {
+    const result = await db.query(
+      "INSERT INTO kpis (name, category, unit, target, direction, sort_order) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      [String(name).trim(), category || 'growth', unit || 'number', Number(target) || 0, direction === 'down' ? 'down' : 'up', Number(sort_order) || 0]
+    );
+    const id = isProduction ? result.rows[0].id : result.lastID;
+    await logActivity(req.user.email, "kpi_created", "kpi", id, name);
+    res.send({ id, success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// Update a KPI definition
+app.patch("/api/kpis/:id", authenticate, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).send("invalid id");
+  const allowed = ['name', 'category', 'unit', 'target', 'direction', 'sort_order', 'archived'];
+  const sets = [], vals = [];
+  for (const key of allowed) {
+    if (req.body[key] !== undefined) { vals.push(req.body[key]); sets.push(`${key} = $${vals.length}`); }
+  }
+  if (!sets.length) return res.status(400).send("nothing to update");
+  vals.push(id);
+  try {
+    await db.query(`UPDATE kpis SET ${sets.join(', ')} WHERE id = $${vals.length}`, vals);
+    res.send({ success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// Delete a KPI and its history
+app.delete("/api/kpis/:id", authenticate, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).send("invalid id");
+  try {
+    await db.query("DELETE FROM kpi_entries WHERE kpi_id = $1", [id]);
+    await db.query("DELETE FROM kpis WHERE id = $1", [id]);
+    await logActivity(req.user.email, "kpi_deleted", "kpi", id, "");
+    res.send({ success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// Log (upsert) a value for a KPI in a given period — period format 'YYYY-MM'
+app.post("/api/kpis/:id/entries", authenticate, async (req, res) => {
+  const kpiId = parseInt(req.params.id);
+  const { period, value, note } = req.body;
+  if (!kpiId || !period || !/^\d{4}-\d{2}$/.test(period)) return res.status(400).send("kpi id and period (YYYY-MM) required");
+  if (value === undefined || value === null || isNaN(Number(value))) return res.status(400).send("numeric value required");
+  try {
+    const existing = await db.query("SELECT id FROM kpi_entries WHERE kpi_id = $1 AND period = $2", [kpiId, period]);
+    const rows = existing.rows || [];
+    if (rows.length) {
+      await db.query("UPDATE kpi_entries SET value = $1, note = $2 WHERE id = $3", [Number(value), note || null, rows[0].id]);
+      res.send({ id: rows[0].id, updated: true });
+    } else {
+      const result = await db.query(
+        "INSERT INTO kpi_entries (kpi_id, period, value, note) VALUES ($1, $2, $3, $4) RETURNING id",
+        [kpiId, period, Number(value), note || null]
+      );
+      const id = isProduction ? result.rows[0].id : result.lastID;
+      res.send({ id, created: true });
+    }
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// Remove a single logged value
+app.delete("/api/kpi-entries/:id", authenticate, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).send("invalid id");
+  try {
+    await db.query("DELETE FROM kpi_entries WHERE id = $1", [id]);
+    res.send({ success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// =====================================================================
+// DOCUMENT HUB — organise proposals, contracts, briefs, SOPs, assets
+// Used by docs.html. All endpoints require login.
+// =====================================================================
+
+// List documents (excludes archived unless ?archived=1)
+app.get("/api/documents", authenticate, async (req, res) => {
+  try {
+    const showArchived = req.query.archived === '1';
+    const result = await db.query(
+      showArchived
+        ? "SELECT * FROM documents ORDER BY pinned DESC, updated_at DESC"
+        : "SELECT * FROM documents WHERE archived = 0 ORDER BY pinned DESC, updated_at DESC"
+    );
+    res.send(result.rows || []);
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// Create a document record
+app.post("/api/documents", authenticate, async (req, res) => {
+  const { title, client, doc_type, status, tags, url, notes, owner, due_date } = req.body;
+  if (!title || !String(title).trim()) return res.status(400).send("title required");
+  try {
+    const result = await db.query(
+      `INSERT INTO documents (title, client, doc_type, status, tags, url, notes, owner, due_date)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+      [String(title).trim(), client || null, doc_type || 'general', status || 'draft',
+       tags || null, url || null, notes || null, owner || req.user.email, due_date || null]
+    );
+    const id = isProduction ? result.rows[0].id : result.lastID;
+    await logActivity(req.user.email, "document_created", "document", id, title);
+    res.send({ id, success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// Update a document record
+app.patch("/api/documents/:id", authenticate, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).send("invalid id");
+  const allowed = ['title', 'client', 'doc_type', 'status', 'tags', 'url', 'notes', 'owner', 'due_date', 'pinned', 'archived'];
+  const sets = [], vals = [];
+  for (const key of allowed) {
+    if (req.body[key] !== undefined) { vals.push(req.body[key]); sets.push(`${key} = $${vals.length}`); }
+  }
+  if (!sets.length) return res.status(400).send("nothing to update");
+  vals.push(new Date().toISOString());
+  sets.push(`updated_at = $${vals.length}`);
+  vals.push(id);
+  try {
+    await db.query(`UPDATE documents SET ${sets.join(', ')} WHERE id = $${vals.length}`, vals);
+    res.send({ success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// Delete a document record
+app.delete("/api/documents/:id", authenticate, async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (!id) return res.status(400).send("invalid id");
+  try {
+    await db.query("DELETE FROM documents WHERE id = $1", [id]);
+    await logActivity(req.user.email, "document_deleted", "document", id, "");
+    res.send({ success: true });
+  } catch (e) { res.status(500).send(e.message); }
+});
+
+// =====================================================================
 // AI CHATBOT — multi-tenant AI receptionist product
 // Each client gets their own /chatbot/:slug endpoint with their own
 // knowledge base, system prompt, and lead capture rules.
@@ -837,7 +1097,7 @@ app.get("/api/chatbot/:slug", async (req, res) => {
 });
 
 // PUBLIC DEMO — chat with the KWBA demo AI receptionist (no DB lookup needed)
-app.post("/api/demo-chat", async (req, res) => {
+app.post("/api/demo-chat", aiLimiter, async (req, res) => {
   const { messages, sessionId } = req.body;
   if (!Array.isArray(messages) || messages.length === 0) return res.status(400).send("messages required");
   if (messages.length > 20) return res.status(400).send("Demo limited to 20 messages");
@@ -896,7 +1156,7 @@ RULES:
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(geminiBody) }
     );
     if (!response.ok) return res.status(500).send("AI temporarily unavailable");
@@ -909,7 +1169,7 @@ RULES:
 });
 
 // PUBLIC — chat with the AI receptionist
-app.post("/api/chatbot/:slug/chat", async (req, res) => {
+app.post("/api/chatbot/:slug/chat", aiLimiter, async (req, res) => {
   const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
   const { sessionId, messages } = req.body;
   if (!sessionId || typeof sessionId !== 'string') return res.status(400).send("sessionId required");
@@ -957,7 +1217,7 @@ app.post("/api/chatbot/:slug/chat", async (req, res) => {
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1177,8 +1437,29 @@ app.post("/upload", authenticate, upload.single("file"), async (req, res) => {
   } catch (e) { res.status(500).send(e.message); }
 });
 
+const PUBLIC_DIR = path.join(__dirname, "public");
+
+// User uploads (no long cache — these can change)
 app.use("/uploads", express.static("uploads"));
-app.use(express.static("."));
+
+// Fingerprinted/static assets — cache hard for 30 days
+app.use("/assets", express.static(path.join(PUBLIC_DIR, "assets"), {
+  maxAge: "30d",
+  immutable: true,
+}));
+
+// Everything else in public/ — HTML revalidates each load, other files cached briefly.
+// extensions:["html"] gives clean URLs: /marketing resolves to /marketing.html
+app.use(express.static(PUBLIC_DIR, {
+  extensions: ["html"],
+  setHeaders(res, filePath) {
+    if (filePath.endsWith(".html")) {
+      res.setHeader("Cache-Control", "no-cache");
+    } else {
+      res.setHeader("Cache-Control", "public, max-age=86400");
+    }
+  },
+}));
 
 // ── Agent V2: production-grade infrastructure (RAG, tools, memory, observability, safety, agentic loops)
 // Adds: /agent-v2/run, /agent-v2/save-output, /agent-v2/telemetry, /agent-v2/safety-flags, /agent-v2/tools-status
@@ -1191,7 +1472,7 @@ try {
 
 // Serve branded 404 page for unknown routes
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, '404.html'));
+  res.status(404).sendFile(path.join(PUBLIC_DIR, '404.html'));
 });
 
 const PORT = process.env.PORT || 3000;

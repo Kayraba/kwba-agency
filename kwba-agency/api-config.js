@@ -23,4 +23,6 @@
     // → hit the Render API explicitly
     window.API_BASE = RENDER_API;
   }
+  // Defensive: ensure API_BASE is always a string
+  if (typeof window.API_BASE !== 'string') window.API_BASE = '';
 })();

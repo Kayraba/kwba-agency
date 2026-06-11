@@ -487,8 +487,17 @@ const API = (window.location.hostname === 'localhost' || window.location.hostnam
 // ═══════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════
-let TOKEN = localStorage.getItem('kwba_token') || '';
-let USER_EMAIL = localStorage.getItem('kwba_email') || '';
+// One-time migration: prospector used to store its own token key.
+// Standardise on the shared 'agency_token' so login carries across all tools.
+(function migrateToken(){
+  const old = localStorage.getItem('kwba_token');
+  if (old && !localStorage.getItem('agency_token')) localStorage.setItem('agency_token', old);
+  const oldEmail = localStorage.getItem('kwba_email');
+  if (oldEmail && !localStorage.getItem('agency_email')) localStorage.setItem('agency_email', oldEmail);
+  localStorage.removeItem('kwba_token'); localStorage.removeItem('kwba_email');
+})();
+let TOKEN = localStorage.getItem('agency_token') || '';
+let USER_EMAIL = localStorage.getItem('agency_email') || '';
 
 function authHeaders(extra = {}) {
   return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}`, ...extra };
@@ -527,8 +536,8 @@ async function doLogin() {
     const data = await r.json();
     TOKEN = data.token;
     USER_EMAIL = email;
-    localStorage.setItem('kwba_token', TOKEN);
-    localStorage.setItem('kwba_email', USER_EMAIL);
+    localStorage.setItem('agency_token', TOKEN);
+    localStorage.setItem('agency_email', USER_EMAIL);
     closeLoginModal();
     updateAuthUI();
     loadQueue();
@@ -538,8 +547,8 @@ async function doLogin() {
 
 function doLogout() {
   TOKEN = ''; USER_EMAIL = '';
-  localStorage.removeItem('kwba_token');
-  localStorage.removeItem('kwba_email');
+  localStorage.removeItem('agency_token');
+  localStorage.removeItem('agency_email');
   updateAuthUI();
   toast('Signed out');
 }
@@ -759,7 +768,7 @@ async function runSearch() {
     });
     if (!r.ok) {
       const errText = await r.text();
-      if (r.status === 401 || r.status === 403) { TOKEN = ''; localStorage.removeItem('kwba_token'); updateAuthUI(); openLoginModal(); }
+      if (r.status === 401 || r.status === 403) { TOKEN = ''; localStorage.removeItem('agency_token'); updateAuthUI(); openLoginModal(); }
       throw new Error(errText || 'Search failed');
     }
     const data = await r.json();

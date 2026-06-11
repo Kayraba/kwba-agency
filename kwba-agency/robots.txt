@@ -1,25 +1,11 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
-Allow: /blog.html
-Allow: /blog/
-Allow: /marketing.html
-Allow: /package-explainer.html
-Disallow: /dashboard.html
 Disallow: /admin.html
-Disallow: /agent-lead-followup.html
-Disallow: /agent-seo-content.html
-Disallow: /agent-case-study.html
+Disallow: /client.html
+Disallow: /portal.html
+Disallow: /prospector.html
+Disallow: /kpi.html
+Disallow: /docs.html
+Disallow: /login.html
 
-Sitemap: https://kwba.co.uk/sitemap.xml
+Sitemap: https://kwba-agency.com/sitemap.xml

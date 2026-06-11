@@ -18,7 +18,7 @@ const fetch = require('node-fetch');
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 const GEMINI_KEY     = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL   = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+const GEMINI_MODEL   = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const EMBED_MODEL    = 'text-embedding-004';
 const GEMINI_BASE    = 'https://generativelanguage.googleapis.com/v1beta';
 
