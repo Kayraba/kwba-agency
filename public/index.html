@@ -406,6 +406,50 @@ nav.scrolled{background:rgba(250,250,247,0.92);border-bottom-color:var(--border-
 .featured-meta{display:flex;gap:32px;margin-bottom:32px;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .featured-meta-item .label{font-size:10.5px;color:var(--text-tertiary);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px}
 .featured-meta-item .value{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text-primary)}
+
+/* ─── PROSPECTOR ENGINE MOCK (featured project) ─── */
+.engine-mock{position:absolute;inset:0;background:#16130f;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:18px 20px;font-size:12px}
+.engine-mock::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(176,138,46,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(176,138,46,0.05) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+.em-chrome{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.em-dots{display:flex;gap:5px}
+.em-dots span{width:8px;height:8px;border-radius:50%;background:rgba(250,250,247,0.14)}
+.em-title{font-size:10px;font-weight:600;letter-spacing:0.16em;color:rgba(250,250,247,0.55);text-transform:uppercase}
+.em-live{display:flex;align-items:center;gap:5px;margin-left:auto;font-size:9.5px;font-weight:600;letter-spacing:0.12em;color:#7bc47f}
+.em-live::before{content:"";width:6px;height:6px;border-radius:50%;background:#7bc47f;animation:emPulse 1.6s ease-in-out infinite}
+@keyframes emPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(123,196,127,0.5)}50%{opacity:0.6;box-shadow:0 0 0 5px rgba(123,196,127,0)}}
+.em-query{display:flex;align-items:center;gap:8px;background:rgba(250,250,247,0.05);border:1px solid rgba(176,138,46,0.25);border-radius:8px;padding:8px 12px;margin-bottom:6px;color:rgba(250,250,247,0.85);font-weight:500}
+.em-query svg{flex-shrink:0;opacity:0.6}
+.em-scan{height:3px;border-radius:2px;background:rgba(176,138,46,0.15);overflow:hidden;margin-bottom:12px}
+.em-scan i{display:block;height:100%;width:40%;border-radius:2px;background:linear-gradient(90deg,var(--gold),#d4af5c);animation:emScan 2.6s ease-in-out infinite}
+@keyframes emScan{0%{transform:translateX(-110%)}55%,100%{transform:translateX(260%)}}
+.em-leads{display:flex;flex-direction:column;gap:7px;flex:1;min-height:0}
+.em-lead{display:flex;align-items:center;gap:10px;background:rgba(250,250,247,0.04);border:1px solid rgba(250,250,247,0.08);border-radius:9px;padding:8px 11px;opacity:0;animation:emIn 9s ease-in-out infinite}
+.em-lead:nth-child(2){animation-delay:0.7s}
+.em-lead:nth-child(3){animation-delay:1.4s}
+.em-lead:nth-child(4){animation-delay:2.1s}
+.em-skel{display:flex;align-items:center;gap:10px;border:1px dashed rgba(250,250,247,0.12);border-radius:9px;padding:12px 11px;margin-top:1px}
+.em-skel i{height:7px;border-radius:4px;background:linear-gradient(90deg,rgba(250,250,247,0.06),rgba(176,138,46,0.22),rgba(250,250,247,0.06));background-size:200% 100%;animation:emShimmer 1.8s linear infinite}
+.em-skel i:nth-child(1){width:26%}.em-skel i:nth-child(2){width:34%}.em-skel i:nth-child(3){width:12%;margin-left:auto}
+@keyframes emShimmer{0%{background-position:180% 0}100%{background-position:-80% 0}}
+@media (prefers-reduced-motion:reduce){.em-skel i{animation:none}}
+@keyframes emIn{0%{opacity:0;transform:translateY(7px)}6%,86%{opacity:1;transform:translateY(0)}94%,100%{opacity:0;transform:translateY(7px)}}
+.em-lead-name{color:rgba(250,250,247,0.9);font-weight:600;font-size:11.5px;white-space:nowrap}
+.em-chips{display:flex;gap:4px;flex:1;min-width:0;overflow:hidden}
+.em-chip{font-size:8.5px;font-weight:600;letter-spacing:0.05em;color:#d9a8a0;background:rgba(192,90,76,0.16);border:1px solid rgba(192,90,76,0.3);padding:2.5px 7px;border-radius:20px;white-space:nowrap;text-transform:uppercase}
+.em-score{margin-left:auto;flex-shrink:0;display:flex;align-items:baseline;gap:3px}
+.em-score b{font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--gold)}
+.em-score span{font-size:8.5px;color:rgba(250,250,247,0.45);letter-spacing:0.08em;text-transform:uppercase}
+.em-status{display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:11px;border-top:1px solid rgba(250,250,247,0.08);font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(250,250,247,0.45)}
+.em-status b{color:var(--gold);font-weight:600}
+@media (prefers-reduced-motion:reduce){.em-lead{opacity:1;animation:none}.em-scan i,.em-live::before{animation:none}}
+@media (max-width:900px){.engine-mock{padding:14px 14px}.em-chips{display:none}}
+.featured-img:has(.engine-mock){aspect-ratio:auto;align-self:stretch;min-height:340px}
+@media (max-width:900px){
+  .featured-img:has(.engine-mock){aspect-ratio:auto;min-height:0;align-self:auto}
+  .engine-mock{position:relative;inset:auto}
+  .em-skel{display:none}
+  .em-lead:nth-child(4){display:none}
+}
 .work-portfolio-cta{text-align:center;margin-top:40px}
 
 /* ─── PORTFOLIO CAROUSEL ─── */
@@ -548,7 +592,7 @@ body{animation:fadeUp .55s cubic-bezier(0.4,0,0.2,1) both}
 <nav class="site-nav" id="nav">
   <div class="nav-inner">
     <a href="/" class="nav-logo" aria-label="KWBA Agency — Home">
-      <img src="/assets/brand/logo-nav.svg" alt="KWBA Agency">
+      <img src="/assets/brand/lockup-horizontal-ink.svg" alt="KWBA Agency">
     </a>
     <div class="nav-links">
       <a href="#services" class="nav-link">Services</a>
@@ -891,22 +935,58 @@ body{animation:fadeUp .55s cubic-bezier(0.4,0,0.2,1) both}
     <div class="container">
       <div class="section-header si">
         <span class="slabel reveal-item">Featured project</span>
-        <h2 class="headline-lg reveal-item delay-1">Streetwear brand,<br>tripled online sales.</h2>
+        <h2 class="headline-lg reveal-item delay-1">We don't just build websites.<br>We build engines.</h2>
       </div>
 
       <div class="featured-work reveal-item delay-2">
         <div class="featured-img">
-          <img src="/assets/portfolio-etncty--6nvijdg.webp" alt="ETNCTY — streetwear brand website" loading="lazy">
+          <div class="engine-mock" role="img" aria-label="KWBA Prospector — live lead engine scanning local businesses and scoring website gaps">
+            <div class="em-chrome">
+              <div class="em-dots"><span></span><span></span><span></span></div>
+              <div class="em-title">KWBA Prospector</div>
+              <div class="em-live">Live</div>
+            </div>
+            <div class="em-query">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b08a2e" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+              plumbers &middot; Milton Keynes
+            </div>
+            <div class="em-scan"><i></i></div>
+            <div class="em-leads">
+              <div class="em-lead">
+                <span class="em-lead-name">MK Drain &amp; Heat Ltd</span>
+                <div class="em-chips"><span class="em-chip">No SSL</span><span class="em-chip">Slow mobile</span></div>
+                <div class="em-score"><b>92</b><span>gap</span></div>
+              </div>
+              <div class="em-lead">
+                <span class="em-lead-name">Bletchley Boiler Co</span>
+                <div class="em-chips"><span class="em-chip">No booking</span><span class="em-chip">No chatbot</span></div>
+                <div class="em-score"><b>87</b><span>gap</span></div>
+              </div>
+              <div class="em-lead">
+                <span class="em-lead-name">Rapid Flow Plumbing</span>
+                <div class="em-chips"><span class="em-chip">Outdated site</span></div>
+                <div class="em-score"><b>81</b><span>gap</span></div>
+              </div>
+              <div class="em-lead">
+                <span class="em-lead-name">A1 Heating Services</span>
+                <div class="em-chips"><span class="em-chip">No reviews reply</span><span class="em-chip">Slow mobile</span></div>
+                <div class="em-score"><b>76</b><span>gap</span></div>
+              </div>
+              <div class="em-skel" aria-hidden="true"><i></i><i></i><i></i></div>
+            </div>
+            <div class="em-status"><span><b>247</b> businesses scanned</span><span><b>38</b> high-gap leads</span></div>
+          </div>
         </div>
         <div class="featured-content">
-          <span class="featured-tag">E-commerce · Fashion</span>
-          <h3>ETNCTY</h3>
-          <p>A premium, dark-themed streetwear store launched in 48 hours. Custom Stripe checkout, mobile-first product galleries, branded for a younger audience. Online sales tripled within three months of launch.</p>
+          <span class="featured-tag">In-house product &middot; AI lead engine</span>
+          <h3>KWBA Prospector</h3>
+          <p>Our real-time lead engine scans a local market, scores every business on the gaps holding it back — slow mobile, no booking, no chatbot — and builds a ready-to-contact shortlist in under a minute. It's the engine behind our own growth, and we point it at our clients' markets too.</p>
           <div class="featured-meta">
-            <div class="featured-meta-item"><div class="label">Delivered in</div><div class="value">48 hours</div></div>
-            <div class="featured-meta-item"><div class="label">Sales lift</div><div class="value">+218%</div></div>
-            <div class="featured-meta-item"><div class="label">Package</div><div class="value">Premium</div></div>
+            <div class="featured-meta-item"><div class="label">Signals checked</div><div class="value">14 / business</div></div>
+            <div class="featured-meta-item"><div class="label">Shortlist in</div><div class="value">&lt; 60 sec</div></div>
+            <div class="featured-meta-item"><div class="label">Built</div><div class="value">In-house</div></div>
           </div>
+          <a href="#contact" class="btn btn--primary">Put it to work for you →</a>
         </div>
       </div>
 
@@ -922,6 +1002,7 @@ body{animation:fadeUp .55s cubic-bezier(0.4,0,0.2,1) both}
           </button>
 
           <div class="carousel-track" data-track>
+            <div class="carousel-slide"><div class="pcard"><img class="pcard-img" src="/assets/portfolio-etncty--6nvijdg.webp" alt="ETNCTY — streetwear brand, online sales tripled" loading="lazy"/><div class="pov"><div><div class="pname">ETNCTY</div><div class="ptype">E-commerce · Sales +218%</div></div></div></div></div>
             <div class="carousel-slide"><div class="pcard"><img class="pcard-img" src="/assets/portfolio-mkgas-vvztx_ed.webp" alt="MK Gas Engineers" loading="lazy"/><div class="pov"><div><div class="pname">MK Gas Engineers</div><div class="ptype">Tradesman · Local</div></div></div></div></div>
             <div class="carousel-slide"><div class="pcard"><img class="pcard-img" src="/assets/portfolio-flowmaster-cfidoifi.webp" alt="FlowMaster" loading="lazy"/><div class="pov"><div><div class="pname">FlowMaster</div><div class="ptype">SaaS · Technology</div></div></div></div></div>
             <div class="carousel-slide"><div class="pcard"><img class="pcard-img" src="/assets/portfolio-restaurant-bfcl6wsl.webp" alt="Restaurant Project" loading="lazy"/><div class="pov"><div><div class="pname">Restaurant Project</div><div class="ptype">Hospitality</div></div></div></div></div>
@@ -1021,7 +1102,7 @@ body{animation:fadeUp .55s cubic-bezier(0.4,0,0.2,1) both}
     <div class="footer-grid">
       <div class="footer-brand">
         <a href="/" aria-label="KWBA Agency — Home">
-          <img src="/assets/brand/logo-nav.svg" alt="KWBA Agency">
+          <img src="/assets/brand/lockup-horizontal-ink.svg" alt="KWBA Agency">
         </a>
         <p>Professional web design &amp; digital marketing for UK small businesses. Based in Milton Keynes.</p>
       </div>
