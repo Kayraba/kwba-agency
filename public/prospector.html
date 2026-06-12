@@ -19,7 +19,8 @@
   --text-primary:#1a1814;--text-secondary:#5a554d;--text-tertiary:#8a857a;--text-disabled:#b5b1a4;
   --muted:#8a857a;--muted2:#b5b1a4;
   --border:rgba(26,24,20,0.08);--border2:rgba(26,24,20,0.05);--border-strong:rgba(26,24,20,0.18);
-  --red:#c0392b;--green:#27ae60;--blue:#2980b9;
+  --red:#c0392b;--green:#27ae60;--blue:#2980b9;--orange:#d4834a;
+  --purple:#7c3aed;--purple-dim:rgba(124,58,237,0.08);--purple-border:rgba(124,58,237,0.28);--purple-mid:#9d66f5;
   --shadow-sm:0 1px 3px rgba(26,24,20,0.06),0 1px 2px rgba(26,24,20,0.04);
   --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text',system-ui,sans-serif;
   --font-display:'Inter Tight','Inter',-apple-system,system-ui,sans-serif;
@@ -98,6 +99,32 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 .rb-contacted{color:var(--blue);border-color:rgba(74,127,212,.3);background:rgba(74,127,212,.07)}
 .rb-queued{color:var(--green);border-color:rgba(79,168,120,.3);background:rgba(79,168,120,.07)}
 .ritem-empty{padding:30px 20px;text-align:center;color:var(--muted);font-size:11px;font-style:italic;line-height:1.7}
+
+/* ── Lead filter tabs ── */
+.lead-tier-bar{display:flex;gap:1px;background:var(--border);border-bottom:1px solid var(--border);flex-shrink:0}
+.ltab{flex:1;padding:8px 6px;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:var(--bg2);border:none;border-bottom:2px solid transparent;transition:.18s;font-family:'Inter',-apple-system,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.ltab:hover{color:var(--ink2);background:var(--bg3)}
+.ltab.on{background:var(--bg3);border-bottom-color:var(--gold);color:var(--gold)}
+.ltab-ct{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;line-height:1}
+.ltab.lhot .ltab-ct{color:var(--red)}
+.ltab.lwarm .ltab-ct{color:var(--orange)}
+.ltab.lcool .ltab-ct{color:var(--muted)}
+.ltab.on.lhot .ltab-ct{color:var(--red)}
+
+/* ── Gap mini-bar in list items ── */
+.ri-gapbar{height:2px;background:var(--bg4);border-radius:2px;margin-top:5px;overflow:hidden}
+.ri-gapfill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s ease}
+.ritem.gaphot .ri-gapfill{background:var(--red)}
+.ritem.gapwarm .ri-gapfill{background:var(--orange)}
+
+/* ── Category tag ── */
+.ri-cat{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);margin-top:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── Notes tab ── */
+.notes-area{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--ink);padding:13px 15px;font-size:13px;font-family:'Inter',-apple-system,sans-serif;font-weight:300;line-height:1.7;resize:vertical;min-height:160px;outline:none;border-radius:4px;transition:.2s}
+.notes-area:focus{border-color:var(--gold-border)}
+.notes-saved{font-size:9.5px;color:var(--green);opacity:0;transition:opacity .3s;letter-spacing:.05em}
+.notes-saved.show{opacity:1}
 
 /* Sidebar nav tabs */
 .lnav{display:flex;border-bottom:1px solid var(--border)}
@@ -273,7 +300,8 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 </style>
 </head>
 <body>
-<nav style="position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(26,24,20,0.08);padding:0 40px;height:64px;display:flex;align-items:center;">
+<nav style="position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(26,24,20,0.08);padding:0 24px;height:64px;display:flex;align-items:center;gap:16px;">
+  <a href="/admin.html" style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;color:#5a554d;padding:7px 14px;border:1px solid rgba(26,24,20,0.12);border-radius:7px;text-decoration:none;transition:all .18s;flex-shrink:0;font-family:'Inter',-apple-system,sans-serif;" onmouseover="this.style.borderColor='rgba(176,138,46,0.35)';this.style.color='#b08a2e'" onmouseout="this.style.borderColor='rgba(26,24,20,0.12)';this.style.color='#5a554d'">← Admin</a>
   <a href="/" style="display:flex;align-items:center;text-decoration:none;">
     <img src="/assets/brand/lockup-horizontal-ink.svg" alt="KWBA Agency" style="height:22px;width:auto;display:block;">
   </a>
@@ -365,6 +393,14 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
         </div>
       </div>
 
+      <!-- Tier filter bar (hidden until results loaded) -->
+      <div class="lead-tier-bar" id="tierBar" style="display:none">
+        <button class="ltab on" onclick="setLeadTier('all',this)"><span class="ltab-ct" id="lct-all">0</span>All</button>
+        <button class="ltab lhot" onclick="setLeadTier('hot',this)"><span class="ltab-ct" id="lct-hot">0</span>Hot 60+</button>
+        <button class="ltab lwarm" onclick="setLeadTier('warm',this)"><span class="ltab-ct" id="lct-warm">0</span>Warm 35+</button>
+        <button class="ltab lcool" onclick="setLeadTier('cool',this)"><span class="ltab-ct" id="lct-cool">0</span>Cool</button>
+      </div>
+
       <!-- Results list -->
       <div class="rlist" id="rlist">
         <div class="ritem-empty">Search for a niche + city to see real businesses from Google Maps.</div>
@@ -413,6 +449,7 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
         <button class="dtab" onclick="setDTab('agents',this)">Agents</button>
         <button class="dtab" onclick="setDTab('package',this)">Package</button>
         <button class="dtab" onclick="setDTab('outreach',this)">Outreach</button>
+        <button class="dtab" onclick="setDTab('notes',this)" id="notes-tab">Notes</button>
       </div>
 
       <div class="dbody">
@@ -421,6 +458,7 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
         <div class="dpane" id="dp-agents"></div>
         <div class="dpane" id="dp-package"></div>
         <div class="dpane" id="dp-outreach"></div>
+        <div class="dpane" id="dp-notes"></div>
       </div>
 
       <div class="dactions">
@@ -562,6 +600,86 @@ let CURRENT = null;   // current lead open in detail
 let CURRENT_DTAB = 'overview';
 let QUEUE = [];       // outreach queue
 let CURRENT_Q = null; // queue item open
+let LEAD_TIER = 'all'; // 'all' | 'hot' | 'warm' | 'cool'
+let NOTES = JSON.parse(localStorage.getItem('kwba_p_notes') || '{}');
+const LEADS_STORE_KEY = 'kwba_p_leads';
+
+function tierOf(l) {
+  return l.gapScore >= 60 ? 'hot' : l.gapScore >= 35 ? 'warm' : 'cool';
+}
+
+function saveLeadsToStorage() {
+  try { localStorage.setItem(LEADS_STORE_KEY, JSON.stringify(LEADS)); } catch(e) {}
+}
+
+function loadLeadsFromStorage() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LEADS_STORE_KEY) || 'null');
+    if (saved && Array.isArray(saved) && saved.length) {
+      LEADS = saved;
+      renderLeadList();
+      updateTierBar();
+      setStatus(`${LEADS.length} leads restored from last session`, false);
+    }
+  } catch(e) {}
+}
+
+function setLeadTier(tier, btn) {
+  LEAD_TIER = tier;
+  document.querySelectorAll('.ltab').forEach(t => t.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  renderLeadList();
+}
+
+function updateTierBar() {
+  const bar = document.getElementById('tierBar');
+  if (!LEADS.length) { if (bar) bar.style.display = 'none'; return; }
+  if (bar) bar.style.display = 'flex';
+  const hot = LEADS.filter(l => tierOf(l) === 'hot').length;
+  const warm = LEADS.filter(l => tierOf(l) === 'warm').length;
+  const cool = LEADS.filter(l => tierOf(l) === 'cool').length;
+  document.getElementById('lct-all').textContent = LEADS.length;
+  document.getElementById('lct-hot').textContent = hot;
+  document.getElementById('lct-warm').textContent = warm;
+  document.getElementById('lct-cool').textContent = cool;
+}
+
+function saveNote(id, text) {
+  NOTES[id] = text;
+  localStorage.setItem('kwba_p_notes', JSON.stringify(NOTES));
+  const el = document.getElementById('note-saved-' + id);
+  if (el) { el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 1500); }
+}
+
+function renderNotesPane(lead) {
+  const existing = NOTES[lead.id] || '';
+  document.getElementById('dp-notes').innerHTML = `
+    <h2 class="dc-h2">Notes — ${esc(lead.name)}</h2>
+    <p class="dc-p" style="margin-bottom:12px">Private notes for this lead. Saved locally in your browser.</p>
+    <textarea class="notes-area" id="notes-${lead.id}" placeholder="Add any notes — follow-up details, conversation history, decision makers, budget signals…" oninput="saveNote('${lead.id}',this.value)">${esc(existing)}</textarea>
+    <span class="notes-saved" id="note-saved-${lead.id}">Saved ✓</span>`;
+  // Show dot on tab if notes exist
+  const tab = document.getElementById('notes-tab');
+  if (tab) tab.textContent = existing ? 'Notes ●' : 'Notes';
+}
+
+function exportLeadsCSV() {
+  if (!LEADS.length) { toast('No leads to export', 'err'); return; }
+  const toExport = LEAD_TIER === 'all' ? LEADS : LEADS.filter(l => tierOf(l) === LEAD_TIER);
+  const headers = ['Name','Category','Address','Phone','Website','Rating','Reviews','Gap Score','Tier','Status','Notes'];
+  const rows = toExport.map(l => [
+    l.name, l.category || '', l.address || '', l.phone || '', l.website || '',
+    l.rating !== null ? l.rating.toFixed(1) : '', l.reviews !== null ? l.reviews : '',
+    l.gapScore, tierOf(l), l.status || 'new', (NOTES[l.id] || '').replace(/\n/g,' ')
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(c => '"' + String(c ?? '').replace(/"/g,'""') + '"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'kwba-leads-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast(`${toExport.length} leads exported to CSV`, 'ok');
+}
 
 // ═══════════════════════════════════════════════════════
 // NICHE INTEL
@@ -786,6 +904,8 @@ async function runSearch() {
 
     SELECTED.clear();
     renderLeadList();
+    saveLeadsToStorage();
+    updateTierBar();
     setStatus(` ${LEADS.length} leads found (${places.length} raw, ${LEADS.length} above gap ${minGap})`);
 
     if (LEADS.length > 0) {
@@ -811,26 +931,35 @@ function setStatus(msg, live, err) {
 function renderLeadList() {
   const list = document.getElementById('rlist');
   if (!LEADS.length) {
-    list.innerHTML = '<div class="ritem-empty">No leads found. Try a broader search or lower the min gap score.</div>';
+    list.innerHTML = '<div class="ritem-empty">Search for a niche + city to see real businesses from Google Maps.</div>';
     return;
   }
-  const rh = `<div class="rlist-head"><span class="rlist-ct"><strong>${LEADS.length}</strong> leads</span><button class="bulk-btn" onclick="selectAll()">Select All</button></div>`;
-  list.innerHTML = rh + LEADS.map(l => {
+  const shown = LEAD_TIER === 'all' ? LEADS : LEADS.filter(l => tierOf(l) === LEAD_TIER);
+  if (!shown.length) {
+    list.innerHTML = `<div class="ritem-empty">No ${LEAD_TIER} leads in this search. Try a lower min gap score or different tier.</div>`;
+    return;
+  }
+  const rh = `<div class="rlist-head"><span class="rlist-ct"><strong>${shown.length}</strong>${LEAD_TIER !== 'all' ? ' ' + LEAD_TIER : ''} leads</span><div style="display:flex;gap:5px"><button class="bulk-btn" onclick="exportLeadsCSV()">↓ CSV</button><button class="bulk-btn" onclick="selectAll()">Select All</button></div></div>`;
+  list.innerHTML = rh + shown.map(l => {
     const isSel = SELECTED.has(l.id);
+    const tier = tierOf(l);
     const statusBadge = l.status !== 'new' ? `<span class="ri-badge rb-${l.status}">${l.status}</span>` : '';
-    return `<div class="ritem${CURRENT?.id === l.id ? ' active' : ''}" id="ri-${l.id}" onclick="openLead(LEADS.find(x=>x.id==='${l.id}'))">
+    const hasNote = NOTES[l.id] ? '●' : '';
+    return `<div class="ritem gap${tier}${CURRENT?.id === l.id ? ' active' : ''}" id="ri-${l.id}" onclick="openLead(LEADS.find(x=>x.id==='${l.id}'))">
       <div class="ritem-cb"><input type="checkbox" ${isSel ? 'checked' : ''} onclick="event.stopPropagation();toggleSel('${l.id}')"></div>
       <div class="ritem-body">
-        <div class="ri-name">${esc(l.name)}</div>
+        <div class="ri-name">${esc(l.name)}${hasNote ? '<span style="color:var(--gold);font-size:8px;margin-left:5px" title="Has notes">●</span>' : ''}</div>
+        <div class="ri-cat">${esc(l.category || '—')}${l.city ? ' · ' + esc(l.city) : ''}</div>
         <div class="ri-meta">
-          ${l.rating !== null ? `<span><span class="star"></span><span class="${l.rating < 4 ? 'low' : ''}">${l.rating.toFixed(1)}</span></span>` : '<span style="color:var(--muted2)">no rating</span>'}
-          <span>${l.reviews !== null ? l.reviews + ' reviews' : 'no reviews'}</span>
-          ${l.website ? '' : '<span style="color:var(--red)">no site</span>'}
+          ${l.rating !== null ? `<span><span class="star">★</span><span class="${l.rating < 4 ? 'low' : ''}">${l.rating.toFixed(1)}</span></span>` : '<span style="color:var(--muted2)">no rating</span>'}
+          <span>${l.reviews !== null ? l.reviews + ' rev' : 'no reviews'}</span>
+          ${l.website ? '' : '<span style="color:var(--red);font-weight:500">⚠ no site</span>'}
         </div>
         ${statusBadge}
+        <div class="ri-gapbar"><div class="ri-gapfill" style="width:${l.gapScore}%"></div></div>
       </div>
       <div class="ri-score">
-        <div class="ri-scorenum ${l.gapScore >= 60 ? 'hot' : l.gapScore >= 35 ? 'med' : 'cool'}">${l.gapScore}</div>
+        <div class="ri-scorenum ${tier === 'hot' ? 'hot' : tier === 'warm' ? 'med' : 'cool'}">${l.gapScore}</div>
         <div class="ri-scorelbl">Gap</div>
       </div>
     </div>`;
@@ -894,6 +1023,7 @@ function openLead(lead) {
   if (lead.auditText) renderAuditCached(lead);
   else document.getElementById('dp-audit').innerHTML = `<div class="aud-empty">Click <strong style="color:var(--gold)"> Run AI Audit</strong> in the action bar below to generate the full 7-step diagnostic.</div>`;
   renderOutreachPane(lead);
+  renderNotesPane(lead);
 
   document.getElementById('d-status').textContent = lead.status !== 'new' ? lead.status : '';
 }
@@ -1417,6 +1547,7 @@ function toast(msg, type) {
 // INIT
 // ═══════════════════════════════════════════════════════
 updateAuthUI();
+loadLeadsFromStorage();
 if (TOKEN) loadQueue();
 
 document.getElementById('login-modal').addEventListener('click', e => { if (e.target === document.getElementById('login-modal')) closeLoginModal(); });

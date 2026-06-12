@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <title>KPI Command Centre — KWBA Agency</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600;700&family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600;700&family=Inter+Tight:wght@500;600;700;800&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -26,9 +26,10 @@
   --shadow-lg:0 20px 60px rgba(26,24,20,0.12),0 8px 24px rgba(26,24,20,0.08);
   --radius:12px;--radius-sm:8px;
   --font-sans:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
-  --font-display:'Inter Tight','Inter',-apple-system,system-ui,sans-serif;
+  --font-display:'Syne','Inter Tight','Inter',-apple-system,system-ui,sans-serif;
+  --font-serif:'Cormorant Garamond',Georgia,serif;
 }
-html,body{background:var(--bg);color:var(--text-primary);font-family:var(--font-sans);font-weight:400;min-height:100vh;-webkit-font-smoothing:antialiased}
+html,body{background:var(--bg);color:var(--text-primary);font-family:var(--font-sans);font-weight:400;min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
 a{color:inherit;text-decoration:none}
 button{font-family:var(--font-sans)}
 
@@ -36,7 +37,7 @@ button{font-family:var(--font-sans)}
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .login-box{width:100%;max-width:380px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:40px 36px;box-shadow:var(--shadow-lg);text-align:center}
 .lmark{width:48px;height:48px;border-radius:12px;background:var(--gold);color:#fafaf7;font-family:var(--font-display);font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
-.ltitle{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;margin-bottom:4px}
+.ltitle{font-family:'Syne',var(--font-display);font-size:26px;font-weight:800;margin-bottom:4px;letter-spacing:-.03em}
 .lsub{font-size:12.5px;color:var(--text-tertiary);margin-bottom:24px}
 .lerr{display:none;background:var(--red-dim);color:var(--red);border:1px solid rgba(192,57,43,0.25);border-radius:var(--radius-sm);font-size:12.5px;padding:9px 12px;margin-bottom:14px;text-align:left}
 .fg{text-align:left;margin-bottom:14px}
@@ -76,7 +77,7 @@ textarea.fi{resize:vertical;min-height:70px}
 /* ── Page ── */
 .page{max-width:1240px;margin:0 auto;padding:36px 28px 90px}
 .pghead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:26px}
-.pgtitle{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:400;line-height:1.05;letter-spacing:-.01em}
+.pgtitle{font-family:var(--font-display);font-size:36px;font-weight:700;line-height:1.05;letter-spacing:-.03em}
 .pgtitle em{font-style:italic;color:var(--gold)}
 .pgsub{font-size:13.5px;color:var(--text-tertiary);margin-top:6px;font-weight:300}
 .pgactions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -87,7 +88,7 @@ textarea.fi{resize:vertical;min-height:70px}
 /* ── Summary strip ── */
 .sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:30px}
 .scard{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm)}
-.sval{font-family:var(--font-display);font-size:30px;font-weight:700;line-height:1}
+.sval{font-family:'Syne',var(--font-display);font-size:30px;font-weight:800;line-height:1;letter-spacing:-.03em}
 .sval.gd{color:var(--gold)} .sval.gn{color:var(--green)} .sval.am{color:var(--amber)} .sval.rd{color:var(--red)}
 .slbl{font-size:12px;color:var(--text-tertiary);margin-top:7px;font-weight:500}
 
@@ -99,7 +100,7 @@ textarea.fi{resize:vertical;min-height:70px}
 .kcard.st-risk{border-left-color:var(--amber)}
 .kcard.st-off{border-left-color:var(--red)}
 .khead{display:flex;align-items:flex-start;gap:10px}
-.kname{font-family:var(--font-display);font-size:15.5px;font-weight:700;line-height:1.25}
+.kname{font-family:'Syne',var(--font-display);font-size:14.5px;font-weight:700;line-height:1.25;letter-spacing:-.01em}
 .kcat{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:100px;padding:2px 9px;margin-top:5px;display:inline-block}
 .kedit{margin-left:auto;background:none;border:none;color:var(--muted2);cursor:pointer;font-size:15px;padding:2px 4px;border-radius:6px;transition:color .2s,background .2s;flex-shrink:0}
 .kedit:hover{color:var(--gold);background:var(--gold-dim)}
@@ -108,7 +109,7 @@ textarea.fi{resize:vertical;min-height:70px}
 .kring svg{transform:rotate(-90deg)}
 .kring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:16px;font-weight:700}
 .kfigs{flex:1;min-width:0}
-.kval{font-family:var(--font-display);font-size:26px;font-weight:700;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kval{font-family:'Syne',var(--font-display);font-size:26px;font-weight:800;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.03em}
 .kval .nodata{font-size:15px;font-weight:500;color:var(--text-disabled)}
 .ktarget{font-size:12px;color:var(--text-tertiary);margin-top:3px}
 .kdelta{font-size:12px;font-weight:600;margin-top:6px;display:inline-flex;align-items:center;gap:4px;border-radius:100px;padding:2px 9px}
@@ -132,7 +133,7 @@ textarea.fi{resize:vertical;min-height:70px}
 .modal-bg{position:fixed;inset:0;background:rgba(26,24,20,0.45);backdrop-filter:blur(3px);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:60px 20px;overflow-y:auto}
 .modal-bg.open{display:flex}
 .modal{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:460px;padding:28px}
-.modal h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;margin-bottom:18px}
+.modal h2{font-family:'Syne',var(--font-display);font-size:24px;font-weight:700;margin-bottom:18px;letter-spacing:-.02em}
 .modal h2 em{font-style:italic;color:var(--gold)}
 .mrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .mfoot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
@@ -205,11 +206,11 @@ textarea.fi{resize:vertical;min-height:70px}
     <div class="sgrid" id="summary"></div>
     <div class="kgrid" id="kpiGrid"></div>
     <div class="empty" id="emptyState" style="display:none">
-      <h3>No KPIs yet</h3>
-      <p>Start with the standard agency scoreboard — revenue, leads, conversion, retention — or define your own from scratch. You can edit targets at any time.</p>
+      <h3>Your scoreboard is empty</h3>
+      <p>Load the agency starter pack — 10 KPIs with 6 months of realistic sample data — so you can see the full dashboard immediately. Edit targets and log real numbers at any time.</p>
       <div class="btnrow">
-        <button class="btn btn-g" onclick="seedDefaults(false)">Load agency starter KPIs</button>
-        <button class="btn btn-o" onclick="seedDefaults(true)">Starter KPIs + 6 months sample data</button>
+        <button class="btn btn-g" onclick="seedDefaults(true)">Load starter KPIs + 6 months data</button>
+        <button class="btn btn-o" onclick="seedDefaults(false)">Blank starter KPIs only</button>
         <button class="btn btn-o" onclick="openKpiModal()">Define my own</button>
       </div>
     </div>
