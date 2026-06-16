@@ -27,7 +27,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:ital,wght@0,500;0,600;0,700;0,800;1,500;1,700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:ital,wght@0,500;0,600;0,700;0,800;1,500;1,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap">
 
 <style>
 /* ════════════════════════════════════════════════════════════════════════
@@ -59,6 +59,7 @@
   --space-section:clamp(88px,15vh,176px);
   --font-sans:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
   --font-display:'Inter Tight','Inter',-apple-system,system-ui,sans-serif;
+  --font-serif:'Fraunces',Georgia,'Times New Roman',serif;
   --radius-sm:6px;
   --radius:14px;
   --radius-lg:20px;
@@ -105,6 +106,7 @@ button{font-family:inherit;cursor:pointer}
 
 /* ─── PARALLAX BACKDROP (fixed, layered, lerped by JS) ─── */
 .bg-stage{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
 .bg-orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;will-change:transform}
 .bg-orb--a{width:54vw;height:54vw;left:-12vw;top:-18vw;background:radial-gradient(circle,rgba(212,168,76,.30),transparent 65%)}
 .bg-orb--b{width:44vw;height:44vw;right:-14vw;top:30vh;background:radial-gradient(circle,rgba(176,138,46,.22),transparent 65%)}
@@ -126,19 +128,22 @@ button{font-family:inherit;cursor:pointer}
 
 /* ─── TYPOGRAPHY ─── */
 h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.02em;line-height:1.1;color:var(--text-primary);font-weight:600}
-.headline-xl{font-size:clamp(44px,6.2vw,82px);font-weight:700;letter-spacing:-.038em;line-height:1.02;white-space:nowrap}
+.headline-xl{font-size:clamp(46px,6.6vw,90px);font-weight:700;letter-spacing:-.038em;line-height:1.05;white-space:nowrap}
 @media (max-width:560px){.headline-xl{white-space:normal}}
+.hero-wordmark{font-family:var(--font-display);font-weight:800;letter-spacing:-.055em;line-height:.9;font-size:clamp(84px,18vw,252px);color:var(--ink);margin:8px 0 6px;display:inline-block;max-width:100%}
+.hero-wordmark .hwm-dot{color:var(--gold-bright)}
+.hero-tagline{font-family:var(--font-display);font-weight:600;font-size:clamp(21px,3.3vw,38px);letter-spacing:-.02em;line-height:1.1;color:var(--text-primary)}
 .headline-lg{font-size:clamp(36px,5.5vw,64px);font-weight:650;letter-spacing:-.03em;line-height:1.04}
 .subline{font-size:clamp(17px,1.7vw,20px);line-height:1.6;color:var(--text-secondary);font-weight:400;max-width:600px}
 .subline-lg{font-size:clamp(18px,2vw,22px);line-height:1.55;color:var(--cream-dim);max-width:560px;margin:20px auto 0}
 
 /* word-mask reveal for headlines */
-.wline{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em;padding-right:.22em}
+.wline{display:block;overflow:hidden;padding-bottom:.16em;margin-bottom:-.16em;padding-right:.22em}
 .wline>span{display:inline-block;transform:translateY(112%);transition:transform 1s var(--ease)}
 .in .wline>span{transform:translateY(0)}
 .wline:nth-child(2)>span{transition-delay:.09s}
 .wline:nth-child(3)>span{transition-delay:.18s}
-.line-gold{background:linear-gradient(100deg,var(--gold) 10%,var(--gold-bright) 38%,#e6c068 50%,var(--gold-bright) 62%,var(--gold) 90%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 7s var(--ease-io) infinite}
+.line-gold{font-family:var(--font-serif);font-style:italic;font-weight:400;letter-spacing:-.012em;padding-right:.08em;background:linear-gradient(100deg,var(--gold) 10%,var(--gold-bright) 38%,#e6c068 50%,var(--gold-bright) 62%,var(--gold) 90%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 7s var(--ease-io) infinite}
 @keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 @media (prefers-reduced-motion:reduce){.line-gold{animation:none}}
 
@@ -218,10 +223,10 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.02em;line-height:1.
 .hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(26,24,20,.030) 1px,transparent 1px),linear-gradient(90deg,rgba(26,24,20,.030) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 90% 70% at 50% 38%,#000 30%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 38%,#000 30%,transparent 75%);z-index:0}
 @media (max-width:980px){.hero{padding-top:120px}}
 
-.hero-label{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);border:1px solid var(--border);border-radius:100px;padding:8px 18px;background:rgba(255,255,255,.6);backdrop-filter:blur(8px);margin-bottom:30px}
+.hero-label{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);border:1px solid var(--gold-border);border-radius:100px;padding:9px 20px;background:rgba(255,255,255,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);margin-bottom:34px}
 .hero-label::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 0 var(--gold-glow);animation:pulse 2.4s infinite}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(176,138,46,.45)}70%{box-shadow:0 0 0 9px rgba(176,138,46,0)}100%{box-shadow:0 0 0 0 rgba(176,138,46,0)}}
-.hero-sub{font-size:clamp(17px,1.8vw,20px);line-height:1.65;color:var(--text-secondary);max-width:520px;margin:28px 0 38px}
+.hero-sub{font-size:clamp(17px,1.85vw,21px);line-height:1.7;color:var(--text-secondary);max-width:600px;margin:30px 0 40px;text-wrap:balance}
 .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
 
 /* hero scroll cue */
@@ -234,13 +239,14 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.02em;line-height:1.
 /* ─── HERO CENTER ─── */
 .hero-center{max-width:840px;margin:0 auto;text-align:center;position:relative;z-index:2}
 .hero-center .hero-label{justify-content:center}
-.hero-center .hero-sub{margin:28px auto 38px}
+.hero-center .hero-sub{margin:30px auto 40px}
 .hero-center .hero-actions{justify-content:center}
-.hero-kpis{display:flex;align-items:stretch;justify-content:center;margin:56px auto 0;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.65);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow:hidden;max-width:580px}
-.hero-kpi{flex:1;padding:20px 16px;text-align:center;position:relative}
-.hero-kpi+.hero-kpi::before{content:'';position:absolute;left:0;top:18%;bottom:18%;width:1px;background:var(--border)}
-.hero-kpi-val{font-family:var(--font-display);font-size:26px;font-weight:750;color:var(--ink);letter-spacing:-.03em;line-height:1}
-.hero-kpi-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-tertiary);font-weight:500;margin-top:6px}
+.hero-kpis{display:flex;align-items:stretch;justify-content:center;margin:60px auto 0;border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:var(--shadow-sm);overflow:hidden;max-width:600px}
+.hero-kpi{flex:1;padding:22px 16px;text-align:center;position:relative}
+.hero-kpi+.hero-kpi::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:1px;background:var(--border)}
+.hero-kpi-val{font-family:var(--font-display);font-size:27px;font-weight:750;color:var(--ink);letter-spacing:-.03em;line-height:1}
+.hero-kpi-val em{font-family:var(--font-serif);font-style:italic;font-weight:500;color:var(--gold-deep)}
+.hero-kpi-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.11em;color:var(--text-tertiary);font-weight:500;margin-top:7px}
 @media (max-width:560px){.hero-kpis{max-width:100%}.hero-kpi{padding:16px 10px}.hero-kpi-val{font-size:20px}}
 
 /* ─── TRUST MARQUEE ─── */
@@ -506,6 +512,7 @@ footer{border-top:1px solid var(--border);padding:64px 0 36px;background:rgba(25
 
 <!-- Layered parallax backdrop -->
 <div class="bg-stage" aria-hidden="true">
+  <canvas class="bg-canvas" id="bgGL"></canvas>
   <div class="bg-orb bg-orb--a" data-depth="0.20"></div>
   <div class="bg-orb bg-orb--b" data-depth="0.34"></div>
   <div class="bg-orb bg-orb--c" data-depth="0.12"></div>
@@ -549,14 +556,12 @@ footer{border-top:1px solid var(--border);padding:64px 0 36px;background:rgba(25
     <div class="hero-grid-bg" data-depth="0.06" aria-hidden="true"></div>
     <div class="container">
       <div class="hero-center">
-        <div class="hero-label reveal-item">Milton Keynes · UK &nbsp;·&nbsp; Est. 2026</div>
-        <h1 class="headline-xl reveal-item in" id="heroH1">
-          <span class="wline"><span>Your growth,</span></span>
-          <span class="wline"><span class="line-gold">engineered.</span></span>
-        </h1>
+        <div class="hero-label reveal-item">AI-native web studio · Milton Keynes, UK</div>
+        <h1 class="hero-wordmark reveal-item in" id="heroH1">KWBA<span class="hwm-dot">.</span></h1>
+        <p class="hero-tagline reveal-item delay-1">Your growth, <span class="line-gold">engineered.</span></p>
         <p class="hero-sub reveal-item delay-2">
-          Premium web design, AI chatbots &amp; digital marketing for UK businesses.<br>
-          Fixed pricing. 48-hour turnaround. Zero retainers.
+          Premium websites, AI chatbots and digital marketing for UK businesses —
+          designed with taste, delivered in 48&nbsp;hours, priced from £800.
         </p>
         <div class="hero-actions reveal-item delay-3">
           <a href="#contact" class="btn btn--primary btn--lg" data-magnetic>Start a project →</a>
@@ -564,19 +569,19 @@ footer{border-top:1px solid var(--border);padding:64px 0 36px;background:rgba(25
         </div>
         <div class="hero-kpis reveal-item delay-4">
           <div class="hero-kpi">
-            <div class="hero-kpi-val">48hr</div>
+            <div class="hero-kpi-val">48<em>hr</em></div>
             <div class="hero-kpi-lbl">Delivery</div>
           </div>
           <div class="hero-kpi">
-            <div class="hero-kpi-val">£800</div>
+            <div class="hero-kpi-val"><em>£</em>800</div>
             <div class="hero-kpi-lbl">From</div>
           </div>
           <div class="hero-kpi">
-            <div class="hero-kpi-val">+218%</div>
+            <div class="hero-kpi-val">+218<em>%</em></div>
             <div class="hero-kpi-lbl">Avg. sales lift</div>
           </div>
           <div class="hero-kpi">
-            <div class="hero-kpi-val">12+</div>
+            <div class="hero-kpi-val">12<em>+</em></div>
             <div class="hero-kpi-lbl">UK clients</div>
           </div>
         </div>
@@ -1369,6 +1374,143 @@ window.showTab = function(tab, e){
 })();
 
 })();
+</script>
+
+<!-- ════ Gold square-node network — animated WebGL backdrop ════ -->
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* A drifting field of gold squares linked by faint gold lines, rendered
+   transparently over the cream stage so the gradient orbs still glow through.
+   Light enough to sit behind the whole site at 60 FPS; idles when off-screen
+   and honours prefers-reduced-motion (one static frame, no animation). */
+
+const GOLD = 0xC4984A, CREAM = 0xFAFAF7;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canvas = document.getElementById('bgGL');
+
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+} catch (e) { canvas.style.display = 'none'; }
+
+if (renderer) {
+  renderer.setClearColor(0x000000, 0);                 // transparent — page cream shows through
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(CREAM, 50, 132);            // distant squares fade into the cream
+  const camera = new THREE.PerspectiveCamera(52, innerWidth / innerHeight, 0.1, 400);
+  camera.position.set(0, 0, 44);
+
+  const field = new THREE.Group();
+  scene.add(field);
+
+  const COUNT = 190;
+  const HX = 38, HY = 26, HZ = 18;                      // field half-extents
+  const pos = new Float32Array(COUNT * 3);
+  const vel = new Float32Array(COUNT * 3);
+  for (let i = 0; i < COUNT; i++) {
+    pos[i*3]   = (Math.random() - 0.5) * HX * 2;
+    pos[i*3+1] = (Math.random() - 0.5) * HY * 2;
+    pos[i*3+2] = (Math.random() - 0.5) * HZ * 2;
+    vel[i*3]   = (Math.random() - 0.5) * 0.018;
+    vel[i*3+1] = (Math.random() - 0.5) * 0.012;
+    vel[i*3+2] = (Math.random() - 0.5) * 0.010;
+  }
+
+  /* square nodes — a PointsMaterial with no map renders crisp squares */
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const points = new THREE.Points(pGeo, new THREE.PointsMaterial({
+    color: GOLD, size: 0.55, transparent: true, opacity: 0.7,
+    sizeAttenuation: true, depthWrite: false,
+  }));
+  points.frustumCulled = false;
+  field.add(points);
+
+  /* gold link lines between nearby squares */
+  const MAX_LINKS = 620, linkPos = new Float32Array(MAX_LINKS * 6), LINK_DIST = 8.4;
+  const lGeo = new THREE.BufferGeometry();
+  lGeo.setAttribute('position', new THREE.BufferAttribute(linkPos, 3));
+  const lineSegs = new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({
+    color: GOLD, transparent: true, opacity: 0.11,
+  }));
+  lineSegs.frustumCulled = false;
+  field.add(lineSegs);
+
+  function resize() {
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
+    renderer.setSize(innerWidth, innerHeight);
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+  }
+  addEventListener('resize', resize);
+  resize();
+
+  let linkFrame = 0;
+  function updateField() {
+    for (let i = 0; i < COUNT; i++) {
+      pos[i*3]   += vel[i*3];
+      pos[i*3+1] += vel[i*3+1];
+      pos[i*3+2] += vel[i*3+2];
+      if (Math.abs(pos[i*3])   > HX) vel[i*3]   *= -1;
+      if (Math.abs(pos[i*3+1]) > HY) vel[i*3+1] *= -1;
+      if (Math.abs(pos[i*3+2]) > HZ) vel[i*3+2] *= -1;
+    }
+    pGeo.attributes.position.needsUpdate = true;
+
+    if ((linkFrame++ & 1) === 0) {                      // rebuild links every other frame
+      let k = 0; const d2max = LINK_DIST * LINK_DIST;
+      for (let i = 0; i < COUNT && k < MAX_LINKS; i++) {
+        const ix = pos[i*3], iy = pos[i*3+1], iz = pos[i*3+2];
+        for (let j = i + 1; j < COUNT && k < MAX_LINKS; j++) {
+          const dx = ix - pos[j*3], dy = iy - pos[j*3+1], dz = iz - pos[j*3+2];
+          if (dx*dx + dy*dy + dz*dz < d2max) {
+            linkPos[k*6]   = ix;       linkPos[k*6+1] = iy;        linkPos[k*6+2] = iz;
+            linkPos[k*6+3] = pos[j*3]; linkPos[k*6+4] = pos[j*3+1]; linkPos[k*6+5] = pos[j*3+2];
+            k++;
+          }
+        }
+      }
+      lGeo.setDrawRange(0, k * 2);
+      lGeo.attributes.position.needsUpdate = true;
+    }
+  }
+
+  /* scroll progress 0→1 down the page, drives a slow zoom into the field */
+  function scrollProgress() {
+    const max = (document.documentElement.scrollHeight - innerHeight) || 1;
+    return Math.min(Math.max(scrollY / max, 0), 1);
+  }
+  const easeIO = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  let camZ = 44, camY = 0;                              // smoothed camera state
+
+  let T = 0, last = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (document.hidden) { last = now; return; }
+    const dt = Math.min((now - last) / 1000, 0.05); last = now;
+    T += dt;
+    updateField();
+    field.rotation.y = T * 0.025;
+    field.rotation.x = Math.sin(T * 0.09) * 0.05;
+
+    /* zoom in: dolly the camera from 44 → 12 as the page scrolls */
+    const e = easeIO(scrollProgress());
+    camZ += ((44 - e * 32) - camZ) * 0.06;              // eased lerp toward target
+    camY += ((e * 6)        - camY) * 0.06;
+    camera.position.set(Math.sin(T * 0.06) * 2.5, camY, camZ);
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+  }
+
+  if (reduced) { updateField(); renderer.render(scene, camera); }   // static single frame
+  else requestAnimationFrame(frame);
+}
 </script>
 </body>
 </html>
