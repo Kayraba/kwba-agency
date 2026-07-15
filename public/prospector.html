@@ -290,6 +290,83 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 .toast.err{border-color:rgba(217,83,79,.35);color:var(--red)}
 .toast.ok{border-color:rgba(79,168,120,.35);color:var(--green)}
 
+/* ── Pipeline stage badges (list) ── */
+.rb-scanned{color:var(--purple);border-color:var(--purple-border);background:var(--purple-dim)}
+.rb-replied{color:var(--blue);border-color:rgba(41,128,185,.3);background:rgba(41,128,185,.07)}
+.rb-won{color:var(--green);border-color:rgba(39,174,96,.35);background:rgba(39,174,96,.09)}
+.rb-lost{color:var(--muted2);border-color:var(--border);background:none}
+.stage-sel{background:var(--bg);border:1px solid var(--border);color:var(--ink);padding:6px 9px;font-size:10px;outline:none;font-family:var(--font-sans);cursor:pointer}
+.stage-sel:focus{border-color:var(--gold-border)}
+
+/* ── Scan button states ── */
+.btn.scanning{opacity:.7;pointer-events:none}
+.ri-webdot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:5px;vertical-align:middle}
+.ri-webdot.good{background:var(--green)}.ri-webdot.warn{background:var(--orange)}.ri-webdot.bad{background:var(--red)}
+
+/* ── Market Intelligence dashboard (right splash after search) ── */
+.mi-wrap{width:100%;max-width:920px;margin:0 auto;text-align:left;padding:8px 4px}
+.mi-eye{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px}
+.mi-h{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3.4vw,40px);font-weight:300;line-height:1.08;letter-spacing:-.015em;margin-bottom:6px}
+.mi-h em{font-style:italic;color:var(--gold)}
+.mi-sub{font-size:12.5px;color:var(--ink2);margin-bottom:22px;line-height:1.6}
+.mi-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);margin-bottom:20px}
+.mi-kpi{background:var(--bg);padding:16px 18px}
+.mi-kpi .v{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;line-height:1;letter-spacing:-.01em}
+.mi-kpi .v.gold{color:var(--gold)}.mi-kpi .v.red{color:var(--red)}.mi-kpi .v.green{color:var(--green)}
+.mi-kpi .k{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.mi-kpi .sub{font-size:10px;color:var(--muted2);margin-top:3px}
+.mi-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:760px){.mi-cols{grid-template-columns:1fr}}
+.mi-card{border:1px solid var(--border);background:var(--bg);padding:18px 20px}
+.mi-card h3{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-bottom:12px;font-weight:600;font-family:'Syne',sans-serif}
+.mi-bar{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.mi-bar .lbl{font-size:11px;color:var(--ink2);width:120px;flex-shrink:0}
+.mi-bar .track{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.mi-bar .fill{height:100%;background:var(--gold);border-radius:3px}
+.mi-bar .fill.red{background:var(--red)}.mi-bar .fill.orange{background:var(--orange)}
+.mi-bar .pct{font-size:10.5px;color:var(--muted);width:38px;text-align:right;font-family:'Syne',sans-serif}
+.mi-pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.mi-pipe .st{background:var(--bg);padding:10px 6px;text-align:center}
+.mi-pipe .st .n{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;line-height:1}
+.mi-pipe .st .l{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);margin-top:3px}
+.mi-cta{margin-top:20px;padding:16px 20px;background:var(--gold-dim);border:1px solid var(--gold-border);font-size:12.5px;color:var(--ink2);line-height:1.6}
+.mi-cta strong{color:var(--gold)}
+
+/* ── Pillar score bars (overview) ── */
+.pillars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 20px}
+@media(max-width:640px){.pillars{grid-template-columns:1fr}}
+.pillar{border:1px solid var(--border);background:var(--bg);padding:12px 14px}
+.pillar .ph{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.pillar .pn{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);font-weight:600;font-family:'Syne',sans-serif}
+.pillar .pv{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;line-height:1}
+.pillar .pv.hot{color:var(--red)}.pillar .pv.med{color:var(--orange)}.pillar .pv.cool{color:var(--muted)}
+.pillar .ptrack{height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;margin-bottom:9px}
+.pillar .pfill{height:100%;border-radius:3px;background:var(--gold)}
+.pillar .pfill.hot{background:var(--red)}.pillar .pfill.med{background:var(--orange)}
+.pillar .psig{font-size:10.5px;color:var(--ink2);padding:3px 0;display:flex;gap:6px;align-items:flex-start;line-height:1.4}
+.pillar .psig .d{color:var(--red);flex-shrink:0}
+.pillar .psig.miss{color:var(--muted2)}.pillar .psig.miss .d{color:var(--muted2)}
+.pillar .plock{font-size:10.5px;color:var(--muted);font-style:italic}
+
+/* ── Web presence checklist ── */
+.web-hero{display:flex;align-items:center;gap:18px;padding:16px 0 20px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.web-score{text-align:center;flex-shrink:0}
+.web-score .n{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:300;line-height:1}
+.web-score .n.hot{color:var(--red)}.web-score .n.med{color:var(--orange)}.web-score .n.good{color:var(--green)}
+.web-score .l{font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2)}
+.web-meta{flex:1;font-size:11.5px;color:var(--ink2);line-height:1.7}
+.web-meta strong{color:var(--ink)}
+.web-meta .chip{display:inline-block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--gold-border);color:var(--gold);margin:2px 4px 2px 0}
+.wcheck{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+@media(max-width:640px){.wcheck{grid-template-columns:1fr}}
+.wc{background:var(--bg);padding:11px 14px;display:flex;align-items:center;gap:10px;font-size:12px}
+.wc .ic{font-size:14px;flex-shrink:0;width:16px;text-align:center}
+.wc.pass .ic{color:var(--green)}.wc.fail .ic{color:var(--red)}.wc.warn .ic{color:var(--orange)}
+.wc .t{flex:1;color:var(--ink2)}.wc.fail .t{color:var(--ink)}
+.wc .sub{font-size:10px;color:var(--muted2)}
+.web-empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.8}
+.web-empty .big{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--ink);font-weight:300;margin-bottom:10px;font-style:italic}
+
 /* Responsive */
 @media(max-width:880px){
   .app{grid-template-columns:1fr}
@@ -445,6 +522,7 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 
       <div class="dtabs">
         <button class="dtab on" onclick="setDTab('overview',this)">Overview</button>
+        <button class="dtab" onclick="setDTab('web',this)" id="web-tab">Web Presence</button>
         <button class="dtab" onclick="setDTab('audit',this)">AI Audit</button>
         <button class="dtab" onclick="setDTab('agents',this)">Agents</button>
         <button class="dtab" onclick="setDTab('package',this)">Package</button>
@@ -454,6 +532,7 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 
       <div class="dbody">
         <div class="dpane on" id="dp-overview"></div>
+        <div class="dpane" id="dp-web"></div>
         <div class="dpane" id="dp-audit"></div>
         <div class="dpane" id="dp-agents"></div>
         <div class="dpane" id="dp-package"></div>
@@ -463,8 +542,18 @@ select.sf-in{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 
       <div class="dactions">
         <button class="btn btn-o btn-sm" onclick="copyCurrentPane()">⎘ Copy tab</button>
+        <button class="btn btn-o btn-sm" id="scan-site-btn" onclick="scanCurrentSite()">◇ Scan Website</button>
         <button class="btn btn-o btn-sm" id="run-audit-btn" onclick="runAuditForCurrent()">Run AI Audit</button>
-        <button class="btn btn-o btn-sm" onclick="markContacted()">Mark Contacted</button>
+        <label style="display:inline-flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Stage
+          <select id="stage-sel" class="stage-sel" onchange="setStage(CURRENT,this.value)">
+            <option value="new">New</option>
+            <option value="scanned">Scanned</option>
+            <option value="contacted">Contacted</option>
+            <option value="replied">Replied</option>
+            <option value="won">Won</option>
+            <option value="lost">Lost</option>
+          </select>
+        </label>
         <button class="btn btn-g btn-sm" onclick="queueOutreachForCurrent()">→ Queue Outreach</button>
         <span style="margin-left:auto;font-size:9.5px;color:var(--muted2);letter-spacing:.04em" id="d-status"></span>
       </div>
@@ -601,6 +690,7 @@ let CURRENT_DTAB = 'overview';
 let QUEUE = [];       // outreach queue
 let CURRENT_Q = null; // queue item open
 let LEAD_TIER = 'all'; // 'all' | 'hot' | 'warm' | 'cool'
+let CTX = { reviewBenchmark: 0 }; // competitor context across current result set
 let NOTES = JSON.parse(localStorage.getItem('kwba_p_notes') || '{}');
 const LEADS_STORE_KEY = 'kwba_p_leads';
 
@@ -617,8 +707,13 @@ function loadLeadsFromStorage() {
     const saved = JSON.parse(localStorage.getItem(LEADS_STORE_KEY) || 'null');
     if (saved && Array.isArray(saved) && saved.length) {
       LEADS = saved;
+      // Backfill fields + rebuild pillar scores for leads saved before this version.
+      LEADS.forEach(l => { if (l.scanned === undefined) l.scanned = false; if (l.site === undefined) l.site = null; });
+      CTX = computeContext(LEADS);
+      LEADS.forEach(rescore);
       renderLeadList();
       updateTierBar();
+      renderMarketIntel();
       setStatus(`${LEADS.length} leads restored from last session`, false);
     }
   } catch(e) {}
@@ -803,6 +898,16 @@ const NICHE_INTEL = {
     niches: ['AI Lead Capture Chatbot', 'Local SEO System', 'Review Generation', 'Automated Follow-Up', 'Conversion Landing Page']
   }
 };
+// Human-readable niche labels (shown in overview + market intelligence)
+Object.assign(NICHE_INTEL.contractor,    { label: 'Trades & Contractors' });
+Object.assign(NICHE_INTEL.dentist,       { label: 'Dental & Aesthetics' });
+Object.assign(NICHE_INTEL.garage,        { label: 'Car Garage / MOT' });
+Object.assign(NICHE_INTEL['estate-agent'],{ label: 'Estate & Letting Agents' });
+Object.assign(NICHE_INTEL.restaurant,    { label: 'Hospitality & Food' });
+Object.assign(NICHE_INTEL.salon,         { label: 'Salon & Beauty' });
+Object.assign(NICHE_INTEL.gym,           { label: 'Gym & Fitness' });
+Object.assign(NICHE_INTEL.legal,         { label: 'Legal & Professional' });
+Object.assign(NICHE_INTEL.other,         { label: 'General SME' });
 
 const PACKAGES = {
   demo: { name: 'Paid Demo', price: '£150 one-off', tagline: 'Try the chatbot first — comes off month one', includes: ['14-day chatbot trial on prospect site','Trained on their services and pricing','Real lead capture during trial','Converts to AI Receptionist at £500/mo if kept'] },
@@ -823,21 +928,74 @@ function detectNiche(category, name) {
 }
 
 // ═══════════════════════════════════════════════════════
-// GAP SCORING
+// GAP SCORING — 4-pillar model (Visibility · Reputation ·
+// Web Quality · Reachability). Combines Google Places fields,
+// live website-scan signals, and competitor-relative reviews.
 // ═══════════════════════════════════════════════════════
-const GAP_RULES = [
-  { k: 'no-website',     label: 'No website linked',        pts: 30, test: l => !l.website },
-  { k: 'under-20-rev',  label: 'Under 20 reviews',         pts: 25, test: l => l.reviews !== null && l.reviews < 20 },
-  { k: 'under-5-rev',   label: 'Under 5 reviews',          pts: 15, test: l => l.reviews !== null && l.reviews < 5 },
-  { k: 'low-rating',    label: 'Rating under 4.0',         pts: 15, test: l => l.rating !== null && l.rating < 4.0 },
-  { k: 'very-low-rat',  label: 'Rating under 3.5',         pts: 10, test: l => l.rating !== null && l.rating < 3.5 },
-  { k: 'no-phone',      label: 'No phone number',          pts: 10, test: l => !l.phone },
-  { k: 'no-hours',      label: 'No opening hours listed',  pts: 5,  test: l => !l.hasHours },
+function siteOk(l) { return l.site && l.site.reachable !== false; }
+
+const PILLARS = ['Visibility', 'Reputation', 'Web Quality', 'Reachability'];
+const SCORE_MODEL = [
+  // ── Visibility (can they be found online?) ──
+  { pillar: 'Visibility',   k: 'no-site',      label: 'No website on Google listing',        pts: 28, test: l => !l.website },
+  { pillar: 'Visibility',   k: 'no-hours',     label: 'No opening hours listed',             pts: 5,  test: l => !l.hasHours },
+  { pillar: 'Visibility',   k: 'builder',      label: 'DIY builder site (Wix/GoDaddy/Weebly)', pts: 6, needsScan: true, test: l => siteOk(l) && /Wix|GoDaddy|Weebly/i.test(l.site.platform || '') },
+  { pillar: 'Visibility',   k: 'no-analytics', label: 'No analytics or ad pixel installed',  pts: 6,  needsScan: true, test: l => siteOk(l) && !l.site.hasAnalytics && !l.site.hasMetaPixel },
+  // ── Reputation (do people trust them?) ──
+  { pillar: 'Reputation',   k: 'rev-none',     label: 'No Google reviews at all',            pts: 8,  test: l => !l.reviews },
+  { pillar: 'Reputation',   k: 'rev-under5',   label: 'Under 5 reviews',                     pts: 10, test: l => l.reviews != null && l.reviews < 5 },
+  { pillar: 'Reputation',   k: 'rev-under20',  label: 'Under 20 reviews',                    pts: 14, test: l => l.reviews != null && l.reviews < 20 },
+  { pillar: 'Reputation',   k: 'rev-below-mkt',label: 'Reviews far below local average',     pts: 10, test: (l, c) => c && c.reviewBenchmark && l.reviews != null && l.reviews < c.reviewBenchmark * 0.4 },
+  { pillar: 'Reputation',   k: 'rating-low',   label: 'Rating below 4.0',                    pts: 10, test: l => l.rating != null && l.rating < 4.0 },
+  { pillar: 'Reputation',   k: 'rating-vlow',  label: 'Rating below 3.5',                    pts: 8,  test: l => l.rating != null && l.rating < 3.5 },
+  // ── Web Quality (is the site any good?) — needs scan ──
+  { pillar: 'Web Quality',  k: 'site-down',    label: 'Website unreachable / offline',       pts: 24, needsScan: true, test: l => l.site && l.site.reachable === false },
+  { pillar: 'Web Quality',  k: 'no-mobile',    label: 'Not mobile-friendly (no viewport)',   pts: 18, needsScan: true, test: l => siteOk(l) && !l.site.mobileViewport },
+  { pillar: 'Web Quality',  k: 'no-ssl',       label: 'Not secure / mixed content',          pts: 14, needsScan: true, test: l => siteOk(l) && (!l.site.https || l.site.hasSslMixedContent) },
+  { pillar: 'Web Quality',  k: 'stale',        label: 'Outdated copyright year',             pts: 7,  needsScan: true, test: l => siteOk(l) && l.site.staleCopyright },
+  { pillar: 'Web Quality',  k: 'no-schema',    label: 'No LocalBusiness schema markup',      pts: 6,  needsScan: true, test: l => siteOk(l) && !l.site.hasLocalBusinessSchema },
+  { pillar: 'Web Quality',  k: 'heavy',        label: 'Heavy / slow page (>2.5MB)',          pts: 5,  needsScan: true, test: l => siteOk(l) && l.site.pageBytes > 2.5 * 1024 * 1024 },
+  // ── Reachability (can a lead actually contact them?) ──
+  { pillar: 'Reachability', k: 'no-phone',     label: 'No phone number listed',              pts: 10, test: l => !l.phone },
+  { pillar: 'Reachability', k: 'no-form',      label: 'No contact/booking form on site',     pts: 6,  needsScan: true, test: l => siteOk(l) && !l.site.hasForm && !l.site.hasBooking },
+  { pillar: 'Reachability', k: 'no-social',    label: 'No social profiles linked',           pts: 5,  needsScan: true, test: l => siteOk(l) && l.site.socialCount === 0 },
+  { pillar: 'Reachability', k: 'no-email',     label: 'No email discoverable',               pts: 4,  needsScan: true, test: l => siteOk(l) && (!l.site.emails || !l.site.emails.length) },
 ];
 
-function scoreGap(lead) {
-  const signals = GAP_RULES.map(r => ({ ...r, hit: r.test(lead) }));
-  return { score: Math.min(100, signals.filter(s => s.hit).reduce((a, s) => a + s.pts, 0)), signals };
+function computeContext(leads) {
+  const revs = leads.map(l => l.reviews).filter(r => r != null && r > 0).sort((a, b) => a - b);
+  const reviewBenchmark = revs.length ? revs[Math.floor(revs.length / 2)] : 0; // median
+  return { reviewBenchmark };
+}
+
+function scoreLead(lead, ctx) {
+  const scanned = !!lead.scanned;
+  const signals = SCORE_MODEL
+    .filter(r => !r.needsScan || scanned)
+    .map(r => ({ pillar: r.pillar, k: r.k, label: r.label, pts: r.pts, needsScan: !!r.needsScan, hit: !!r.test(lead, ctx) }));
+  const score = Math.min(100, signals.filter(s => s.hit).reduce((a, s) => a + s.pts, 0));
+  const pillars = PILLARS.map(p => {
+    const rules = SCORE_MODEL.filter(r => r.pillar === p);
+    const applicable = rules.filter(r => !r.needsScan || scanned);
+    const sigs = applicable.map(r => ({ label: r.label, pts: r.pts, hit: !!r.test(lead, ctx) }));
+    return {
+      name: p,
+      val: sigs.filter(s => s.hit).reduce((a, s) => a + s.pts, 0),
+      max: applicable.reduce((a, r) => a + r.pts, 0),
+      signals: sigs,
+      locked: rules.filter(r => r.needsScan && !scanned).length
+    };
+  });
+  return { score, signals, pillars };
+}
+
+// Backward-compatible: recompute one lead in place against current context.
+function rescore(lead) {
+  const res = scoreLead(lead, CTX);
+  lead.gapScore = res.score;
+  lead.gapSignals = res.signals;          // flat list (used by CSV / outreach)
+  lead.pillars = res.pillars;
+  return res;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -892,15 +1050,14 @@ async function runSearch() {
     const data = await r.json();
     const places = data.places || [];
 
-    // Score and filter
-    LEADS = places.map((p, i) => {
+    // Build lead objects, then score against competitor context (relative reviews).
+    const built = places.map((p, i) => {
       const niche2 = detectNiche(p.category, p.name);
-      const lead = { ...p, id: 'l_' + Date.now() + '_' + i, niche: niche2, status: 'new', auditText: null };
-      const gap = scoreGap(lead);
-      lead.gapScore = gap.score;
-      lead.gapSignals = gap.signals;
-      return lead;
-    }).filter(l => l.gapScore >= minGap).sort((a, b) => b.gapScore - a.gapScore);
+      return { ...p, id: 'l_' + Date.now() + '_' + i, niche: niche2, status: 'new', auditText: null, scanned: false, site: null };
+    });
+    CTX = computeContext(built);
+    built.forEach(rescore);
+    LEADS = built.filter(l => l.gapScore >= minGap).sort((a, b) => b.gapScore - a.gapScore);
 
     SELECTED.clear();
     renderLeadList();
@@ -909,7 +1066,8 @@ async function runSearch() {
     setStatus(` ${LEADS.length} leads found (${places.length} raw, ${LEADS.length} above gap ${minGap})`);
 
     if (LEADS.length > 0) {
-      openLead(LEADS[0]);
+      renderMarketIntel();   // show the market-intelligence dashboard first
+      showSplash();
     }
     toast(`${LEADS.length} leads found`);
   } catch (e) {
@@ -1018,12 +1176,20 @@ function openLead(lead) {
   document.getElementById('dp-overview').classList.add('on');
 
   renderOverview(lead);
+  renderWebPane(lead);
   renderAgents(lead);
   renderPackage(lead);
   if (lead.auditText) renderAuditCached(lead);
   else document.getElementById('dp-audit').innerHTML = `<div class="aud-empty">Click <strong style="color:var(--gold)"> Run AI Audit</strong> in the action bar below to generate the full 7-step diagnostic.</div>`;
   renderOutreachPane(lead);
   renderNotesPane(lead);
+
+  // Stage selector + scan button state
+  const stageSel = document.getElementById('stage-sel');
+  if (stageSel) stageSel.value = lead.status || 'new';
+  refreshScanBtn(lead);
+  const webTab = document.getElementById('web-tab');
+  if (webTab) webTab.textContent = lead.scanned ? 'Web Presence ●' : 'Web Presence';
 
   document.getElementById('d-status').textContent = lead.status !== 'new' ? lead.status : '';
 }
@@ -1036,19 +1202,250 @@ function setDTab(tab, btn) {
   document.getElementById('dp-' + tab).classList.add('on');
 }
 
+function showSplash() {
+  document.getElementById('splash').style.display = 'flex';
+  document.getElementById('detail').classList.remove('on');
+  document.getElementById('qdetail').style.display = 'none';
+  CURRENT = null;
+  document.querySelectorAll('.ritem').forEach(r => r.classList.remove('active'));
+}
+
+// ═══════════════════════════════════════════════════════
+// WEBSITE SCAN — live enrichment via /api/site-check
+// ═══════════════════════════════════════════════════════
+function refreshScanBtn(lead) {
+  const btn = document.getElementById('scan-site-btn');
+  if (!btn) return;
+  btn.classList.remove('scanning');
+  if (!lead.website) { btn.textContent = '◇ No website'; btn.disabled = true; return; }
+  btn.disabled = false;
+  btn.textContent = lead.scanned ? '↻ Re-scan Site' : '◇ Scan Website';
+}
+
+function updateDetailHeaderScore(lead) {
+  const gapNum = document.getElementById('dh-gapnum');
+  if (!gapNum) return;
+  gapNum.textContent = lead.gapScore;
+  gapNum.className = 'dh-gapnum ' + (lead.gapScore >= 60 ? 'hot' : lead.gapScore >= 35 ? 'med' : 'cool');
+}
+
+async function scanSite(lead, silent) {
+  if (!lead.website) { if (!silent) toast('No website to scan', 'err'); return; }
+  if (!TOKEN) { toast('Log in first', 'err'); openLoginModal(); return; }
+  const btn = document.getElementById('scan-site-btn');
+  if (btn && CURRENT?.id === lead.id) { btn.classList.add('scanning'); btn.textContent = 'Scanning…'; }
+  try {
+    const r = await fetch(API + '/api/site-check', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ url: lead.website }) });
+    if (!r.ok) {
+      if (r.status === 401 || r.status === 403) { TOKEN = ''; localStorage.removeItem('agency_token'); updateAuthUI(); openLoginModal(); }
+      throw new Error(await r.text() || 'Scan failed');
+    }
+    lead.site = await r.json();
+    lead.scanned = true;
+    if (lead.status === 'new') lead.status = 'scanned';
+    rescore(lead);
+    saveLeadsToStorage();
+    renderLeadList();
+    updateTierBar();
+    if (CURRENT?.id === lead.id) {
+      updateDetailHeaderScore(lead);
+      renderOverview(lead);
+      renderWebPane(lead);
+      const stageSel = document.getElementById('stage-sel'); if (stageSel) stageSel.value = lead.status;
+      document.getElementById('web-tab').textContent = 'Web Presence ●';
+      refreshScanBtn(lead);
+      if (!silent) setDTab('web', document.getElementById('web-tab'));
+    }
+    if (!silent) toast(lead.site.reachable === false ? 'Site unreachable — strong pitch signal' : 'Website scanned', 'ok');
+  } catch (e) {
+    if (btn && CURRENT?.id === lead.id) refreshScanBtn(lead);
+    if (!silent) toast(e.message, 'err');
+  }
+}
+function scanCurrentSite() { if (CURRENT) scanSite(CURRENT, false); }
+
+async function bulkScanTop(n) {
+  const targets = LEADS.filter(l => l.website && !l.scanned).slice(0, n);
+  if (!targets.length) { toast('Nothing to scan (top leads already scanned or have no site)', 'err'); return; }
+  toast(`Scanning ${targets.length} websites…`);
+  let done = 0;
+  for (const l of targets) { await scanSite(l, true); done++; if (done % 3 === 0) renderMarketIntel(); }
+  renderMarketIntel();
+  toast(`Scanned ${done} websites`, 'ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// WEB PRESENCE PANE
+// ═══════════════════════════════════════════════════════
+function renderWebPane(lead) {
+  const pane = document.getElementById('dp-web');
+  if (!pane) return;
+  if (!lead.website) {
+    pane.innerHTML = `<div class="web-empty"><div class="big">No website on file</div>This business isn't linking a website on Google — the strongest possible reason to pitch a new one. Nothing to scan.</div>`;
+    return;
+  }
+  if (!lead.scanned) {
+    pane.innerHTML = `<div class="web-empty"><div class="big">Not scanned yet</div>Run a live scan of <strong>${esc(lead.website)}</strong> to reveal mobile-friendliness, SSL, page weight, tracking, booking forms, schema and the tech stack.<br><br><button class="btn btn-g btn-sm" onclick="scanCurrentSite()">◇ Scan Website Now</button></div>`;
+    return;
+  }
+  const s = lead.site;
+  if (s.reachable === false) {
+    pane.innerHTML = `<div class="web-hero"><div class="web-score"><div class="n hot">✕</div><div class="l">Offline</div></div>
+      <div class="web-meta"><strong>Website unreachable.</strong> ${s.error === 'timeout' ? 'The site timed out' : 'The domain did not respond'} when scanned — ${esc(lead.website)}. A dead or broken site is the clearest possible pitch: they're paying for a domain that turns customers away.</div></div>`;
+    return;
+  }
+  const wq = lead.pillars.find(p => p.name === 'Web Quality') || { val: 0, max: 0 };
+  const wpct = wq.max ? Math.round((wq.val / wq.max) * 100) : 0;
+  const wtier = wpct >= 60 ? 'hot' : wpct >= 30 ? 'med' : 'good';
+  const chk = (cond, passT, failT, sub) => `<div class="wc ${cond ? 'pass' : 'fail'}"><span class="ic">${cond ? '✓' : '✕'}</span><span class="t">${cond ? passT : failT}${sub ? ` <span class="sub">${esc(sub)}</span>` : ''}</span></div>`;
+  const kb = s.pageBytes ? Math.round(s.pageBytes / 1024) : 0;
+  const social = Object.keys(s.social || {});
+  pane.innerHTML = `
+    <div class="web-hero">
+      <div class="web-score"><div class="n ${wtier}">${wq.val}</div><div class="l">Web gap</div></div>
+      <div class="web-meta">
+        <strong>${esc(s.title || lead.website)}</strong><br>
+        ${s.metaDescription ? esc(s.metaDescription.slice(0, 120)) + '…' : '<span style="color:var(--red)">No meta description</span>'}<br>
+        <span class="chip">${esc(s.platform)}</span>
+        <span class="chip">${s.https ? 'HTTPS' : 'No SSL'}</span>
+        <span class="chip">${kb} KB</span>
+        ${s.loadMs ? `<span class="chip">${s.loadMs} ms</span>` : ''}
+      </div>
+    </div>
+    <div class="wcheck">
+      ${chk(s.https && !s.hasSslMixedContent, 'Secure (HTTPS)', 'Not secure / mixed content')}
+      ${chk(s.mobileViewport, 'Mobile-friendly', 'Not mobile-optimised')}
+      ${chk(s.pageBytes && s.pageBytes < 2.5 * 1024 * 1024, 'Reasonable page weight', 'Heavy / slow page', kb + ' KB')}
+      ${chk(s.hasLocalBusinessSchema, 'LocalBusiness schema', 'No local schema markup')}
+      ${chk(s.hasAnalytics || s.hasMetaPixel, 'Tracking installed', 'No analytics / ad pixel')}
+      ${chk(s.hasForm || s.hasBooking, 'Contact / booking form', 'No form to capture leads')}
+      ${chk(!s.staleCopyright, 'Copyright up to date', 'Outdated copyright', s.latestCopyright ? '© ' + s.latestCopyright : '')}
+      ${chk(social.length > 0, `Social linked (${social.join(', ')})`, 'No social profiles linked')}
+    </div>
+    ${s.emails && s.emails.length ? `<h2 class="dc-h2">Contacts found</h2><ul class="dc-ul">${s.emails.map(e => `<li><a href="mailto:${esc(e)}" style="color:var(--blue)">${esc(e)}</a></li>`).join('')}</ul>` : ''}
+    <p class="dc-p" style="margin-top:16px;color:var(--muted)">Scanned live from the homepage HTML. Deeper crawls (speed score, sub-pages) can be layered on next.</p>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════
+// PIPELINE STAGES
+// ═══════════════════════════════════════════════════════
+function setStage(lead, stage) {
+  if (!lead) return;
+  lead.status = stage;
+  saveLeadsToStorage();
+  renderLeadList();
+  document.getElementById('d-status').textContent = stage !== 'new' ? stage : '';
+  renderMarketIntel();
+}
+
+// ═══════════════════════════════════════════════════════
+// MARKET INTELLIGENCE DASHBOARD (right-panel splash)
+// ═══════════════════════════════════════════════════════
+function renderMarketIntel() {
+  const splash = document.getElementById('splash');
+  if (!splash) return;
+  if (!LEADS.length) {
+    splash.innerHTML = `<div><div class="splash-ico">KWBA Prospector</div>
+      <h1 class="splash-h">Find local businesses. <em>Audit their gaps.</em> Close them.</h1>
+      <p class="splash-p">Type a niche and a UK city on the left. Real Google Maps data comes back in seconds, scored across four pillars — Visibility, Reputation, Web Quality and Reachability. Scan any website live, then generate the audit, package and outreach.</p></div>`;
+    return;
+  }
+  const n = LEADS.length;
+  const noSite = LEADS.filter(l => !l.website).length;
+  const lowRev = LEADS.filter(l => l.reviews != null && l.reviews < 20).length;
+  const lowRat = LEADS.filter(l => l.rating != null && l.rating < 4.0).length;
+  const scanned = LEADS.filter(l => l.scanned).length;
+  const hot = LEADS.filter(l => tierOf(l) === 'hot').length;
+  const ratings = LEADS.map(l => l.rating).filter(r => r != null);
+  const avgRating = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : '—';
+  const addressable = LEADS.reduce((a, l) => a + ((NICHE_INTEL[l.niche] || NICHE_INTEL.other).revenuePerLead || 400), 0);
+  const pipeline = LEADS.filter(l => tierOf(l) === 'hot').reduce((a, l) => a + ((NICHE_INTEL[l.niche] || NICHE_INTEL.other).revenuePerLead || 400) * 5, 0);
+  // niche mix
+  const nicheCounts = {};
+  LEADS.forEach(l => { const lbl = (NICHE_INTEL[l.niche] || NICHE_INTEL.other).label; nicheCounts[lbl] = (nicheCounts[lbl] || 0) + 1; });
+  const topNiches = Object.entries(nicheCounts).sort((a, b) => b[1] - a[1]).slice(0, 4);
+  const pct = x => Math.round((x / n) * 100);
+  const bar = (lbl, val, cls) => `<div class="mi-bar"><span class="lbl">${lbl}</span><div class="track"><div class="fill ${cls || ''}" style="width:${pct(val)}%"></div></div><span class="pct">${pct(val)}%</span></div>`;
+  const stages = ['new', 'scanned', 'contacted', 'replied', 'won', 'lost'];
+  const stageCount = st => LEADS.filter(l => (l.status || 'new') === st).length;
+
+  splash.innerHTML = `<div class="mi-wrap">
+    <div class="mi-eye">Market Intelligence</div>
+    <h1 class="mi-h">${n} leads · <em>${hot} hot</em></h1>
+    <p class="mi-sub">Opportunity across this search, scored on Visibility, Reputation, Web Quality &amp; Reachability. Click any lead on the left for the full breakdown, or scan websites to sharpen every score.</p>
+
+    <div class="mi-kpis">
+      <div class="mi-kpi"><div class="v gold">£${Math.round(pipeline / 1000)}k</div><div class="k">Est. monthly pipeline</div><div class="sub">hot leads × 5 jobs × niche value</div></div>
+      <div class="mi-kpi"><div class="v ${noSite ? 'red' : ''}">${pct(noSite)}%</div><div class="k">No website</div><div class="sub">${noSite} of ${n} businesses</div></div>
+      <div class="mi-kpi"><div class="v">${avgRating}</div><div class="k">Avg rating</div><div class="sub">${lowRat} below 4.0★</div></div>
+      <div class="mi-kpi"><div class="v">£${(addressable / 1000).toFixed(0)}k</div><div class="k">Addressable value</div><div class="sub">Σ niche revenue/lead</div></div>
+    </div>
+
+    <div class="mi-cols">
+      <div class="mi-card">
+        <h3>Weakness signals</h3>
+        ${bar('No website', noSite, 'red')}
+        ${bar('Under 20 reviews', lowRev, 'orange')}
+        ${bar('Rating below 4.0', lowRat, 'orange')}
+        ${bar('Websites scanned', scanned, '')}
+      </div>
+      <div class="mi-card">
+        <h3>Niche mix</h3>
+        ${topNiches.map(([lbl, c]) => bar(lbl, c, '')).join('') || '<div style="color:var(--muted);font-size:11px">—</div>'}
+      </div>
+    </div>
+
+    <div class="mi-card" style="margin-top:20px">
+      <h3>Pipeline</h3>
+      <div class="mi-pipe">${stages.map(st => `<div class="st"><div class="n">${stageCount(st)}</div><div class="l">${st}</div></div>`).join('')}</div>
+    </div>
+
+    <div class="mi-cta">
+      <strong>Sharpen the data:</strong> scan the top websites to reveal mobile, SSL, speed, schema &amp; tech-stack gaps and recompute every score.
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-g btn-sm" onclick="bulkScanTop(10)">◇ Scan Top 10 Sites</button>
+        <button class="btn btn-o btn-sm" onclick="exportLeadsCSV()">↓ Export CSV</button>
+      </div>
+    </div>
+  </div>`;
+}
+
 // ═══════════════════════════════════════════════════════
 // OVERVIEW PANE
 // ═══════════════════════════════════════════════════════
+function pillarTier(pct) { return pct >= 60 ? 'hot' : pct >= 30 ? 'med' : 'cool'; }
+
+function renderPillars(lead) {
+  return lead.pillars.map(p => {
+    const pct = p.max ? Math.round((p.val / p.max) * 100) : 0;
+    const tier = pillarTier(pct);
+    const hits = p.signals.filter(s => s.hit);
+    const body = hits.length
+      ? hits.map(s => `<div class="psig"><span class="d">▲</span>${esc(s.label)}</div>`).join('')
+      : `<div class="psig miss"><span class="d">○</span>No gaps found here</div>`;
+    const lock = p.locked ? `<div class="psig miss"><span class="d">◇</span>${p.locked} more revealed by website scan</div>` : '';
+    return `<div class="pillar">
+      <div class="ph"><span class="pn">${p.name}</span><span class="pv ${tier}">${p.val}<span style="font-size:11px;color:var(--muted2)">/${p.max}</span></span></div>
+      <div class="ptrack"><div class="pfill ${tier}" style="width:${pct}%"></div></div>
+      ${body}${lock}
+    </div>`;
+  }).join('');
+}
+
 function renderOverview(lead) {
   const intel = NICHE_INTEL[lead.niche] || NICHE_INTEL.other;
-  const signals = lead.gapSignals.map(s => `
-    <div class="gsig${s.hit ? ' hit' : ''}">
-      <span class="g-ico">${s.hit ? '' : '○'}</span>
-      <span class="g-lbl">${esc(s.label)}</span>
-      <span class="g-pts">+${s.pts}</span>
-    </div>`).join('');
+  const scanCta = lead.scanned
+    ? `<div class="mi-cta" style="margin-top:0;margin-bottom:18px">Website scanned — <strong>${lead.site && lead.site.reachable === false ? 'site is offline/unreachable' : esc((lead.site && lead.site.platform) || 'analysed')}</strong>. See the <strong>Web Presence</strong> tab for the full technical audit.</div>`
+    : lead.website
+      ? `<div class="mi-cta" style="margin-top:0;margin-bottom:18px">This lead has a website but it hasn't been analysed yet. Click <strong>◇ Scan Website</strong> below to reveal mobile, SSL, speed, schema and tech-stack gaps — and sharpen the score.</div>`
+      : `<div class="mi-cta" style="margin-top:0;margin-bottom:18px"><strong>No website at all</strong> — the strongest possible pitch. Lead straight with a "you're invisible on Google" angle.</div>`;
 
   document.getElementById('dp-overview').innerHTML = `
+    <h2 class="dc-h2">Opportunity Score — ${lead.gapScore}/100</h2>
+    ${scanCta}
+    <div class="pillars">${renderPillars(lead)}</div>
+
     <h2 class="dc-h2">Listing Details</h2>
     <ul class="dc-ul">
       <li><strong>Address:</strong> ${esc(lead.address || '—')}</li>
@@ -1058,8 +1455,7 @@ function renderOverview(lead) {
       <li><strong>Niche detected:</strong> ${esc(intel.label || 'General SME')}</li>
       <li><strong>Revenue per lead (niche avg):</strong> £${(intel.revenuePerLead || 400).toLocaleString()}</li>
     </ul>
-    <h2 class="dc-h2">Gap Signals — Why ${lead.gapScore}/100</h2>
-    <div class="gap-grid">${signals}</div>
+
     <h2 class="dc-h2">Estimated Opportunity</h2>
     <p class="dc-p">If ${esc(lead.name)} is missing <strong>5-10 leads/month</strong> from these gaps, that's roughly <strong>£${(intel.revenuePerLead * 5).toLocaleString()} – £${(intel.revenuePerLead * 10).toLocaleString()}/month</strong> being left on the table. Run the <strong style="color:var(--gold)">AI Audit</strong> tab for a fully quantified 7-step report.</p>
   `;
@@ -1073,7 +1469,7 @@ async function runAuditForCurrent() {
   if (!TOKEN) { toast('Log in first', 'err'); openLoginModal(); return; }
 
   const pane = document.getElementById('dp-audit');
-  setDTab('audit', document.querySelectorAll('.dtab')[1]);
+  setDTab('audit', [...document.querySelectorAll('.dtab')].find(b => (b.getAttribute('onclick') || '').includes("'audit'")));
 
   pane.innerHTML = `<div class="aud-status live">Building audit prompt…</div><div class="audit-wrap" id="aud-stream"></div>`;
 

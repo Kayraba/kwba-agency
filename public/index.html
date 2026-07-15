@@ -355,6 +355,63 @@ h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.02em;line-height:1.
 .aud-cta-after{display:none;margin-top:18px;padding-top:18px;border-top:1px solid var(--border-d)}
 .aud-cta-after.show{display:flex;gap:12px;flex-wrap:wrap}
 
+/* ── Live scan stage (step 2) ── */
+.aud-scan{display:none;margin-top:4px}
+.aud-scan.show{display:block}
+.aud-scan-head{display:flex;align-items:center;gap:16px;padding-bottom:14px;margin-bottom:12px;border-bottom:1px solid var(--border-d)}
+.aud-score{flex-shrink:0;text-align:center;min-width:74px}
+.aud-score .n{font-family:var(--font-serif,'Cormorant Garamond',serif);font-size:44px;font-weight:300;line-height:1;color:var(--gold-bright)}
+.aud-score .n.bad{color:#e08f8f}
+.aud-score .n.mid{color:#d4a84c}
+.aud-score .l{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(244,239,226,.45);margin-top:4px}
+.aud-scan-sum{font-size:13px;line-height:1.6;color:var(--cream-dim)}
+.aud-scan-sum strong{color:var(--cream)}
+.aud-scan-sum .chip{display:inline-block;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border:1px solid rgba(212,168,76,.4);color:var(--gold-bright);border-radius:20px;margin:3px 4px 0 0}
+.aud-checks{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(max-width:640px){.aud-checks{grid-template-columns:1fr}}
+.aud-chk{display:flex;align-items:center;gap:9px;padding:8px 11px;background:rgba(244,239,226,.04);border:1px solid var(--border-d);border-radius:9px;font-size:12.5px;color:var(--cream-dim);opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+.aud-chk.in{opacity:1;transform:none}
+.aud-chk .ic{flex-shrink:0;width:17px;height:17px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700}
+.aud-chk.pass .ic{background:rgba(127,199,138,.15);color:#7fc78a}
+.aud-chk.fail .ic{background:rgba(224,143,143,.15);color:#e08f8f}
+.aud-chk.fail{border-color:rgba(224,143,143,.25)}
+.aud-unlock{margin-top:16px;padding:16px;border:1px solid rgba(212,168,76,.35);border-radius:12px;background:rgba(212,168,76,.06)}
+.aud-unlock p{font-size:13px;color:var(--cream-dim);margin:0 0 12px;line-height:1.6}
+.aud-unlock p strong{color:var(--gold-bright)}
+.aud-back{background:none;border:none;color:rgba(244,239,226,.45);font-size:11.5px;cursor:pointer;padding:0;margin-top:12px;text-decoration:underline;text-underline-offset:3px}
+.aud-back:hover{color:var(--gold-bright)}
+
+/* ─── SERVICES SCROLL-SCRUB — Apple-style pinned scene (desktop only).
+   Enabled by JS adding .scrub-on; without it the grid renders as before. ─── */
+#services.scrub-on{height:380vh;padding:0}
+#services.scrub-on > .container{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;padding-top:64px}
+#services.scrub-on .section-header{margin-bottom:22px}
+#services.scrub-on .headline-lg{font-size:clamp(28px,3.2vw,42px)}
+#services.scrub-on .subline{display:none}
+#services.scrub-on .services-grid{display:block;position:relative;height:min(520px,58vh);max-width:660px;margin:0 auto;width:100%}
+#services.scrub-on .svc-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;will-change:transform,opacity,filter;pointer-events:none}
+#services.scrub-on .svc-wrap.live{pointer-events:auto}
+#services.scrub-on .svc-wrap .svc{width:100%;margin:0;max-height:100%}
+#services.scrub-on .scd-msgs{max-height:128px;overflow:hidden}
+.svc-rail{display:none}
+#services.scrub-on ~ * .svc-rail,#services.scrub-on .svc-rail{display:flex;gap:10px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+.svc-rail button{display:flex;align-items:center;gap:8px;background:none;border:1px solid var(--border);border-radius:99px;padding:8px 16px;cursor:pointer;transition:border-color .25s,color .25s,background .25s;color:var(--text-tertiary);font-family:var(--font-display)}
+.svc-rail button .sr-num{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--gold-deep)}
+.svc-rail button .sr-name{font-size:12.5px;font-weight:600;letter-spacing:.01em}
+.svc-rail button:hover{border-color:var(--gold-border);color:var(--text-secondary)}
+.svc-rail button.on{background:var(--surface-1);border-color:var(--gold-border);color:var(--text-primary);box-shadow:var(--shadow-sm)}
+
+/* ─── PARTNERSHIPS STRIP ─── */
+.partners-strip{text-align:center;padding:34px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.partners-lbl{display:block;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:18px;font-weight:600}
+.partners-row{display:flex;align-items:center;justify-content:center;gap:26px;flex-wrap:wrap}
+.partner-mark{font-family:var(--font-display);font-size:21px;font-weight:700;letter-spacing:.12em;color:var(--text-secondary);transition:color .25s}
+.partner-mark em{font-style:normal;color:var(--gold-deep)}
+.partner-mark:hover{color:var(--gold-deep)}
+.partner-dot{color:var(--gold);font-size:9px;opacity:.6}
+.partner-more{font-size:12.5px;color:var(--text-tertiary);font-style:italic}
+@media(max-width:640px){.partners-row{gap:16px}.partner-mark{font-size:17px}}
+
 /* ─── PRICING ─── */
 .pricing-tabs-wrap{display:flex;justify-content:center;margin-bottom:52px}
 .pricing-tabs{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:13px;padding:5px;position:relative}
@@ -708,11 +765,11 @@ footer{border-top:1px solid var(--border);padding:64px 0 36px;background:rgba(25
         <div>
           <span class="slabel reveal-item">Free AI website audit</span>
           <h2 class="headline-lg reveal-item delay-1">Find out what your<br>website is costing you.</h2>
-          <p class="subline reveal-item delay-2" style="margin-top:22px">Our AI scans your online presence the same way our Prospector engine scores hundreds of local businesses — then writes you an honest report in about 60 seconds. No call. No obligation. No spam.</p>
+          <p class="subline reveal-item delay-2" style="margin-top:22px">Type your web address and we scan your actual site live — the same engine our Prospector uses to score hundreds of local businesses — then the AI writes you an honest report on the verified findings. No call. No obligation. No spam.</p>
           <ul class="audit-points reveal-item delay-3">
             <li>
               <span class="ap-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
-              <span><b>14 signals checked</b> — speed, mobile, SEO basics, booking, trust markers, AI-readiness.</span>
+              <span><b>12 signals checked live on your actual site</b> — SSL, mobile, speed, SEO basics, schema, tracking, booking &amp; trust markers.</span>
             </li>
             <li>
               <span class="ap-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,17 9,11 13,15 21,7"/><polyline points="14,7 21,7 21,14"/></svg></span>
@@ -729,13 +786,32 @@ footer{border-top:1px solid var(--border);padding:64px 0 36px;background:rgba(25
         <div class="reveal-scale delay-2">
           <div class="aud-console">
             <div class="aud-body">
-              <form class="aud-form" id="auditForm" novalidate>
-                <div class="aud-field"><label for="audBiz">Business name</label><input id="audBiz" type="text" placeholder="e.g. MK Plumbing Ltd" autocomplete="organization" required></div>
-                <div class="aud-field"><label for="audCity">Town / city</label><input id="audCity" type="text" placeholder="e.g. Milton Keynes" autocomplete="address-level2" required></div>
-                <div class="aud-field full"><label for="audUrl">Website address</label><input id="audUrl" type="url" placeholder="https://yourbusiness.co.uk" inputmode="url" required></div>
-                <div class="aud-field full"><label for="audEmail">Email — we'll send the full report here</label><input id="audEmail" type="email" placeholder="you@business.co.uk" autocomplete="email" required></div>
-                <div class="aud-submit"><button type="submit" class="btn btn--primary btn--lg" id="audBtn" data-magnetic>Run my free audit →</button></div>
+              <!-- STEP 1 — just the URL, value before any ask -->
+              <form class="aud-form" id="scanForm" novalidate>
+                <div class="aud-field full"><label for="audUrl">Your website address</label><input id="audUrl" type="url" placeholder="yourbusiness.co.uk" inputmode="url" required></div>
+                <div class="aud-submit"><button type="submit" class="btn btn--primary btn--lg" id="scanBtn" data-magnetic>Scan my site — free, instant →</button></div>
               </form>
+
+              <!-- STEP 2 — real scan results, rendered live -->
+              <div class="aud-scan" id="audScan">
+                <div class="aud-scan-head">
+                  <div class="aud-score"><div class="n" id="audScoreN">—</div><div class="l">Presence score</div></div>
+                  <div class="aud-scan-sum" id="audScanSum"></div>
+                </div>
+                <div class="aud-checks" id="audChecks"></div>
+
+                <!-- STEP 3 — unlock the full AI report -->
+                <div class="aud-unlock" id="audUnlock">
+                  <p><strong>That's the surface scan.</strong> Get the full AI report — what these gaps cost you monthly and a prioritised fix list — free to your inbox and on screen.</p>
+                  <form class="aud-form" id="auditForm" novalidate>
+                    <div class="aud-field"><label for="audBiz">Business name</label><input id="audBiz" type="text" placeholder="e.g. MK Plumbing Ltd" autocomplete="organization" required></div>
+                    <div class="aud-field"><label for="audCity">Town / city</label><input id="audCity" type="text" placeholder="e.g. Milton Keynes" autocomplete="address-level2" required></div>
+                    <div class="aud-field full"><label for="audEmail">Email for the full report</label><input id="audEmail" type="email" placeholder="you@business.co.uk" autocomplete="email" required></div>
+                    <div class="aud-submit"><button type="submit" class="btn btn--primary btn--lg" id="audBtn" data-magnetic>Get my full report →</button></div>
+                  </form>
+                </div>
+                <button type="button" class="aud-back" id="audRescan">← Scan a different site</button>
+              </div>
               <div class="aud-status" id="audStatus"><span class="aud-spin"></span><span id="audStatusTxt">Scanning your online presence…</span></div>
               <div class="aud-out" id="audOut" aria-live="polite"></div>
               <div class="aud-cta-after" id="audCta">
@@ -971,6 +1047,22 @@ footer{border-top:1px solid var(--border);padding:64px 0 36px;background:rgba(25
           </button>
 
           <div class="carousel-dots" data-dots aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTNERSHIPS -->
+  <section class="section section--tight" id="partners" aria-label="Partnerships">
+    <div class="container">
+      <div class="partners-strip reveal-item">
+        <span class="partners-lbl">Working in partnership with</span>
+        <div class="partners-row">
+          <span class="partner-mark">HAVILAH</span>
+          <span class="partner-dot">◆</span>
+          <span class="partner-mark"><em>i</em>Learn</span>
+          <span class="partner-dot">◆</span>
+          <span class="partner-more">and a growing network of UK collaborators</span>
         </div>
       </div>
     </div>
@@ -1271,7 +1363,65 @@ window.showTab = function(tab, e){
   updateUI();
 })();
 
-/* ── FREE AI AUDIT — streams from /public-audit, lead lands in admin ── */
+/* ── SERVICES SCROLL-SCRUB — pinned scene, scroll drives the timeline.
+   Progressive enhancement: bails on mobile, short screens and
+   prefers-reduced-motion, leaving the original grid untouched. ── */
+(function(){
+  var section = document.getElementById('services'); if (!section) return;
+  var reducedM = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if (reducedM || window.innerWidth < 981 || window.innerHeight < 680) return;
+  var grid = section.querySelector('.services-grid'); if (!grid) return;
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.svc'));
+  if (cards.length < 2) return;
+
+  /* Wrap each card so scrub transforms never fight the tilt/hover transforms */
+  var wraps = cards.map(function(c){
+    var w = document.createElement('div'); w.className = 'svc-wrap';
+    c.parentNode.insertBefore(w, c); w.appendChild(c);
+    c.classList.add('in'); /* defeat reveal-item initial hiding inside the stack */
+    return w;
+  });
+  section.classList.add('scrub-on');
+
+  /* Progress rail — numbered chips that also jump the timeline */
+  var names = cards.map(function(c){ var h = c.querySelector('h3'); return h ? h.textContent.replace(/\s*New\s*$/,'').trim() : ''; });
+  var rail = document.createElement('div'); rail.className = 'svc-rail';
+  var N = wraps.length;
+  wraps.forEach(function(_, i){
+    var b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = '<span class="sr-num">0' + (i + 1) + '</span><span class="sr-name">' + names[i] + '</span>';
+    b.addEventListener('click', function(){
+      var run = section.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: section.offsetTop + run * (i / (N - 1)), behavior: 'smooth' });
+    });
+    rail.appendChild(b);
+  });
+  grid.parentNode.appendChild(rail);
+
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+  var raf = false;
+  function frame(){
+    raf = false;
+    var rect = section.getBoundingClientRect();
+    var run = section.offsetHeight - window.innerHeight;
+    var p = clamp(-rect.top / run, 0, 1);
+    var seg = p * (N - 1);
+    wraps.forEach(function(w, i){
+      var t = seg - i;                                /* 0 = this card centred */
+      var a = clamp(1 - Math.abs(t) * 1.7, 0, 1);     /* tight crossfade, longer dwell */
+      w.style.opacity = a;
+      w.style.transform = 'translate3d(0,' + (-t * 46) + 'px,0) scale(' + (0.94 + 0.06 * a) + ')';
+      w.style.filter = a > 0.98 ? 'none' : 'blur(' + ((1 - a) * 7) + 'px)';
+      w.classList.toggle('live', a > 0.5);
+      rail.children[i].classList.toggle('on', Math.round(seg) === i);
+    });
+  }
+  window.addEventListener('scroll', function(){ if (!raf){ raf = true; requestAnimationFrame(frame); } }, { passive: true });
+  window.addEventListener('resize', function(){ if (!raf){ raf = true; requestAnimationFrame(frame); } });
+  frame();
+})();
+
+/* ── FREE AI AUDIT — live site scan first, then AI report on real facts ── */
 (function(){
   var form = document.getElementById('auditForm'); if (!form) return;
   var btn = document.getElementById('audBtn');
@@ -1280,6 +1430,110 @@ window.showTab = function(tab, e){
   var out = document.getElementById('audOut');
   var cta = document.getElementById('audCta');
   var running = false;
+
+  /* Step-1/2 elements + scan state */
+  var scanForm = document.getElementById('scanForm');
+  var scanBtn = document.getElementById('scanBtn');
+  var scanPanel = document.getElementById('audScan');
+  var checksEl = document.getElementById('audChecks');
+  var scoreEl = document.getElementById('audScoreN');
+  var sumEl = document.getElementById('audScanSum');
+  var API0 = (typeof window.API_BASE === 'string') ? window.API_BASE : '';
+  var SCAN = null; // { url, data, score, fails[] }
+
+  function fmtKB(b){ return b > 1024*1024 ? (b/1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b/1024)) + ' KB'; }
+
+  /* The 12 live checks — each maps a real scan field to pass/fail + weight */
+  function buildChecks(s){
+    return [
+      { ok: s.reachable !== false && s.statusCode < 400, t: 'Site loads correctly', f: 'Site not loading properly', w: 15 },
+      { ok: !!s.https && !s.hasSslMixedContent, t: 'Secure (HTTPS)', f: 'Not fully secure', w: 12 },
+      { ok: !!s.mobileViewport, t: 'Mobile-friendly', f: 'Not mobile-optimised', w: 15 },
+      { ok: s.pageBytes > 0 && s.pageBytes < 2.5*1024*1024, t: 'Healthy page weight', f: 'Heavy page (' + fmtKB(s.pageBytes||0) + ')', w: 7 },
+      { ok: (s.loadMs||0) < 3000, t: 'Responds quickly', f: 'Slow response (' + ((s.loadMs||0)/1000).toFixed(1) + 's)', w: 6 },
+      { ok: !!s.title, t: 'Page title set', f: 'Missing page title', w: 5 },
+      { ok: !!s.metaDescription, t: 'Meta description set', f: 'No meta description', w: 6 },
+      { ok: !!s.hasLocalBusinessSchema, t: 'Local business schema', f: 'No local schema markup', w: 7 },
+      { ok: !!(s.hasAnalytics || s.hasMetaPixel), t: 'Visitor tracking installed', f: 'No analytics installed', w: 7 },
+      { ok: !!(s.hasForm || s.hasBooking), t: 'Contact / booking capture', f: 'No way to capture enquiries', w: 10 },
+      { ok: (s.socialCount||0) > 0, t: 'Social profiles linked', f: 'No social profiles linked', w: 5 },
+      { ok: !s.staleCopyright, t: 'Content looks current', f: 'Outdated (© ' + (s.latestCopyright||'old') + ')', w: 5 }
+    ];
+  }
+
+  function renderScan(url, s){
+    var checks, score, fails = [];
+    if (s.reachable === false){
+      checks = [{ ok:false, t:'', f:'Website unreachable — it did not respond at all', w:96 }];
+      score = 4;
+      fails = ['site completely unreachable'];
+    } else {
+      checks = buildChecks(s);
+      var lost = 0;
+      checks.forEach(function(c){ if (!c.ok){ lost += c.w; fails.push(c.f); } });
+      score = Math.max(4, 100 - lost);
+    }
+    SCAN = { url: url, data: s, score: score, fails: fails };
+
+    scoreEl.textContent = score;
+    scoreEl.className = 'n ' + (score < 45 ? 'bad' : score < 75 ? 'mid' : '');
+    var chips = '';
+    if (s.platform) chips += '<span class="chip">' + esc(s.platform) + '</span>';
+    if (s.pageBytes) chips += '<span class="chip">' + fmtKB(s.pageBytes) + '</span>';
+    if (s.loadMs) chips += '<span class="chip">' + s.loadMs + ' ms</span>';
+    sumEl.innerHTML = (s.reachable === false
+      ? '<strong>' + esc(url) + '</strong> did not respond. If customers click your Google listing right now, they hit a dead end.'
+      : '<strong>' + esc(s.title || url) + '</strong> — scanned live just now. ' +
+        (fails.length ? fails.length + ' of ' + checks.length + ' checks need attention.' : 'All core checks passed — impressive.')) +
+      (chips ? '<br>' + chips : '');
+
+    checksEl.innerHTML = checks.map(function(c){
+      return '<div class="aud-chk ' + (c.ok ? 'pass' : 'fail') + '"><span class="ic">' + (c.ok ? '✓' : '✕') + '</span><span>' + esc(c.ok ? c.t : c.f) + '</span></div>';
+    }).join('');
+    /* staggered reveal for the theatre */
+    Array.prototype.forEach.call(checksEl.children, function(el, i){
+      setTimeout(function(){ el.classList.add('in'); }, 90 * i);
+    });
+  }
+
+  if (scanForm) scanForm.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if (running) return;
+    var url = document.getElementById('audUrl').value.trim();
+    if (!url){ statusTxt.textContent = 'Type your website address first.'; status.classList.add('show'); return; }
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    running = true;
+    scanBtn.disabled = true; scanBtn.style.opacity = '.6';
+    statusTxt.textContent = 'Scanning ' + url.replace(/^https?:\/\//,'') + ' live…';
+    status.classList.add('show');
+    fetch(API0 + '/public-site-scan', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: url })
+    }).then(function(r){
+      if (!r.ok) return r.text().then(function(t){ throw new Error(t || 'Scan failed'); });
+      return r.json();
+    }).then(function(s){
+      status.classList.remove('show');
+      scanForm.style.display = 'none';
+      renderScan(url, s);
+      scanPanel.classList.add('show');
+      running = false; scanBtn.disabled = false; scanBtn.style.opacity = '';
+    }).catch(function(e){
+      running = false; scanBtn.disabled = false; scanBtn.style.opacity = '';
+      var msg = String(e.message || 'Scan failed');
+      if (/</.test(msg) || msg.length > 140) msg = 'The scanner could not be reached.';
+      statusTxt.textContent = msg + ' — you can still email us at hello@kwba-agency.com.';
+    });
+  });
+
+  var rescan = document.getElementById('audRescan');
+  if (rescan) rescan.addEventListener('click', function(){
+    SCAN = null;
+    scanPanel.classList.remove('show');
+    scanForm.style.display = '';
+    out.classList.remove('show'); out.innerHTML = '';
+    cta.classList.remove('show');
+    document.getElementById('audUrl').focus();
+  });
 
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function mdToHtml(md){
@@ -1310,10 +1564,10 @@ window.showTab = function(tab, e){
     if (running) return;
     var biz = document.getElementById('audBiz').value.trim();
     var city = document.getElementById('audCity').value.trim();
-    var url = document.getElementById('audUrl').value.trim();
     var email = document.getElementById('audEmail').value.trim();
-    if (!biz || !city || !url || !email){ statusTxt.textContent = 'Please fill in all four fields.'; status.classList.add('show'); return; }
-    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    if (!biz || !city || !email){ statusTxt.textContent = 'Please fill in all three fields.'; status.classList.add('show'); return; }
+    var url = (SCAN && SCAN.url) || '';
+    if (!url){ statusTxt.textContent = 'Run the site scan first.'; status.classList.add('show'); return; }
 
     running = true;
     btn.disabled = true; btn.style.opacity = '.6';
@@ -1321,9 +1575,33 @@ window.showTab = function(tab, e){
     statusTxt.textContent = 'Scanning your online presence…';
     status.classList.add('show');
 
+    /* Verified facts from the live scan — the AI audits reality, not guesses */
+    var facts = '';
+    if (SCAN && SCAN.data){
+      var s = SCAN.data;
+      if (s.reachable === false){
+        facts = 'CRITICAL: the website did not respond to a live scan — it appears to be down or unreachable.';
+      } else {
+        facts = 'Platform: ' + (s.platform || 'unknown') +
+          ' | HTTPS: ' + (s.https ? 'yes' : 'NO') +
+          ' | Mobile viewport: ' + (s.mobileViewport ? 'yes' : 'NO') +
+          ' | Page weight: ' + Math.round((s.pageBytes||0)/1024) + 'KB' +
+          ' | Response: ' + (s.loadMs||'?') + 'ms' +
+          ' | Title: ' + (s.title ? '"' + s.title.slice(0,80) + '"' : 'MISSING') +
+          ' | Meta description: ' + (s.metaDescription ? 'present' : 'MISSING') +
+          ' | LocalBusiness schema: ' + (s.hasLocalBusinessSchema ? 'yes' : 'NO') +
+          ' | Analytics/pixel: ' + ((s.hasAnalytics || s.hasMetaPixel) ? 'yes' : 'NONE') +
+          ' | Contact/booking capture: ' + ((s.hasForm || s.hasBooking) ? 'yes' : 'NONE') +
+          ' | Social links: ' + (s.socialCount || 0) +
+          ' | Copyright year: ' + (s.latestCopyright || 'not found') + (s.staleCopyright ? ' (STALE)' : '');
+      }
+    }
+
     var prompt = 'You are a senior UK digital agency consultant performing a free website & online-presence audit for a small business. Be honest, specific and useful — British English, no fluff, no generic filler.\n\n' +
       'BUSINESS: ' + biz + '\nWEBSITE: ' + url + '\nLOCATION: ' + city + ', UK\n\n' +
-      'You cannot browse the live site, so audit on the basis of what is statistically true for UK small-business websites in this situation, framed as "things to verify". Structure the report in markdown exactly as:\n\n' +
+      'A live scan of the website was performed moments ago. These findings are VERIFIED FACTS — build the audit around them, quote them, and never contradict them:\n' +
+      'SCAN RESULTS (presence score ' + (SCAN ? SCAN.score : '?') + '/100): ' + (facts || 'scan unavailable') + '\n\n' +
+      'For anything the scan does not cover (Google Business Profile, reviews, local rankings), frame it as "to verify". Structure the report in markdown exactly as:\n\n' +
       '## First impressions\n3 short bullets on what a potential customer in ' + city + ' likely experiences.\n\n' +
       '## The 6 checks that matter\nFor each: **Check name** — why it matters for ' + biz + ', what good looks like, and a realistic risk if failed. Cover: mobile speed, Google Business Profile, booking/contact friction, trust signals (reviews/SSL/photos), local SEO basics, after-hours lead capture (AI chat).\n\n' +
       '## What this is likely costing\nA grounded estimate of missed enquiries/month for a ' + city + ' business of this type, and the revenue impact range in GBP. State assumptions.\n\n' +
@@ -1337,7 +1615,8 @@ window.showTab = function(tab, e){
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: prompt,
-        leadCapture: { email: email, name: biz, business: biz, city: city, website: url }
+        leadCapture: { email: email, name: biz, business: biz, city: city, website: url,
+          scanSummary: SCAN ? ('Presence score ' + SCAN.score + '/100' + (SCAN.fails.length ? ' — fails: ' + SCAN.fails.join('; ') : ' — all checks passed')) : '' }
       })
     }).then(function(r){
       if (!r.ok) return r.text().then(function(t){ throw new Error(t || ('Audit failed (' + r.status + ')')); });

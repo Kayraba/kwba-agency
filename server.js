@@ -704,14 +704,95 @@ function deliverAuditEmails(rawStream, leadCapture) {
       `<p style="margin-top:28px"><a href="${SITE_URL}/brief.html" style="display:inline-block;background:#b08a2e;color:#fff;text-decoration:none;padding:13px 24px;border-radius:8px;font-size:14px;font-weight:500">Fix this — start a project →</a></p>` +
       `<p style="margin-top:20px;font-size:13px;color:#8a857a">Questions? Just reply to this email.</p>`)
   );
+  const scanBlock = leadCapture.scanSummary
+    ? `<p style="margin-top:14px"><strong>Live scan findings:</strong><br>${escHtml(String(leadCapture.scanSummary).slice(0, 800)).replace(/\n/g, '<br>')}</p>`
+    : '';
   notifyAdmin(
     `🔥 New audit lead: ${leadCapture.business || leadCapture.email}`,
     brandedEmail("New audit lead",
       `<p><strong>${escHtml(leadCapture.business)}</strong> (${escHtml(leadCapture.city)}) just ran a free audit on the homepage.</p>` +
       `<p>Email: <a href="mailto:${escHtml(leadCapture.email)}" style="color:#b08a2e">${escHtml(leadCapture.email)}</a><br>Website: ${escHtml(leadCapture.website)}</p>` +
+      scanBlock +
       `<p><a href="${SITE_URL}/admin.html" style="color:#b08a2e">Open the admin →</a></p>`)
   );
 }
+
+// ── PUBLIC SITE SCAN — real website check for the homepage audit funnel.
+// Unauthenticated but strictly rate-limited; reuses the Prospector's
+// analyseSiteHtml so the "signals checked" claim on the homepage is real.
+const publicScanRateLimits = new Map();
+function checkPublicScanLimit(ip) {
+  const now = Date.now();
+  const oneHour = 60 * 60 * 1000;
+  const ts = (publicScanRateLimits.get(ip) || []).filter(t => now - t < oneHour);
+  if (ts.length >= 10) return false; // 10 scans/hr/IP
+  ts.push(now);
+  publicScanRateLimits.set(ip, ts);
+  if (publicScanRateLimits.size > 2000) {
+    for (const [k, v] of publicScanRateLimits) {
+      if (v.every(t => now - t > oneHour)) publicScanRateLimits.delete(k);
+    }
+  }
+  return true;
+}
+
+app.post("/public-site-scan", async (req, res) => {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+  if (!checkPublicScanLimit(ip)) return res.status(429).send("Scan limit reached — try again in an hour.");
+  let { url } = req.body;
+  if (!url || typeof url !== 'string' || url.length > 300) return res.status(400).send("url required");
+  url = url.trim();
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  let host;
+  try { host = new URL(url).hostname; } catch { return res.status(400).send("Invalid URL"); }
+  if (/^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.)/i.test(host) || /\.(local|internal)$/i.test(host) ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) {
+    return res.status(400).send("Blocked host");
+  }
+  const started = Date.now();
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 9000);
+    const fetchOpts = {
+      redirect: 'follow', signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KWBA-SiteCheck/1.0; +https://kwba-agency.onrender.com)' }
+    };
+    let resp;
+    try {
+      resp = await fetch(url, fetchOpts);
+    } catch (e) {
+      // Older small-business sites often have no HTTPS at all — retry plain http
+      // once. A working http-only site then correctly reports https:false.
+      if (url.startsWith('https://') && e.name !== 'AbortError') {
+        try { url = 'http://' + url.slice(8); resp = await fetch(url, fetchOpts); }
+        catch (e2) {
+          clearTimeout(timer);
+          return res.send({ ok: false, reachable: false, https: false, error: e2.name === 'AbortError' ? 'timeout' : 'unreachable', finalUrl: url });
+        }
+      } else {
+        clearTimeout(timer);
+        return res.send({ ok: false, reachable: false, https: url.startsWith('https://'), error: e.name === 'AbortError' ? 'timeout' : 'unreachable', finalUrl: url });
+      }
+    }
+    let received = 0; const chunks = []; const CAP = 600 * 1024;
+    try {
+      for await (const value of resp.body) {
+        chunks.push(value); received += value.length;
+        if (received >= CAP) { resp.body.destroy(); break; }
+      }
+    } catch (e) { if (!chunks.length) throw e; }
+    clearTimeout(timer);
+    const html = Buffer.concat(chunks).toString('utf8');
+    const analysis = analyseSiteHtml(html, resp.url || url, {
+      statusCode: resp.status, pageBytes: received, loadMs: Date.now() - started
+    });
+    analysis.reachable = true;
+    delete analysis.emails; // don't echo harvested emails to anonymous visitors
+    res.send(analysis);
+  } catch (e) {
+    res.send({ ok: false, reachable: false, error: 'scan-failed', finalUrl: url });
+  }
+});
 
 app.post("/public-audit", async (req, res) => {
   const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
@@ -997,6 +1078,139 @@ app.post("/api/places-search", authenticate, async (req, res) => {
     res.send({ query: searchText, places, count: places.length });
   } catch (e) {
     res.status(500).send('Places search failed: ' + e.message);
+  }
+});
+
+// =====================================================================
+// SITE CHECK — server-side website enrichment for the Prospector.
+// Fetches a prospect's website and extracts real, pitchable signals
+// (SSL, mobile, weight, analytics, forms, schema, tech stack, socials).
+// Key never touches the client; results feed the Web Presence score.
+// =====================================================================
+const siteCheckRateLimits = new Map();
+function checkSiteCheckLimit(userId) {
+  const now = Date.now();
+  const win = 60 * 60 * 1000; // 1 hour
+  const ts = (siteCheckRateLimits.get(userId) || []).filter(t => now - t < win);
+  if (ts.length >= 120) return false; // 120 scans/hour/user
+  ts.push(now);
+  siteCheckRateLimits.set(userId, ts);
+  return true;
+}
+
+function analyseSiteHtml(html, finalUrl, meta) {
+  const lower = html.toLowerCase();
+  const has = (re) => re.test(html);
+  const year = new Date().getFullYear();
+  // Tech / CMS fingerprint
+  let platform = 'Custom / Unknown';
+  if (/wp-content|wp-includes|wordpress/i.test(html)) platform = 'WordPress';
+  else if (/cdn\.shopify|shopify/i.test(html)) platform = 'Shopify';
+  else if (/wix\.com|wixstatic|_wix/i.test(html)) platform = 'Wix';
+  else if (/squarespace/i.test(html)) platform = 'Squarespace';
+  else if (/godaddy|websitebuilder/i.test(html)) platform = 'GoDaddy Builder';
+  else if (/webflow/i.test(html)) platform = 'Webflow';
+  else if (/weebly/i.test(html)) platform = 'Weebly';
+  // Copyright year staleness
+  const yearMatches = (html.match(/(?:©|&copy;|copyright)[^0-9]{0,12}(20[0-2][0-9])/gi) || [])
+    .map(m => parseInt((m.match(/20[0-2][0-9]/) || [])[0])).filter(Boolean);
+  const latestCopyright = yearMatches.length ? Math.max(...yearMatches) : null;
+  // Emails (deduped, ignore asset-looking noise)
+  const emails = Array.from(new Set((html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || [])
+    .map(e => e.toLowerCase())
+    .filter(e => !/\.(png|jpg|jpeg|gif|svg|webp|css|js)$/i.test(e) && !e.includes('example.com')))).slice(0, 5);
+  // Social profiles
+  const social = {};
+  const socialPat = { facebook: /facebook\.com\/[a-zA-Z0-9._-]+/i, instagram: /instagram\.com\/[a-zA-Z0-9._-]+/i,
+    linkedin: /linkedin\.com\/(?:company|in)\/[a-zA-Z0-9._-]+/i, twitter: /(?:twitter|x)\.com\/[a-zA-Z0-9._-]+/i,
+    tiktok: /tiktok\.com\/@[a-zA-Z0-9._-]+/i, youtube: /youtube\.com\/(?:@|channel\/|c\/)[a-zA-Z0-9._-]+/i };
+  for (const [k, re] of Object.entries(socialPat)) { const m = html.match(re); if (m) social[k] = 'https://' + m[0].replace(/^https?:\/\//, ''); }
+  const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
+  const descMatch = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i);
+  return {
+    ok: true,
+    finalUrl,
+    https: finalUrl.startsWith('https://'),
+    statusCode: meta.statusCode,
+    pageBytes: meta.pageBytes,
+    loadMs: meta.loadMs,
+    title: (titleMatch ? titleMatch[1].trim() : '').slice(0, 160),
+    metaDescription: (descMatch ? descMatch[1].trim() : '').slice(0, 300),
+    mobileViewport: /<meta[^>]+name=["']viewport["']/i.test(html),
+    h1Count: (html.match(/<h1[\b >]/gi) || []).length,
+    hasAnalytics: /google-analytics\.com|googletagmanager\.com|gtag\(|analytics\.js|gtm\.js/i.test(html),
+    hasMetaPixel: /connect\.facebook\.net|fbq\(|facebook.*pixel/i.test(html),
+    hasForm: /<form[\b >]/i.test(html),
+    // NB: no bare "book" — it would false-positive on facebook.com links
+    hasBooking: /(book now|book online|booking|appointment|appoint|reserve|schedule|calendly|acuity|setmore)/i.test(lower),
+    hasSchema: /application\/ld\+json/i.test(html),
+    hasLocalBusinessSchema: /"@type"\s*:\s*"(localbusiness|[a-z]*business|dentist|restaurant|store|professionalservice)"/i.test(html),
+    hasSslMixedContent: finalUrl.startsWith('https://') && /src=["']http:\/\//i.test(html),
+    platform,
+    latestCopyright,
+    staleCopyright: latestCopyright !== null && latestCopyright < year - 1,
+    emails,
+    social,
+    socialCount: Object.keys(social).length,
+  };
+}
+
+app.post("/api/site-check", authenticate, async (req, res) => {
+  if (!checkSiteCheckLimit(req.user.id)) return res.status(429).send("Rate limit: 120 scans/hour. Wait a while.");
+  let { url } = req.body;
+  if (!url || typeof url !== 'string') return res.status(400).send("url required");
+  url = url.trim();
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  let host;
+  try { host = new URL(url).hostname; } catch { return res.status(400).send("Invalid URL"); }
+  // SSRF guard: no localhost / private ranges / non-http schemes
+  if (/^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.)/i.test(host) || /\.(local|internal)$/i.test(host) ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) {
+    return res.status(400).send("Blocked host");
+  }
+  const started = Date.now();
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 9000);
+    const fetchOpts = {
+      redirect: 'follow', signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KWBA-Prospector/1.0; +https://kwba-agency.onrender.com)' }
+    };
+    let resp;
+    try {
+      resp = await fetch(url, fetchOpts);
+    } catch (e) {
+      // No-HTTPS sites are common among dated prospects — retry plain http once.
+      if (url.startsWith('https://') && e.name !== 'AbortError') {
+        try { url = 'http://' + url.slice(8); resp = await fetch(url, fetchOpts); }
+        catch (e2) {
+          clearTimeout(timer);
+          // A hard failure is itself a strong pitch signal (site down / unreachable).
+          return res.send({ ok: false, reachable: false, https: false, error: e2.name === 'AbortError' ? 'timeout' : 'unreachable', finalUrl: url });
+        }
+      } else {
+        clearTimeout(timer);
+        return res.send({ ok: false, reachable: false, https: url.startsWith('https://'), error: e.name === 'AbortError' ? 'timeout' : 'unreachable', finalUrl: url });
+      }
+    }
+    // Read at most ~600KB of HTML (node-fetch v2: body is a Node Readable stream)
+    let received = 0; const chunks = []; const CAP = 600 * 1024;
+    try {
+      for await (const value of resp.body) {
+        chunks.push(value); received += value.length;
+        if (received >= CAP) { resp.body.destroy(); break; }
+      }
+    } catch (e) { if (!chunks.length) throw e; /* keep partial content */ }
+    clearTimeout(timer);
+    const html = Buffer.concat(chunks).toString('utf8');
+    const analysis = analyseSiteHtml(html, resp.url || url, {
+      statusCode: resp.status, pageBytes: received, loadMs: Date.now() - started
+    });
+    analysis.reachable = true;
+    await logActivity(req.user.email, "site_check", "search", 0, `Scanned ${host}`);
+    res.send(analysis);
+  } catch (e) {
+    res.send({ ok: false, reachable: false, error: e.message, finalUrl: url });
   }
 });
 

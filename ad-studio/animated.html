@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<style>
+  :root{
+    --ink:#201c18; --ink2:#2d2820; --gold:#d4a84c; --gold-bright:#e6c068;
+    --gold-deep:#b08a2e; --cream:#fffdf8; --cream2:#f4efe2; --muted:#a89e8c; --green:#7fc78a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:#000}
+  body{font-family:"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+
+  .ad{position:relative;width:100vw;height:100vh;display:flex;flex-direction:column;
+      justify-content:space-between;overflow:hidden;padding:8% 7%;}
+  .ad.ink{color:var(--cream);
+    background:linear-gradient(160deg,#2a251e,#201c18 60%,#191510);background-size:160% 160%;
+    animation:bgdrift 24s ease-in-out infinite alternate;}
+  .ad.cream{color:var(--ink);
+    background:linear-gradient(160deg,#fffdf8,#f4efe2);background-size:160% 160%;
+    animation:bgdrift 24s ease-in-out infinite alternate;}
+  @keyframes bgdrift{from{background-position:0% 0%}to{background-position:100% 100%}}
+  .glow{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(60% 50% at 85% 0%,rgba(212,168,76,.20),transparent 70%);
+    animation:glowpulse 8s ease-in-out infinite alternate}
+  @keyframes glowpulse{from{opacity:.6}to{opacity:1}}
+
+  .ad.cream .muted{color:#6f6452}.ad.cream .eyebrow{color:var(--gold-deep)}
+  .ad.cream .cta{background:var(--ink);color:var(--cream)}
+
+  .edge{position:absolute;left:0;top:0;bottom:0;width:12px;transform-origin:top;transform:scaleY(0);
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold-deep));
+    animation:edgewipe .7s cubic-bezier(.2,.8,.2,1) .1s forwards;z-index:5}
+  @keyframes edgewipe{to{transform:scaleY(1)}}
+
+  .top{display:flex;align-items:center;justify-content:space-between;gap:20px;z-index:3}
+  .logo{font-weight:800;letter-spacing:.14em;font-size:clamp(20px,3.4vw,44px);
+    opacity:0;transform:translateY(-14px);animation:fadeDown .7s ease .35s forwards}
+  .logo .k{color:var(--gold)}
+  .eyebrow{font-size:clamp(11px,1.7vw,20px);letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;text-align:right;max-width:46%;
+    opacity:0;animation:fadeIn .8s ease 1.0s forwards}
+
+  .mid{z-index:3;display:flex;flex-direction:column;gap:3.2%}
+  .angle{align-self:flex-start;font-size:clamp(10px,1.5vw,17px);letter-spacing:.2em;font-weight:800;
+    text-transform:uppercase;color:var(--ink);background:linear-gradient(90deg,var(--gold-bright),var(--gold));
+    padding:.5em .9em;border-radius:999px;opacity:0;transform:scale(.8);
+    animation:pop .6s cubic-bezier(.2,1.4,.4,1) 1.5s forwards}
+  h1{font-size:clamp(34px,8vw,116px);line-height:1.0;letter-spacing:-.02em;font-weight:800}
+  h1 .ln{display:block;overflow:hidden}
+  h1 .ln > span{display:block;transform:translateY(110%);
+    animation:slideUp .8s cubic-bezier(.2,.8,.2,1) forwards}
+  h1 b{color:var(--gold)}
+  .sub{font-size:clamp(15px,2.3vw,30px);line-height:1.4;max-width:90%;color:var(--muted);
+    opacity:0;transform:translateY(16px);animation:fadeUp .8s ease 4.6s forwards}
+  .badges{display:flex;flex-wrap:wrap;gap:2.2%;margin-top:1%}
+  .badge{border:1.5px solid rgba(212,168,76,.5);color:var(--cream2);background:rgba(212,168,76,.08);
+    border-radius:999px;padding:.55em 1.1em;font-size:clamp(12px,1.85vw,24px);font-weight:600;
+    display:flex;align-items:center;gap:.5em;white-space:nowrap;opacity:0;transform:translateY(12px) scale(.9)}
+  .ad.cream .badge{border-color:rgba(176,138,46,.4);color:#5c5240;background:rgba(176,138,46,.08)}
+  .badge::before{content:"◈";color:var(--gold)}
+  .badge.b0{animation:popUp .55s cubic-bezier(.2,1.4,.4,1) 5.4s forwards}
+  .badge.b1{animation:popUp .55s cubic-bezier(.2,1.4,.4,1) 5.65s forwards}
+  .badge.b2{animation:popUp .55s cubic-bezier(.2,1.4,.4,1) 5.9s forwards}
+
+  .bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;z-index:3}
+  .cta{background:linear-gradient(90deg,var(--gold-bright),var(--gold-deep));color:var(--ink);
+    font-weight:800;font-size:clamp(14px,2.2vw,30px);padding:.75em 1.4em;border-radius:999px;
+    display:inline-flex;align-items:center;gap:.5em;opacity:0;transform:translateY(14px);
+    animation:fadeUp .7s ease 6.4s forwards, ctapulse 1.8s ease-in-out 7.4s infinite}
+  @keyframes ctapulse{0%,100%{box-shadow:0 0 0 0 rgba(212,168,76,.5)}50%{box-shadow:0 0 0 16px rgba(212,168,76,0)}}
+  .url{font-size:clamp(11px,1.6vw,21px);color:var(--muted);letter-spacing:.04em;font-weight:600;
+    opacity:0;animation:fadeIn .8s ease 6.8s forwards}
+
+  .mockwrap{z-index:2;align-self:flex-end;opacity:0;transform:translateX(40px);
+    animation:slideInRight 1s cubic-bezier(.2,.8,.2,1) 6.2s forwards}
+  .mockwrap .mock{animation:float 5s ease-in-out 7.2s infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.2%)}}
+
+  /* end-card emphasis: gentle zoom of whole ad in final seconds */
+  .ad{transform-origin:center;animation:kenburns 30s ease-in-out forwards}
+  @keyframes kenburns{0%{transform:scale(1)}100%{transform:scale(1.05)}}
+
+  @keyframes fadeIn{to{opacity:1}}
+  @keyframes fadeDown{to{opacity:1;transform:none}}
+  @keyframes fadeUp{to{opacity:1;transform:none}}
+  @keyframes popUp{to{opacity:1;transform:none}}
+  @keyframes pop{to{opacity:1;transform:scale(1)}}
+  @keyframes slideUp{to{transform:translateY(0)}}
+  @keyframes slideInRight{to{opacity:1;transform:none}}
+
+  /* layout variants */
+  .ad.tall .mockwrap{align-self:center}
+  .ad.wide{flex-direction:row;align-items:center;gap:5%}
+  .ad.wide .left{flex:1.25;display:flex;flex-direction:column;justify-content:center;gap:4%;height:100%}
+  .ad.wide .top{position:absolute;top:6%;left:7%;right:7%}
+  .ad.wide .bottom{position:absolute;bottom:6%;left:7%;right:auto}
+  .ad.wide .mockwrap{flex:1;display:flex;justify-content:center;align-self:center}
+
+  /* ---- mock visuals (shared with static template) ---- */
+  .browser{width:clamp(160px,28vw,460px);background:#15120e;border:1px solid rgba(212,168,76,.35);
+    border-radius:14px;overflow:hidden;filter:drop-shadow(0 24px 50px rgba(0,0,0,.5))}
+  .bar{height:34px;background:#0e0c09;display:flex;align-items:center;gap:6px;padding:0 12px}
+  .dot{width:9px;height:9px;border-radius:50%;background:#3a342a}.dot.g{background:var(--gold)}
+  .scr{padding:9%;display:flex;flex-direction:column;gap:14px}
+  .scr .h{height:16px;width:60%;background:linear-gradient(90deg,var(--gold),var(--gold-deep));border-radius:4px}
+  .scr .l{height:10px;width:100%;background:#2c271f;border-radius:4px}.scr .l.s{width:70%}
+  .scr .btn{height:26px;width:45%;background:var(--gold);border-radius:6px;margin-top:6px}
+  .phone{width:clamp(150px,22vw,330px);aspect-ratio:9/19;background:#15120e;border:6px solid #0c0a07;
+    border-radius:34px;overflow:hidden;filter:drop-shadow(0 24px 50px rgba(0,0,0,.5));padding:12px;
+    display:flex;flex-direction:column;justify-content:flex-end}
+  .bubble{margin:6px 0;max-width:80%;padding:10px 13px;border-radius:15px;font-size:clamp(10px,1.5vw,16px);
+    line-height:1.25;opacity:0;transform:translateY(8px)}
+  .bubble.them{background:#2c271f;color:var(--cream2);border-bottom-left-radius:4px}
+  .bubble.me{background:linear-gradient(90deg,var(--gold),var(--gold-deep));color:#1a1610;margin-left:auto;border-bottom-right-radius:4px}
+  .ping{display:flex;align-items:center;gap:9px;background:#2c271f;border-radius:13px;padding:11px 12px;margin:6px 0;
+    font-size:clamp(10px,1.4vw,15px);color:var(--cream2);opacity:0;transform:translateY(8px)}
+  .ping .ic{width:26px;height:26px;border-radius:8px;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#1a1610;font-weight:800}
+  .c0{animation:fadeUp .5s ease 7.6s forwards}.c1{animation:fadeUp .5s ease 8.6s forwards}
+  .c2{animation:fadeUp .5s ease 9.6s forwards}.c3{animation:fadeUp .5s ease 10.8s forwards}
+  .panel{width:clamp(180px,30vw,500px);background:#15120e;border:1px solid rgba(212,168,76,.3);
+    border-radius:16px;padding:6%;filter:drop-shadow(0 24px 50px rgba(0,0,0,.5))}
+  .kpis{display:flex;gap:6%;margin-bottom:7%}
+  .kpi{flex:1}.kpi .v{font-size:clamp(18px,3vw,40px);font-weight:800;color:var(--gold)}
+  .kpi .k{font-size:clamp(9px,1.3vw,15px);color:var(--muted)}
+  .chart{display:flex;align-items:flex-end;gap:5%;height:clamp(60px,9vw,150px)}
+  .chart span{flex:1;background:linear-gradient(180deg,var(--gold-bright),var(--gold-deep));border-radius:5px 5px 0 0;
+    transform-origin:bottom;transform:scaleY(0);animation:grow .8s cubic-bezier(.2,.8,.2,1) forwards}
+  .chart span:nth-child(1){animation-delay:7.4s}.chart span:nth-child(2){animation-delay:7.55s}
+  .chart span:nth-child(3){animation-delay:7.7s}.chart span:nth-child(4){animation-delay:7.85s}
+  .chart span:nth-child(5){animation-delay:8.0s}.chart span:nth-child(6){animation-delay:8.15s}
+  @keyframes grow{to{transform:scaleY(1)}}
+  .priceblock{width:clamp(180px,30vw,480px);background:#fff;border:1px solid rgba(176,138,46,.25);border-radius:18px;
+    padding:7%;filter:drop-shadow(0 24px 50px rgba(120,95,40,.18));color:var(--ink)}
+  .priceblock .t{font-size:clamp(11px,1.6vw,18px);letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);font-weight:700}
+  .priceblock .p{font-size:clamp(34px,6vw,80px);font-weight:800;line-height:1}
+  .priceblock .p small{font-size:.4em;color:#8a7c63;font-weight:600}
+  .priceblock .row{display:flex;align-items:center;gap:8px;margin-top:6%;font-size:clamp(11px,1.6vw,19px);color:#4a4234}
+  .priceblock .row::before{content:"✓";color:var(--green);font-weight:800}
+  .mapwrap{width:clamp(180px,30vw,500px);aspect-ratio:4/3;background:#efe7d4;border-radius:16px;position:relative;
+    overflow:hidden;filter:drop-shadow(0 24px 50px rgba(120,95,40,.2));border:1px solid rgba(176,138,46,.25)}
+  .road{position:absolute;background:#fff}
+  .pin{position:absolute;width:clamp(22px,3.4vw,44px);height:clamp(22px,3.4vw,44px);background:var(--gold-deep);
+    border-radius:50% 50% 50% 0;transform:rotate(-45deg) scale(0);box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .pin::after{content:"";position:absolute;inset:28%;background:#fff;border-radius:50%}
+  .pin.p0{animation:pindrop .5s cubic-bezier(.2,1.5,.4,1) 7.4s forwards}
+  .pin.p1{animation:pindrop .5s cubic-bezier(.2,1.5,.4,1) 7.7s forwards}
+  .pin.p2{animation:pindrop .5s cubic-bezier(.2,1.5,.4,1) 8.0s forwards}
+  .pin.p3{animation:pindrop .5s cubic-bezier(.2,1.5,.4,1) 8.3s forwards}
+  @keyframes pindrop{to{transform:rotate(-45deg) scale(1)}}
+</style></head>
+<body>
+<div class="ad" id="ad">
+  <div class="glow"></div><div class="edge"></div>
+  <div class="top">
+    <div class="logo"><span class="k">KW</span>BA<span class="k">.</span></div>
+    <div class="eyebrow" id="eyebrow"></div>
+  </div>
+  <div class="left">
+    <div class="mid">
+      <span class="angle" id="angle"></span>
+      <h1 id="headline"></h1>
+      <p class="sub" id="sub"></p>
+      <div class="badges" id="badges"></div>
+    </div>
+  </div>
+  <div class="mockwrap"><div class="mock" id="mock"></div></div>
+  <div class="bottom">
+    <span class="cta" id="cta"></span>
+    <span class="url">kwba-agency.onrender.com</span>
+  </div>
+</div>
+<script>
+function mockHTML(kind){
+  switch(kind){
+    case "web": return `<div class="browser"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot g"></span></div>
+      <div class="scr"><div class="h"></div><div class="l"></div><div class="l s"></div><div class="l"></div><div class="btn"></div></div></div>`;
+    case "chat": return `<div class="phone">
+      <div class="bubble them c0">Hi, are you open this weekend?</div>
+      <div class="bubble me c1">Yes! Want me to book you in? 🗓️</div>
+      <div class="bubble them c2">Please — Saturday 10am.</div>
+      <div class="ping c3"><span class="ic">✓</span>Booking confirmed · lead captured</div></div>`;
+    case "dashboard": return `<div class="panel">
+      <div class="kpis"><div class="kpi"><div class="v">+212%</div><div class="k">Enquiries</div></div>
+      <div class="kpi"><div class="v">#1</div><div class="k">Local rank</div></div>
+      <div class="kpi"><div class="v">4.9★</div><div class="k">Reviews</div></div></div>
+      <div class="chart"><span style="height:35%"></span><span style="height:52%"></span><span style="height:46%"></span>
+      <span style="height:70%"></span><span style="height:84%"></span><span style="height:100%"></span></div></div>`;
+    case "pricing": return `<div class="priceblock"><div class="t">Website · fixed</div>
+      <div class="p">£800<small> one-off</small></div>
+      <div class="row">Live in 48 hours</div><div class="row">No retainers</div><div class="row">30-day promise</div></div>`;
+    case "map": return `<div class="mapwrap">
+      <div class="road" style="left:0;right:0;top:38%;height:8px"></div>
+      <div class="road" style="left:0;right:0;top:68%;height:6px"></div>
+      <div class="road" style="top:0;bottom:0;left:30%;width:7px"></div>
+      <div class="road" style="top:0;bottom:0;left:66%;width:5px"></div>
+      <div class="pin p0" style="left:22%;top:24%"></div><div class="pin p1" style="left:55%;top:46%"></div>
+      <div class="pin p2" style="left:74%;top:20%"></div><div class="pin p3" style="left:40%;top:70%"></div></div>`;
+    default: return "";
+  }
+}
+const p=new URLSearchParams(location.search);
+const data=JSON.parse(decodeURIComponent(p.get("d")||"%7B%7D"));
+const ad=document.getElementById("ad");ad.classList.add(data.theme||"ink");
+const W=+p.get("w"),H=+p.get("h"),ratio=W/H;
+if(ratio<0.85)ad.classList.add("tall");
+if(ratio>1.7)ad.classList.add("wide");
+document.getElementById("eyebrow").textContent=data.eyebrow||"";
+document.getElementById("angle").textContent=data.angle||"";
+// headline: wrap each <br>-separated line for staggered slide-up
+const lines=(data.headline||"").split("<br>");
+document.getElementById("headline").innerHTML=lines.map((ln,i)=>
+  `<span class="ln"><span style="animation-delay:${2.4+i*0.45}s">${ln}</span></span>`).join("");
+document.getElementById("sub").textContent=data.sub||"";
+document.getElementById("cta").innerHTML=(data.cta||"")+" ▸";
+document.getElementById("badges").innerHTML=(data.badges||[]).map((b,i)=>`<span class="badge b${i}">${b}</span>`).join("");
+document.getElementById("mock").innerHTML=mockHTML(data.mock);
+document.title="ready";
+</script>
+</body></html>
