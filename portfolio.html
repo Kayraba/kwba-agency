@@ -44,6 +44,22 @@
 .stack{display:flex;gap:8px;flex-wrap:wrap}
 .stack span{font-size:11px;font-family:var(--display);color:var(--muted);border:1px solid var(--border);padding:5px 11px;border-radius:20px}
 
+/* Brand lockup */
+.project-brand{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.logo-tile{width:46px;height:46px;border-radius:12px;flex-shrink:0;overflow:hidden;box-shadow:0 2px 8px rgba(26,24,20,.10)}
+.logo-tile svg{width:100%;height:100%;display:block}
+.logo-tile.mono{background:var(--gold-dim);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:19px;color:var(--gold-text);letter-spacing:-.02em}
+
+/* Revenue figures — rendered only when a real number is supplied */
+.figures{display:none;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 26px}
+.figures.on{display:grid}
+.fig{border:1px solid var(--border);border-radius:12px;padding:16px 18px;background:var(--bg)}
+.fig-k{display:block;font-family:var(--display);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.fig-v{font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:-.03em;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums}
+.fig.projected .fig-v{color:var(--gold-text)}
+.fig-sub{display:block;font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+.fig-note{grid-column:1/-1;font-size:11.5px;color:var(--muted);line-height:1.5;margin-top:-4px}
+
 /* Screen mock — CSS only, no image assets to go stale */
 .project-visual{position:relative;background:var(--bg2);border-left:1px solid var(--border);display:flex;align-items:center;justify-content:center;padding:44px 40px;overflow:hidden}
 .project-visual::before{content:'';position:absolute;top:-30%;right:-20%;width:420px;height:420px;background:radial-gradient(circle,rgba(176,138,46,.16) 0%,transparent 68%);pointer-events:none}
@@ -129,9 +145,10 @@
           <span class="project-num">01</span>
           <span class="project-type">Marketplace · Live</span>
         </div>
-        <h2>drivingtestmatch</h2>
+        <div class="project-brand"><span class="logo-tile" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="7" fill="#15803d"/><path d="M7 23 L16 11 L25 23" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="11" r="2.4" fill="#bbf7d0"/></svg></span><h2>drivingtestmatch</h2></div>
         <p class="project-line">Learner drivers find each other and coordinate a test swap.</p>
         <p>Learners post the test they hold and the one they want, and the platform surfaces compatible matches. Chat-first by design — contact details stay protected until both sides agree, listings expire automatically after the test date, and the DVSA still handles the actual booking. Free to browse and post; a one-off £25 unlocks messaging when you find your match.</p>
+        <div class="figures" data-figures="dtm"><div class="fig"><span class="fig-k">Revenue to date</span><b class="fig-v" data-rev></b><span class="fig-sub" data-rev-sub></span></div><div class="fig projected"><span class="fig-k">Projected potential</span><b class="fig-v" data-pot></b><span class="fig-sub" data-pot-sub></span></div><p class="fig-note" data-note></p></div>
         <ul class="project-features">
           <li>Listing &amp; matching engine</li>
           <li>Accounts with email and phone confirmation</li>
@@ -164,9 +181,10 @@
           <span class="project-num">02</span>
           <span class="project-type">Exam preparation</span>
         </div>
-        <h2>SQE Academy</h2>
+        <div class="project-brand"><span class="logo-tile mono" aria-hidden="true">SQE</span><h2>SQE Academy</h2></div>
         <p class="project-line">FLK2 preparation for the paper most candidates fail.</p>
         <p>Built specifically for SQE1 FLK2 resitters. Candidates answer questions with a confidence rating before submitting, then get a worked explanation of why the right answer is right — plus exam technique. Full 180-question mock papers run on a server clock in halves, and an AI tutor bounded to the question being reviewed answers follow-ups without wandering off-syllabus.</p>
+        <div class="figures" data-figures="sqe"><div class="fig"><span class="fig-k">Revenue to date</span><b class="fig-v" data-rev></b><span class="fig-sub" data-rev-sub></span></div><div class="fig projected"><span class="fig-k">Projected potential</span><b class="fig-v" data-pot></b><span class="fig-sub" data-pot-sub></span></div><p class="fig-note" data-note></p></div>
         <ul class="project-features">
           <li>Confidence-rated answering</li>
           <li>Worked explanations + exam technique</li>
@@ -199,9 +217,10 @@
           <span class="project-num">03</span>
           <span class="project-type">Learning platform</span>
         </div>
-        <h2>iLearn</h2>
+        <div class="project-brand"><span class="logo-tile mono" aria-hidden="true">iL</span><h2>iLearn</h2></div>
         <p class="project-line">A learning platform built from the ground up.</p>
         <p>Course material, learner accounts and progress tracking in one place, with an admin side for managing what gets published. Built and shipped to a live URL like everything else here.</p>
+        <div class="figures" data-figures="ilearn"><div class="fig"><span class="fig-k">Revenue to date</span><b class="fig-v" data-rev></b><span class="fig-sub" data-rev-sub></span></div><div class="fig projected"><span class="fig-k">Projected potential</span><b class="fig-v" data-pot></b><span class="fig-sub" data-pot-sub></span></div><p class="fig-note" data-note></p></div>
         <ul class="project-features">
           <li>Course &amp; lesson structure</li>
           <li>Learner accounts</li>
@@ -235,9 +254,10 @@
           <span class="project-num">04</span>
           <span class="project-type">Live site</span>
         </div>
-        <h2>Kobzlenz</h2>
+        <div class="project-brand"><span class="logo-tile mono" aria-hidden="true">Kz</span><h2>Kobzlenz</h2></div>
         <p class="project-line">Designed, built and launched on its own domain.</p>
         <p>Another build shipped end to end — design through to a live domain. See it for yourself.</p>
+        <div class="figures" data-figures="kobz"><div class="fig"><span class="fig-k">Revenue to date</span><b class="fig-v" data-rev></b><span class="fig-sub" data-rev-sub></span></div><div class="fig projected"><span class="fig-k">Projected potential</span><b class="fig-v" data-pot></b><span class="fig-sub" data-pot-sub></span></div><p class="fig-note" data-note></p></div>
         <div class="stack"><span>Web build</span><span>Custom domain</span><span>Live</span></div>
         <p style="margin:22px 0 0"><a class="btn-secondary" href="https://kobzlenz.com/" target="_blank" rel="noopener">Visit kobzlenz.com
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>
@@ -290,5 +310,44 @@
 </footer>
 
 <script src="/assets/kwba.js"></script>
+<script>
+/* ─────────────────────────────────────────────────────────────
+   Revenue figures. Fill these in and they appear on the page;
+   leave a value empty and that project simply shows no figures,
+   so the page is always safe to publish as-is.
+     revenue   — earned so far
+     potential — forward projection (labelled as a projection)
+     sub       — optional one-line qualifier under each number
+   ───────────────────────────────────────────────────────────── */
+var FIGURES = {
+  dtm:    { revenue:'', revenueSub:'', potential:'', potentialSub:'' },
+  sqe:    { revenue:'', revenueSub:'', potential:'', potentialSub:'' },
+  ilearn: { revenue:'', revenueSub:'', potential:'', potentialSub:'' },
+  kobz:   { revenue:'', revenueSub:'', potential:'', potentialSub:'' }
+};
+var PROJECTION_NOTE = 'Projection based on current pricing and reach — an estimate, not a guarantee.';
+
+(function () {
+  document.querySelectorAll('[data-figures]').forEach(function (box) {
+    var f = FIGURES[box.dataset.figures] || {};
+    var rev = (f.revenue || '').trim(), pot = (f.potential || '').trim();
+    if (!rev && !pot) return;                    /* nothing supplied: stay hidden */
+
+    var revCell = box.querySelector('.fig'), potCell = box.querySelector('.fig.projected');
+    if (rev) {
+      box.querySelector('[data-rev]').textContent = rev;
+      box.querySelector('[data-rev-sub]').textContent = f.revenueSub || '';
+    } else { revCell.remove(); }
+    if (pot) {
+      box.querySelector('[data-pot]').textContent = pot;
+      box.querySelector('[data-pot-sub]').textContent = f.potentialSub || '';
+      box.querySelector('[data-note]').textContent = PROJECTION_NOTE;
+    } else { potCell.remove(); }
+
+    if (!rev || !pot) box.style.gridTemplateColumns = '1fr';
+    box.classList.add('on');
+  });
+})();
+</script>
 </body>
 </html>

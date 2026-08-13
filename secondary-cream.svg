@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="KWBA">
+  <text x="80" y="148" text-anchor="middle"
+        font-family="Inter Tight, Inter, system-ui, sans-serif"
+        font-weight="700" font-size="160"
+        fill="#fafaf7" letter-spacing="-0.05em">K</text>
+  <circle cx="148" cy="138" r="9" fill="#b08a2e"/>
+</svg>
