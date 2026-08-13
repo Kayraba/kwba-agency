@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8" />
+<style>
+  :root{
+    --ink:#201c18; --ink2:#2d2820; --gold:#d4a84c; --gold-bright:#e6c068;
+    --gold-deep:#b08a2e; --cream:#fffdf8; --cream2:#f4efe2; --muted:#a89e8c; --green:#7fc78a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%}
+  body{font-family:"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+
+  .ad{position:relative;width:100vw;height:100vh;display:flex;flex-direction:column;
+      justify-content:space-between;overflow:hidden;padding:7% 7%;}
+  /* themes */
+  .ad.ink{background:radial-gradient(120% 90% at 85% -10%,rgba(212,168,76,.16),transparent),
+           linear-gradient(160deg,#2a251e,#201c18 60%,#191510);color:var(--cream);}
+  .ad.cream{background:radial-gradient(120% 90% at 90% 0%,rgba(212,168,76,.18),transparent),
+            linear-gradient(160deg,#fffdf8,#f4efe2);color:var(--ink);}
+  .ad.cream .muted{color:#6f6452}
+  .ad.cream .eyebrow{color:var(--gold-deep)}
+  .ad.cream .badge{border-color:rgba(176,138,46,.4);color:#5c5240;background:rgba(176,138,46,.08)}
+  .ad.cream .cta{background:var(--ink);color:var(--cream)}
+  .ad.cream .mockwrap{filter:drop-shadow(0 30px 60px rgba(120,95,40,.22))}
+
+  /* gold edge accent */
+  .ad::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold-deep));}
+
+  .top{display:flex;align-items:center;justify-content:space-between;gap:20px;z-index:2}
+  .logo{font-weight:800;letter-spacing:.14em;font-size:clamp(20px,3.4vw,42px)}
+  .logo .k{color:var(--gold)}
+  .eyebrow{font-size:clamp(11px,1.7vw,20px);letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;text-align:right;max-width:46%}
+
+  .mid{z-index:2;display:flex;flex-direction:column;gap:3%;}
+  .angle{display:inline-block;align-self:flex-start;font-size:clamp(10px,1.5vw,17px);
+    letter-spacing:.2em;font-weight:800;text-transform:uppercase;color:var(--ink);
+    background:linear-gradient(90deg,var(--gold-bright),var(--gold));padding:.5em .9em;border-radius:999px;}
+  h1{font-size:clamp(34px,8.2vw,118px);line-height:1.0;letter-spacing:-.02em;font-weight:800;}
+  h1 b{color:var(--gold)}
+  .sub{font-size:clamp(15px,2.4vw,30px);line-height:1.4;max-width:88%;}
+  .sub.muted,.muted{color:var(--muted)}
+
+  .badges{display:flex;flex-wrap:wrap;gap:2.2%;margin-top:1%;}
+  .badge{border:1.5px solid rgba(212,168,76,.5);color:var(--cream2);background:rgba(212,168,76,.08);
+    border-radius:999px;padding:.55em 1.1em;font-size:clamp(12px,1.9vw,24px);font-weight:600;
+    display:flex;align-items:center;gap:.5em;white-space:nowrap}
+  .badge::before{content:"◈";color:var(--gold)}
+
+  .bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;z-index:2}
+  .cta{background:linear-gradient(90deg,var(--gold-bright),var(--gold-deep));color:var(--ink);
+    font-weight:800;font-size:clamp(14px,2.3vw,30px);padding:.75em 1.4em;border-radius:999px;
+    display:inline-flex;align-items:center;gap:.5em}
+  .url{font-size:clamp(11px,1.7vw,21px);color:var(--muted);letter-spacing:.04em;font-weight:600}
+
+  /* ---- mock visuals ---- */
+  .mockwrap{z-index:2;align-self:flex-end}
+  .mock{position:relative}
+  .browser{width:clamp(160px,28vw,460px);background:#15120e;border:1px solid rgba(212,168,76,.35);
+    border-radius:14px;overflow:hidden;filter:drop-shadow(0 24px 50px rgba(0,0,0,.5))}
+  .bar{height:8%;min-height:18px;background:#0e0c09;display:flex;align-items:center;gap:6px;padding:0 10px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#3a342a}.dot.g{background:var(--gold)}
+  .scr{padding:9%;display:flex;flex-direction:column;gap:8%}
+  .scr .h{height:14px;width:60%;background:linear-gradient(90deg,var(--gold),var(--gold-deep));border-radius:4px}
+  .scr .l{height:9px;width:100%;background:#2c271f;border-radius:4px}.scr .l.s{width:70%}
+  .scr .btn{height:22px;width:45%;background:var(--gold);border-radius:6px;margin-top:4px}
+
+  .phone{width:clamp(140px,22vw,330px);aspect-ratio:9/19;background:#15120e;border:6px solid #0c0a07;
+    border-radius:32px;overflow:hidden;filter:drop-shadow(0 24px 50px rgba(0,0,0,.5));padding:10px}
+  .bubble{margin:8px 0;max-width:78%;padding:9px 12px;border-radius:14px;font-size:clamp(9px,1.5vw,15px);line-height:1.25}
+  .bubble.them{background:#2c271f;color:var(--cream2);border-bottom-left-radius:4px}
+  .bubble.me{background:linear-gradient(90deg,var(--gold),var(--gold-deep));color:#1a1610;margin-left:auto;border-bottom-right-radius:4px}
+  .ping{display:flex;align-items:center;gap:8px;background:#2c271f;border-radius:12px;padding:9px 11px;margin:8px 0;
+    font-size:clamp(9px,1.4vw,14px);color:var(--cream2)}
+  .ping .ic{width:24px;height:24px;border-radius:7px;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#1a1610;font-weight:800}
+
+  .panel{width:clamp(180px,30vw,500px);background:#15120e;border:1px solid rgba(212,168,76,.3);
+    border-radius:16px;padding:6%;filter:drop-shadow(0 24px 50px rgba(0,0,0,.5))}
+  .kpis{display:flex;gap:6%;margin-bottom:7%}
+  .kpi{flex:1}.kpi .v{font-size:clamp(18px,3vw,40px);font-weight:800;color:var(--gold)}
+  .kpi .k{font-size:clamp(9px,1.3vw,15px);color:var(--muted)}
+  .chart{display:flex;align-items:flex-end;gap:5%;height:clamp(60px,9vw,150px)}
+  .chart span{flex:1;background:linear-gradient(180deg,var(--gold-bright),var(--gold-deep));border-radius:5px 5px 0 0}
+  .priceblock{width:clamp(180px,30vw,480px);background:#fff;border:1px solid rgba(176,138,46,.25);border-radius:18px;
+    padding:7%;filter:drop-shadow(0 24px 50px rgba(120,95,40,.18));color:var(--ink)}
+  .priceblock .t{font-size:clamp(11px,1.6vw,18px);letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);font-weight:700}
+  .priceblock .p{font-size:clamp(34px,6vw,80px);font-weight:800;line-height:1}
+  .priceblock .p small{font-size:.4em;color:#8a7c63;font-weight:600}
+  .priceblock .row{display:flex;align-items:center;gap:8px;margin-top:6%;font-size:clamp(11px,1.6vw,19px);color:#4a4234}
+  .priceblock .row::before{content:"✓";color:var(--green);font-weight:800}
+  .mapwrap{width:clamp(180px,30vw,500px);aspect-ratio:4/3;background:
+      linear-gradient(0deg,rgba(176,138,46,.10),rgba(176,138,46,.10)),#efe7d4;border-radius:16px;position:relative;overflow:hidden;
+      filter:drop-shadow(0 24px 50px rgba(120,95,40,.2));border:1px solid rgba(176,138,46,.25)}
+  .road{position:absolute;background:#fff}
+  .pin{position:absolute;width:clamp(22px,3.4vw,44px);height:clamp(22px,3.4vw,44px);background:var(--gold-deep);
+    border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 6px 14px rgba(0,0,0,.25)}
+  .pin::after{content:"";position:absolute;inset:28%;background:#fff;border-radius:50%}
+
+  /* size-class tweaks */
+  .ad.tall .mockwrap{align-self:center}
+  .ad.wide{flex-direction:row;align-items:center;gap:5%}
+  .ad.wide .left{flex:1.25;display:flex;flex-direction:column;justify-content:center;gap:4%;height:100%}
+  .ad.wide .top{position:absolute;top:6%;left:7%;right:7%}
+  .ad.wide .bottom{position:absolute;bottom:6%;left:7%;right:auto}
+  .ad.wide .mockwrap{flex:1;display:flex;justify-content:center}
+  .ad.banner{padding:4% 6%}
+  .ad.banner h1{font-size:clamp(28px,6vw,60px)}
+  .ad.banner .sub{display:none}
+  .ad.banner .mockwrap{display:none}
+
+  /* short wide banners (e.g. 1200x628): avoid bottom-bar collision */
+  .ad.wide.short{padding:5% 6%}
+  .ad.wide.short .left{justify-content:center;gap:2.5%}
+  .ad.wide.short .badges{display:none}
+  .ad.wide.short h1{font-size:clamp(30px,5.4vw,62px)}
+  .ad.wide.short .sub{font-size:clamp(13px,1.9vw,22px);max-width:96%}
+  .ad.wide.short .top{top:5%}
+  .ad.wide.short .bottom{bottom:5%}
+  .ad.wide.short .mockwrap .browser{width:clamp(150px,24vw,300px)}
+  .ad.wide.short .mockwrap .phone{width:clamp(110px,17vw,180px)}
+  .ad.wide.short .mockwrap .panel,.ad.wide.short .mockwrap .priceblock,
+  .ad.wide.short .mockwrap .mapwrap{width:clamp(160px,26vw,330px)}
+</style></head>
+<body>
+<div class="ad" id="ad">
+  <div class="top">
+    <div class="logo"><span class="k">KW</span>BA<span class="k">.</span></div>
+    <div class="eyebrow" id="eyebrow"></div>
+  </div>
+  <div class="left">
+    <div class="mid">
+      <span class="angle" id="angle"></span>
+      <h1 id="headline"></h1>
+      <p class="sub muted" id="sub"></p>
+      <div class="badges" id="badges"></div>
+    </div>
+  </div>
+  <div class="mockwrap" id="mockwrap"></div>
+  <div class="bottom">
+    <span class="cta" id="cta"></span>
+    <span class="url">kwba-agency.onrender.com</span>
+  </div>
+</div>
+
+<script>
+function mockHTML(kind){
+  switch(kind){
+    case "web": return `<div class="browser"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot g"></span></div>
+      <div class="scr"><div class="h"></div><div class="l"></div><div class="l s"></div><div class="l"></div><div class="btn"></div></div></div>`;
+    case "chat": return `<div class="phone">
+      <div class="bubble them">Hi, are you open this weekend?</div>
+      <div class="bubble me">Yes! Want me to book you in? 🗓️</div>
+      <div class="bubble them">Please — Saturday 10am.</div>
+      <div class="ping"><span class="ic">✓</span>Booking confirmed · lead captured</div></div>`;
+    case "dashboard": return `<div class="panel">
+      <div class="kpis"><div class="kpi"><div class="v">+212%</div><div class="k">Enquiries</div></div>
+      <div class="kpi"><div class="v">#1</div><div class="k">Local rank</div></div>
+      <div class="kpi"><div class="v">4.9★</div><div class="k">Reviews</div></div></div>
+      <div class="chart"><span style="height:35%"></span><span style="height:52%"></span><span style="height:46%"></span>
+      <span style="height:70%"></span><span style="height:84%"></span><span style="height:100%"></span></div></div>`;
+    case "pricing": return `<div class="priceblock"><div class="t">Website · fixed</div>
+      <div class="p">£800<small> one-off</small></div>
+      <div class="row">Live in 48 hours</div><div class="row">No retainers</div>
+      <div class="row">30-day promise</div></div>`;
+    case "map": return `<div class="mapwrap">
+      <div class="road" style="left:0;right:0;top:38%;height:8px"></div>
+      <div class="road" style="left:0;right:0;top:68%;height:6px"></div>
+      <div class="road" style="top:0;bottom:0;left:30%;width:7px"></div>
+      <div class="road" style="top:0;bottom:0;left:66%;width:5px"></div>
+      <div class="pin" style="left:22%;top:24%"></div>
+      <div class="pin" style="left:55%;top:46%"></div>
+      <div class="pin" style="left:74%;top:20%"></div>
+      <div class="pin" style="left:40%;top:70%"></div></div>`;
+    default: return "";
+  }
+}
+const p = new URLSearchParams(location.search);
+const data = JSON.parse(decodeURIComponent(p.get("d")||"%7B%7D"));
+const ad = document.getElementById("ad");
+ad.classList.add(data.theme||"ink");
+const W=+p.get("w"), H=+p.get("h"), ratio=W/H;
+if(ratio < 0.85) ad.classList.add("tall");        // story / portrait
+if(ratio > 1.7)  ad.classList.add("wide");        // wide / pmax
+if(ratio > 1.7 && H < 760) ad.classList.add("short"); // short wide banner
+document.getElementById("eyebrow").textContent = data.eyebrow||"";
+document.getElementById("angle").textContent = data.angle||"";
+document.getElementById("headline").innerHTML = data.headline||"";
+document.getElementById("sub").textContent = data.sub||"";
+document.getElementById("cta").innerHTML = (data.cta||"")+" ▸";
+document.getElementById("badges").innerHTML = (data.badges||[]).map(b=>`<span class="badge">${b}</span>`).join("");
+document.getElementById("mockwrap").innerHTML = mockHTML(data.mock);
+document.title="ready";
+</script>
+</body></html>
