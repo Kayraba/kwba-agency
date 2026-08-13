@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project ads — KWBA Studio</title>
+<meta name="description" content="Shoot-ready ad creative for the platforms KWBA Studio has built: drivingtestmatch, SQE Academy, iLearn and Kobzlenz.">
+<meta name="theme-color" content="#fafaf7">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/favicon-k.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="/assets/kwba.css">
+
+<style>
+.filters{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:34px}
+.filters .fl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:var(--display);margin-right:6px}
+.chip{font-family:var(--display);font-size:12.5px;padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--ink2);cursor:pointer;transition:all .2s}
+.chip:hover{border-color:var(--gold-border)}
+.chip[aria-pressed="true"]{background:var(--gold-deep);border-color:var(--gold-deep);color:#fff}
+.count{margin-left:auto;font-size:12.5px;color:var(--muted)}
+
+.ads{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.ad{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column;transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s}
+.ad:hover{transform:translateY(-3px);border-color:var(--gold-border);box-shadow:0 20px 50px rgba(26,24,20,.07)}
+.ad-top{padding:24px 26px 20px;border-bottom:1px solid var(--border2)}
+.ad-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.ad-no{font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--gold-text)}
+.ad-tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-family:var(--display);font-weight:500;padding:3px 10px;border-radius:20px;background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold-text)}
+.ad-fmt{font-size:11px;color:var(--muted);font-family:var(--display)}
+.ad h2{font-size:20px;margin-bottom:9px;letter-spacing:-.02em}
+.ad-hook{font-size:14px;line-height:1.6;color:var(--ink2);font-style:italic}
+.ad-board{padding:20px 26px 24px}
+.ad-board h3{font-family:var(--display);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:14px}
+.beat{display:grid;grid-template-columns:56px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid var(--border2)}
+.beat:last-of-type{border-bottom:none}
+.tc{font-family:var(--display);font-size:10.5px;color:var(--gold-text);background:var(--gold-dim);border-radius:6px;padding:3px 0;text-align:center;height:fit-content}
+.beat p{font-size:13px;line-height:1.55;color:var(--ink2)}
+.beat .os{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.beat .os b{font-family:var(--display);color:var(--gold-text);font-weight:500}
+.ad-foot{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center}
+.vo{font-size:12.5px;color:var(--muted);line-height:1.5;flex:1;min-width:180px}
+.vo b{font-family:var(--display);color:var(--ink2);font-weight:500}
+.cta-pill{font-family:var(--display);font-size:12px;font-weight:500;padding:7px 15px;border-radius:20px;background:var(--gold-deep);color:#fff;white-space:nowrap}
+.hidden{display:none}
+@media(max-width:900px){.ads{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="site-nav">
+  <a class="nav-logo" href="/">KWBA<span>.</span></a>
+  <div class="nav-links">
+    <a href="/#platform">Platform Build</a>
+    <a href="/portfolio.html">Work</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-cta" href="/contact.html">Book a call</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="/#platform">Platform Build</a>
+  <a href="/portfolio.html">Work</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/contact.html">Contact</a>
+</div>
+
+<main id="main">
+
+<header class="page-head">
+  <div class="page-glow"></div>
+  <div class="si">
+    <p class="slabel">Ad creative</p>
+    <h1>Ads for the <em>platforms.</em></h1>
+    <p class="lede">Twelve shoot-ready spots — three per project. Each one is a hook, a four-beat shot list with timecodes, a voiceover line and a call to action. Hand any card straight to an editor, Canva, or a video generator.</p>
+  </div>
+</header>
+
+<section class="section" style="padding-top:20px">
+  <div class="si">
+    <div class="filters">
+      <span class="fl">Filter</span>
+      <button class="chip" data-filter="all" aria-pressed="true">All 12</button>
+      <button class="chip" data-filter="dtm" aria-pressed="false">drivingtestmatch</button>
+      <button class="chip" data-filter="sqe" aria-pressed="false">SQE Academy</button>
+      <button class="chip" data-filter="ilearn" aria-pressed="false">iLearn</button>
+      <button class="chip" data-filter="kobz" aria-pressed="false">Kobzlenz</button>
+      <span class="count" id="count">12 of 12 ads</span>
+    </div>
+
+    <div class="ads" id="ads">
+
+      <!-- ══════════ drivingtestmatch ══════════ -->
+      <article class="ad" data-cat="dtm">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 01</span><span class="ad-tag">drivingtestmatch</span><span class="ad-fmt">9:16 · Reels / TikTok · 30s</span></div>
+          <h2>The Six-Month Wait</h2>
+          <p class="ad-hook">"Your test is in October. You're ready now."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 30s</h3>
+          <div class="beat"><span class="tc">0–6s</span><p>Learner sits in a parked car, phone showing a test date months away. Instructor shrugs.<span class="os">On-screen: <b>Ready now. Test in October.</b></span></p></div>
+          <div class="beat"><span class="tc">6–15s</span><p>Phone screen: they post the test they hold and the one they want. Matches slide in.<span class="os">On-screen: <b>Post your date. See who matches.</b></span></p></div>
+          <div class="beat"><span class="tc">15–24s</span><p>Two learners message inside the app, agree, then swap through the DVSA.<span class="os">On-screen: <b>You swap. DVSA books it.</b></span></p></div>
+          <div class="beat"><span class="tc">24–30s</span><p>Pass certificate on the dashboard. End card.<span class="os">On-screen: <b>drivingtestmatch — £25 one-off</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "Waiting months for a test you're already ready for? Find a learner who wants to swap."</p>
+            <span class="cta-pill">Post a listing free</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="ad" data-cat="dtm">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 02</span><span class="ad-tag">drivingtestmatch</span><span class="ad-fmt">1:1 · Feed · 30s</span></div>
+          <h2>Nobody Gets Your Number</h2>
+          <p class="ad-hook">"Swapping a test shouldn't mean handing a stranger your details."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 30s</h3>
+          <div class="beat"><span class="tc">0–7s</span><p>Cluttered group chat, strangers posting phone numbers and booking refs. Uneasy face.<span class="os">On-screen: <b>The old way.</b></span></p></div>
+          <div class="beat"><span class="tc">7–16s</span><p>Cut to the app: clean listing, chat opens, contact details stay hidden behind a lock.<span class="os">On-screen: <b>Chat first. Details stay yours.</b></span></p></div>
+          <div class="beat"><span class="tc">16–25s</span><p>Both tap agree; only then does anything get revealed. Listing auto-expires after the date.<span class="os">On-screen: <b>Revealed only when you both agree.</b></span></p></div>
+          <div class="beat"><span class="tc">25–30s</span><p>Calm end card on a clean background.<span class="os">On-screen: <b>Independent. No DVSA credentials. Ever.</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "Match first, talk second, share nothing until you're both sure."</p>
+            <span class="cta-pill">See how matching works</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="ad" data-cat="dtm">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 03</span><span class="ad-tag">drivingtestmatch</span><span class="ad-fmt">9:16 · Reels · 20s</span></div>
+          <h2>Twenty-Five Pounds, Once</h2>
+          <p class="ad-hook">"No subscription. You pay when it actually works."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 20s</h3>
+          <div class="beat"><span class="tc">0–5s</span><p>Hand scrolls past three apps all demanding monthly fees. Thumb hesitates.<span class="os">On-screen: <b>£9.99/mo. £14.99/mo. £19.99/mo.</b></span></p></div>
+          <div class="beat"><span class="tc">5–12s</span><p>Cut to drivingtestmatch: browsing and posting, no paywall in sight.<span class="os">On-screen: <b>Browse free. Post free.</b></span></p></div>
+          <div class="beat"><span class="tc">12–17s</span><p>A match lands. One tap, £25, messaging unlocks.<span class="os">On-screen: <b>£25 once — only when you match.</b></span></p></div>
+          <div class="beat"><span class="tc">17–20s</span><p>End card, price front and centre.<span class="os">On-screen: <b>Pay only when you find a match.</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "One payment, one match, one earlier test."</p>
+            <span class="cta-pill">Start free</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ══════════ SQE Academy ══════════ -->
+      <article class="ad" data-cat="sqe">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 04</span><span class="ad-tag">SQE Academy</span><span class="ad-fmt">9:16 · Reels · 30s</span></div>
+          <h2>The Paper Most Candidates Fail</h2>
+          <p class="ad-hook">"You didn't fail because you didn't work. You failed FLK2."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 30s</h3>
+          <div class="beat"><span class="tc">0–7s</span><p>Results email opens. Face drops. Textbooks stacked, clearly well-used.<span class="os">On-screen: <b>You worked. You still didn't pass.</b></span></p></div>
+          <div class="beat"><span class="tc">7–16s</span><p>Screen: a question, then a confidence rating tapped <em>before</em> submitting.<span class="os">On-screen: <b>How sure are you — before you answer?</b></span></p></div>
+          <div class="beat"><span class="tc">16–25s</span><p>Explanation panel opens: why B is right, then the exam technique behind it.<span class="os">On-screen: <b>Not just the answer. The technique.</b></span></p></div>
+          <div class="beat"><span class="tc">25–30s</span><p>Mastery dashboard fills. End card.<span class="os">On-screen: <b>SQE Academy — built for FLK2 resitters</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "Built for the one paper that stops most candidates. Try thirty questions free."</p>
+            <span class="cta-pill">Try 30 questions free</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="ad" data-cat="sqe">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 05</span><span class="ad-tag">SQE Academy</span><span class="ad-fmt">1:1 · Feed · 30s</span></div>
+          <h2>Sit The Real Thing First</h2>
+          <p class="ad-hook">"180 questions. Server clock. Closing the tab changes nothing."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 30s</h3>
+          <div class="beat"><span class="tc">0–6s</span><p>Candidate starts a mock at a kitchen table. Timer begins, top right.<span class="os">On-screen: <b>Mock paper 2 · question 112 of 180</b></span></p></div>
+          <div class="beat"><span class="tc">6–15s</span><p>They close the laptop lid in panic, reopen — the clock has kept running.<span class="os">On-screen: <b>Server clock. No pausing. Like the real thing.</b></span></p></div>
+          <div class="beat"><span class="tc">15–24s</span><p>Half submitted. Results break down by subject, weak areas flagged.<span class="os">On-screen: <b>Mock readiness, by subject.</b></span></p></div>
+          <div class="beat"><span class="tc">24–30s</span><p>Calm candidate walking into the real exam centre. End card.<span class="os">On-screen: <b>Nothing on exam day is a surprise.</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "Full-length, properly timed mocks — so the real paper is the second time you've sat it."</p>
+            <span class="cta-pill">See a real item</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="ad" data-cat="sqe">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 06</span><span class="ad-tag">SQE Academy</span><span class="ad-fmt">9:16 · Reels · 20s</span></div>
+          <h2>Ask Lex</h2>
+          <p class="ad-hook">"A tutor that only talks about the question in front of you."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 20s</h3>
+          <div class="beat"><span class="tc">0–5s</span><p>Candidate stares at a Land Law item, rereads it twice.<span class="os">On-screen: <b>Still not sure why you got it wrong?</b></span></p></div>
+          <div class="beat"><span class="tc">5–12s</span><p>Taps "Ask Lex about this one". A tutor panel opens, tied to that item.<span class="os">On-screen: <b>Bounded to this item.</b></span></p></div>
+          <div class="beat"><span class="tc">12–17s</span><p>Clear answer, no waffle, no wandering off-syllabus. Understanding lands.<span class="os">On-screen: <b>On-syllabus. Every time.</b></span></p></div>
+          <div class="beat"><span class="tc">17–20s</span><p>End card.<span class="os">On-screen: <b>SQE Academy</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "Every question comes with a tutor. It only answers on the question you're on."</p>
+            <span class="cta-pill">Start with 30 free questions</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ══════════ iLearn ══════════ -->
+      <article class="ad" data-cat="ilearn">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 07</span><span class="ad-tag">iLearn</span><span class="ad-fmt">9:16 · Reels · 30s</span></div>
+          <h2>Where Did Everyone Get To?</h2>
+          <p class="ad-hook">"Spreadsheets don't tell you who's stuck."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 30s</h3>
+          <div class="beat"><span class="tc">0–7s</span><p>Course owner scrolls a messy spreadsheet of learner names, guessing.<span class="os">On-screen: <b>Who's finished? Who's stuck?</b></span></p></div>
+          <div class="beat"><span class="tc">7–16s</span><p>Cut to iLearn: modules laid out, progress bars filling per learner.<span class="os">On-screen: <b>Every learner. Every module.</b></span></p></div>
+          <div class="beat"><span class="tc">16–25s</span><p>Owner publishes a new lesson from the admin side — no developer involved.<span class="os">On-screen: <b>Publish it yourself.</b></span></p></div>
+          <div class="beat"><span class="tc">25–30s</span><p>Learner opens it on a phone on the bus. End card.<span class="os">On-screen: <b>iLearn</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "Your course, your learners, your platform — not a folder of PDFs."</p>
+            <span class="cta-pill">See the platform</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="ad" data-cat="ilearn">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 08</span><span class="ad-tag">iLearn</span><span class="ad-fmt">1:1 · Feed · 20s</span></div>
+          <h2>Own The Platform</h2>
+          <p class="ad-hook">"Stop renting your course out to someone else's marketplace."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 20s</h3>
+          <div class="beat"><span class="tc">0–6s</span><p>Marketplace dashboard: big revenue number, bigger commission line beside it.<span class="os">On-screen: <b>Their platform. Their cut. Their rules.</b></span></p></div>
+          <div class="beat"><span class="tc">6–13s</span><p>Swipe to iLearn on the owner's own domain, own branding.<span class="os">On-screen: <b>Your domain. Your learners.</b></span></p></div>
+          <div class="beat"><span class="tc">13–17s</span><p>Learner list grows; owner adds a module without asking anyone.<span class="os">On-screen: <b>Change it whenever you like.</b></span></p></div>
+          <div class="beat"><span class="tc">17–20s</span><p>End card.<span class="os">On-screen: <b>Built by KWBA Studio</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "If your course lives on someone else's platform, it isn't really yours."</p>
+            <span class="cta-pill">Build yours</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="ad" data-cat="ilearn">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 09</span><span class="ad-tag">iLearn</span><span class="ad-fmt">9:16 · Reels · 15s</span></div>
+          <h2>Pick Up Where You Left Off</h2>
+          <p class="ad-hook">"Module four, sixty-eight percent, exactly where you stopped."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 15s</h3>
+          <div class="beat"><span class="tc">0–5s</span><p>Learner closes laptop mid-lesson, day gets busy.<span class="os">On-screen: <b>Life happened.</b></span></p></div>
+          <div class="beat"><span class="tc">5–10s</span><p>Evening, phone opens straight back to the same point.<span class="os">On-screen: <b>Module 4 · 68% complete</b></span></p></div>
+          <div class="beat"><span class="tc">10–13s</span><p>Progress bar ticks over the line. Small, satisfying moment.<span class="os">On-screen: <b>Finished.</b></span></p></div>
+          <div class="beat"><span class="tc">13–15s</span><p>End card.<span class="os">On-screen: <b>iLearn</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "Progress that follows the learner, not the device."</p>
+            <span class="cta-pill">Take a look</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ══════════ Kobzlenz ══════════ -->
+      <article class="ad" data-cat="kobz">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 10</span><span class="ad-tag">Kobzlenz</span><span class="ad-fmt">9:16 · Reels · 20s</span></div>
+          <h2>Live On Its Own Domain</h2>
+          <p class="ad-hook">"From a blank page to kobzlenz.com."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 20s</h3>
+          <div class="beat"><span class="tc">0–5s</span><p>Empty browser tab, cursor blinking in the address bar.<span class="os">On-screen: <b>Day one.</b></span></p></div>
+          <div class="beat"><span class="tc">5–12s</span><p>Fast build montage — layout, colour, copy snapping into place.<span class="os">On-screen: <b>We start building.</b></span></p></div>
+          <div class="beat"><span class="tc">12–17s</span><p>Finished site scrolls on laptop and phone side by side.<span class="os">On-screen: <b>kobzlenz.com — live.</b></span></p></div>
+          <div class="beat"><span class="tc">17–20s</span><p>End card.<span class="os">On-screen: <b>Built by KWBA Studio</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "Designed, built and launched — on its own domain."</p>
+            <span class="cta-pill">Visit the site</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="ad" data-cat="kobz">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 11</span><span class="ad-tag">Kobzlenz</span><span class="ad-fmt">1:1 · Feed · 15s</span></div>
+          <h2>Proof, Not Promises</h2>
+          <p class="ad-hook">"Anyone can show you a mockup."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 15s</h3>
+          <div class="beat"><span class="tc">0–5s</span><p>A pretty mockup floating on a dribbble-style backdrop. Looks unreal, because it is.<span class="os">On-screen: <b>A mockup isn't a website.</b></span></p></div>
+          <div class="beat"><span class="tc">5–11s</span><p>Cut to a real browser, real URL typed, real site loading.<span class="os">On-screen: <b>This one you can visit.</b></span></p></div>
+          <div class="beat"><span class="tc">11–15s</span><p>End card with the live URL.<span class="os">On-screen: <b>kobzlenz.com</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "Every site in our portfolio is one you can open right now."</p>
+            <span class="cta-pill">See the work</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="ad" data-cat="kobz">
+        <div class="ad-top">
+          <div class="ad-meta"><span class="ad-no">AD 12</span><span class="ad-tag">Kobzlenz</span><span class="ad-fmt">9:16 · Reels · 30s</span></div>
+          <h2>Four Builds, One Studio</h2>
+          <p class="ad-hook">"A marketplace, an exam platform, a course platform, and a live site."</p>
+        </div>
+        <div class="ad-board">
+          <h3>Storyboard · 30s</h3>
+          <div class="beat"><span class="tc">0–8s</span><p>Four screens light up one by one — drivingtestmatch, SQE Academy, iLearn, Kobzlenz.<span class="os">On-screen: <b>Four ideas. Four platforms.</b></span></p></div>
+          <div class="beat"><span class="tc">8–17s</span><p>Quick cuts: payments clearing, mocks timing, progress filling, pages loading.<span class="os">On-screen: <b>Users. Logins. Payments. Data.</b></span></p></div>
+          <div class="beat"><span class="tc">17–26s</span><p>Founder-type describes an idea across a table; hands sketch it into a flow.<span class="os">On-screen: <b>Yours is next.</b></span></p></div>
+          <div class="beat"><span class="tc">26–30s</span><p>End card.<span class="os">On-screen: <b>KWBA Studio — from £1,500</b></span></p></div>
+          <div class="ad-foot">
+            <p class="vo"><b>VO:</b> "We don't show mockups. We show platforms people actually use."</p>
+            <span class="cta-pill">Start a project</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="flogo">KWBA<span>.</span></div>
+  <nav class="flinks" aria-label="Footer">
+    <a href="/#platform">Platform Build</a>
+    <a href="/portfolio.html">Work</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/chatbot-demo.html">AI demo</a>
+    <a href="/contact.html">Contact</a>
+  </nav>
+  <div class="fcopy">© <span data-year>2026</span> KWBA Studio · Milton Keynes, UK</div>
+</footer>
+
+<script src="/assets/kwba.js"></script>
+<script>
+(function(){
+  var chips=[].slice.call(document.querySelectorAll('.chip'));
+  var ads=[].slice.call(document.querySelectorAll('.ad'));
+  var count=document.getElementById('count');
+  chips.forEach(function(chip){
+    chip.addEventListener('click',function(){
+      var f=chip.dataset.filter;
+      chips.forEach(function(c){c.setAttribute('aria-pressed',String(c===chip));});
+      var shown=0;
+      ads.forEach(function(ad){
+        var match = f==='all' || ad.dataset.cat===f;
+        ad.classList.toggle('hidden',!match);
+        if(match) shown++;
+      });
+      count.textContent = shown + ' of ' + ads.length + ' ads';
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Work — Platforms built by KWBA Studio</title>
+<meta name="description" content="Platforms built by KWBA Studio — drivingtestmatch, SQE Academy, iLearn and Kobzlenz. Real products with users, logins, payments and data.">
+<meta name="theme-color" content="#fafaf7">
+
+<meta property="og:title" content="Work — Platforms built by KWBA Studio">
+<meta property="og:description" content="drivingtestmatch, SQE Academy, iLearn and Kobzlenz — real platforms built from idea to launch.">
+<meta property="og:image" content="https://kwba-agency.com/og-image.png">
+<meta property="og:url" content="https://kwba-agency.com/portfolio.html">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://kwba-agency.com/portfolio.html">
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/favicon-k.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="/assets/kwba.css">
+
+<style>
+.work{display:flex;flex-direction:column;gap:28px}
+.project{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  overflow:hidden;display:grid;grid-template-columns:1.05fr .95fr;
+  transition:transform .4s var(--ease),box-shadow .4s var(--ease),border-color .4s;
+}
+.project:hover{transform:translateY(-4px);border-color:var(--gold-border);box-shadow:0 24px 60px rgba(26,24,20,.08)}
+.project-body{padding:44px 46px}
+.project-kicker{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.project-num{font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--gold-text)}
+.project-type{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);background:var(--gold-dim);border:1px solid var(--gold-border);padding:4px 11px;border-radius:20px;font-family:var(--display);font-weight:500}
+.project h2{font-size:clamp(26px,3.2vw,34px);margin-bottom:12px}
+.project-line{font-family:var(--display);font-size:15px;font-weight:500;color:var(--gold-text);margin-bottom:14px}
+.project p{font-size:14.5px;line-height:1.7;color:var(--ink2);margin-bottom:26px}
+.project-features{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:11px 22px;margin-bottom:28px}
+.project-features li{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;color:var(--ink2);line-height:1.5}
+.project-features li::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:7px}
+.stack{display:flex;gap:8px;flex-wrap:wrap}
+.stack span{font-size:11px;font-family:var(--display);color:var(--muted);border:1px solid var(--border);padding:5px 11px;border-radius:20px}
+
+/* Screen mock — CSS only, no image assets to go stale */
+.project-visual{position:relative;background:var(--bg2);border-left:1px solid var(--border);display:flex;align-items:center;justify-content:center;padding:44px 40px;overflow:hidden}
+.project-visual::before{content:'';position:absolute;top:-30%;right:-20%;width:420px;height:420px;background:radial-gradient(circle,rgba(176,138,46,.16) 0%,transparent 68%);pointer-events:none}
+.mock{position:relative;width:100%;max-width:340px;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 44px rgba(26,24,20,.10);overflow:hidden}
+.mock-bar{display:flex;align-items:center;gap:6px;padding:11px 14px;border-bottom:1px solid var(--border);background:var(--bg)}
+.mock-bar i{width:9px;height:9px;border-radius:50%;background:var(--border);display:block}
+.mock-bar i:first-child{background:var(--gold-light)}
+.mock-bar span{margin-left:8px;font-size:10px;color:var(--muted);font-family:var(--display);letter-spacing:.04em}
+.mock-body{padding:18px}
+.mock-row{height:9px;border-radius:5px;background:var(--bg2);margin-bottom:10px}
+.mock-row.w70{width:70%}.mock-row.w45{width:45%}.mock-row.w85{width:85%}
+.mock-row.gold{background:linear-gradient(90deg,var(--gold-light),rgba(212,184,106,.35));width:56%;height:11px}
+.mock-tiles{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
+.mock-tile{border:1px solid var(--border);border-radius:9px;padding:11px;background:var(--bg)}
+.mock-tile b{display:block;font-family:var(--display);font-size:15px;color:var(--gold-text);margin-bottom:3px}
+.mock-tile em{font-style:normal;font-size:9.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+
+.note{
+  margin-top:56px;padding:26px 28px;border-radius:var(--radius-lg);
+  background:var(--gold-dim);border:1px solid var(--gold-border);
+  font-size:14px;line-height:1.7;color:var(--ink2);
+}
+.note b{font-family:var(--display);color:var(--ink);font-weight:600}
+
+.cta-strip{text-align:center;padding:clamp(56px,8vw,92px) 32px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--gold-border);position:relative;overflow:hidden;margin-top:20px}
+.cta-strip::before{content:'';position:absolute;top:-140px;left:50%;transform:translateX(-50%);width:520px;height:280px;border-radius:50%;background:radial-gradient(closest-side,rgba(176,138,46,.16),transparent);pointer-events:none}
+.cta-strip h2{font-size:clamp(30px,4.4vw,52px);margin-bottom:16px;position:relative}
+.cta-strip p{color:var(--muted);font-size:16px;max-width:440px;margin:0 auto 32px;position:relative}
+
+@media(max-width:940px){
+  .project{grid-template-columns:1fr}
+  .project-visual{border-left:none;border-top:1px solid var(--border);order:-1;padding:32px 24px}
+  .project-body{padding:30px 24px}
+  .project-features{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="site-nav">
+  <a class="nav-logo" href="/">KWBA<span>.</span></a>
+  <div class="nav-links">
+    <a href="/#how">How it works</a>
+    <a href="/#platform">Platform Build</a>
+    <a href="/portfolio.html" aria-current="page">Work</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-cta" href="/contact.html">Book a call</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="/#how">How it works</a>
+  <a href="/#platform">Platform Build</a>
+  <a href="/portfolio.html">Work</a>
+  <a href="/blog.html">Blog</a>
+  <a href="/contact.html">Contact</a>
+</div>
+
+<main id="main">
+
+<header class="page-head">
+  <div class="page-glow"></div>
+  <div class="si">
+    <p class="slabel">Selected work</p>
+    <h1>Platforms we've <em>built.</em></h1>
+    <p class="lede">Not brochure sites — real products with users, logins and data behind them. Each one started as an idea and ended up in front of real people.</p>
+  </div>
+</header>
+
+<section class="section" style="padding-top:20px">
+  <div class="si work">
+
+    <article class="project reveal">
+      <div class="project-body">
+        <div class="project-kicker">
+          <span class="project-num">01</span>
+          <span class="project-type">Marketplace · Live</span>
+        </div>
+        <h2>drivingtestmatch</h2>
+        <p class="project-line">Learner drivers find each other and coordinate a test swap.</p>
+        <p>Learners post the test they hold and the one they want, and the platform surfaces compatible matches. Chat-first by design — contact details stay protected until both sides agree, listings expire automatically after the test date, and the DVSA still handles the actual booking. Free to browse and post; a one-off £25 unlocks messaging when you find your match.</p>
+        <ul class="project-features">
+          <li>Listing &amp; matching engine</li>
+          <li>Accounts with email and phone confirmation</li>
+          <li>Protected chat until both agree</li>
+          <li>Stripe one-off payment (£25)</li>
+          <li>Reference screenshot review</li>
+          <li>Auto-expiring listings and reporting</li>
+        </ul>
+        <div class="stack"><span>Supabase / Postgres</span><span>Serverless functions</span><span>Stripe</span><span>Netlify</span></div>
+      </div>
+      <div class="project-visual">
+        <div class="mock" aria-hidden="true">
+          <div class="mock-bar"><i></i><i></i><i></i><span>drivingtestmatch — matches</span></div>
+          <div class="mock-body">
+            <div class="mock-row gold"></div>
+            <div class="mock-row w85"></div>
+            <div class="mock-row w70"></div>
+            <div class="mock-tiles">
+              <div class="mock-tile"><b>£25</b><em>One-off</em></div>
+              <div class="mock-tile"><b>Chat</b><em>First</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="project reveal">
+      <div class="project-body">
+        <div class="project-kicker">
+          <span class="project-num">02</span>
+          <span class="project-type">Exam preparation</span>
+        </div>
+        <h2>SQE Academy</h2>
+        <p class="project-line">FLK2 preparation for the paper most candidates fail.</p>
+        <p>Built specifically for SQE1 FLK2 resitters. Candidates answer questions with a confidence rating before submitting, then get a worked explanation of why the right answer is right — plus exam technique. Full 180-question mock papers run on a server clock in halves, and an AI tutor bounded to the question being reviewed answers follow-ups without wandering off-syllabus.</p>
+        <ul class="project-features">
+          <li>Confidence-rated answering</li>
+          <li>Worked explanations + exam technique</li>
+          <li>Timed 180-question mock papers</li>
+          <li>SM-2 spaced repetition scheduling</li>
+          <li>Subject mastery &amp; mock readiness dashboard</li>
+          <li>Question-bounded AI tutor</li>
+        </ul>
+        <div class="stack"><span>Web app</span><span>Question engine</span><span>Spaced repetition</span><span>AI tutor</span></div>
+      </div>
+      <div class="project-visual">
+        <div class="mock" aria-hidden="true">
+          <div class="mock-bar"><i></i><i></i><i></i><span>sqe academy — mock paper 2</span></div>
+          <div class="mock-body">
+            <div class="mock-row gold"></div>
+            <div class="mock-row w85"></div>
+            <div class="mock-row w45"></div>
+            <div class="mock-tiles">
+              <div class="mock-tile"><b>180</b><em>Questions</em></div>
+              <div class="mock-tile"><b>80:20</b><em>Time left</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="project reveal">
+      <div class="project-body">
+        <div class="project-kicker">
+          <span class="project-num">03</span>
+          <span class="project-type">Learning platform</span>
+        </div>
+        <h2>iLearn</h2>
+        <p class="project-line">A learning platform built from the ground up.</p>
+        <p>Course material, learner accounts and progress tracking in one place, with an admin side for managing what gets published. Built and shipped to a live URL like everything else here.</p>
+        <ul class="project-features">
+          <li>Course &amp; lesson structure</li>
+          <li>Learner accounts</li>
+          <li>Progress tracking</li>
+          <li>Admin content management</li>
+        </ul>
+        <div class="stack"><span>Web app</span><span>Auth</span><span>Database</span></div>
+        <p style="margin:22px 0 0"><a class="btn-secondary" href="https://famous-sherbet-ad035a.netlify.app/ilearn.dc" target="_blank" rel="noopener">Visit iLearn
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>
+        </a></p>
+      </div>
+      <div class="project-visual">
+        <div class="mock" aria-hidden="true">
+          <div class="mock-bar"><i></i><i></i><i></i><span>ilearn — my courses</span></div>
+          <div class="mock-body">
+            <div class="mock-row gold"></div>
+            <div class="mock-row w85"></div>
+            <div class="mock-row w70"></div>
+            <div class="mock-tiles">
+              <div class="mock-tile"><b>12</b><em>Modules</em></div>
+              <div class="mock-tile"><b>68%</b><em>Complete</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="project reveal">
+      <div class="project-body">
+        <div class="project-kicker">
+          <span class="project-num">04</span>
+          <span class="project-type">Live site</span>
+        </div>
+        <h2>Kobzlenz</h2>
+        <p class="project-line">Designed, built and launched on its own domain.</p>
+        <p>Another build shipped end to end — design through to a live domain. See it for yourself.</p>
+        <div class="stack"><span>Web build</span><span>Custom domain</span><span>Live</span></div>
+        <p style="margin:22px 0 0"><a class="btn-secondary" href="https://kobzlenz.com/" target="_blank" rel="noopener">Visit kobzlenz.com
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>
+        </a></p>
+      </div>
+      <div class="project-visual">
+        <div class="mock" aria-hidden="true">
+          <div class="mock-bar"><i></i><i></i><i></i><span>kobzlenz.com</span></div>
+          <div class="mock-body">
+            <div class="mock-row gold"></div>
+            <div class="mock-row w70"></div>
+            <div class="mock-row w85"></div>
+            <div class="mock-tiles">
+              <div class="mock-tile"><b>Live</b><em>Shipped</em></div>
+              <div class="mock-tile"><b>.com</b><em>Own domain</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="si">
+    <div class="cta-strip reveal">
+      <h2>Yours could be <em>next.</em></h2>
+      <p>Tell us the idea. We'll tell you what it takes to build it — free, within 24 hours.</p>
+      <a class="btn-primary" href="/contact.html">Start a project
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="flogo">KWBA<span>.</span></div>
+  <nav class="flinks" aria-label="Footer">
+    <a href="/#platform">Platform Build</a>
+    <a href="/portfolio.html">Work</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/chatbot-demo.html">AI demo</a>
+    <a href="/brief.html">Start a brief</a>
+    <a href="/contact.html">Contact</a>
+  </nav>
+  <div class="fcopy">© <span data-year>2026</span> KWBA Studio · Milton Keynes, UK</div>
+</footer>
+
+<script src="/assets/kwba.js"></script>
+</body>
+</html>
