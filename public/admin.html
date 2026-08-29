@@ -730,7 +730,6 @@ button{cursor:pointer;font-family:var(--font-sans)}
       <div class="pghead"><div><h1 class="pgtitle">Agency <em>Settings</em></h1><p class="pgsub">System configuration</p></div></div>
       <div class="setgrid">
         <div class="setcard"><div class="sethead">Infrastructure</div>
-          <div class="fg"><label class="fl">API Key</label><input type="password" id="sk" class="fi" placeholder="sk-…"><div class="fhint">Stored locally in your browser</div></div>
           <div class="fg"><label class="fl">Backend URL</label><input type="text" id="burl" class="fi" value="https://kwba-agency.onrender.com"></div>
           <button class="btn btn-g btn-sm" onclick="saveSet()">Save</button>
         </div>
@@ -1594,7 +1593,7 @@ function renderBriefs(){
           <div><div class="bbiz">${esc(b.bizName||'Unnamed')}</div><div class="bmeta">${esc([b.contactEmail,b.location].filter(Boolean).join(' · '))}</div></div>
         </div>
         <div class="bright">
-          <span class="badge ${sc2}">${b.status||'new'}</span>
+          <span class="badge ${sc2}">${esc(b.status||'new')}</span>
           ${b.pkgName?`<span class="badge bg">${esc(b.pkgName)}</span>`:''}
           <span class="chev" id="cv${idx}">▾</span>
         </div>
@@ -1610,7 +1609,7 @@ function renderBriefs(){
         ${b.bizDesc?`<div class="bfull"><label>Description</label><p>${esc(b.bizDesc)}</p></div>`:''}
         <div class="bactions">
           <button class="btn btn-g btn-sm" onclick="openHub(${idx})">Open in AI Hub</button>
-          ${b.contactEmail?`<button class="btn btn-o btn-sm" onclick="window.open('mailto:${b.contactEmail}')">Email</button>`:''}
+          ${b.contactEmail?`<a class="btn btn-o btn-sm" href="mailto:${encodeURIComponent(b.contactEmail).replace(/%40/g,'@')}">Email</a>`:''}
           <button class="btn btn-o btn-sm" onclick="openHub(${idx});setTimeout(runCore,400)">Run Core Pipeline</button>
         </div>
       </div>
@@ -2226,7 +2225,10 @@ async function loadInbox(){
   }).join('');
 }
 // SETTINGS
-function saveSet(){const k=document.getElementById('sk').value;if(k)localStorage.setItem('API_KEY',k);const u=document.getElementById('burl').value;if(u)window.API_BASE=u;toast('Settings saved','s');}
+// The old version of this also wrote an 'API_KEY' field to localStorage. Nothing
+// ever read it — AI calls go through the server, which holds the key — so it was
+// only ever an invitation to paste a real key into browser storage.
+function saveSet(){const u=document.getElementById('burl').value;if(u)window.API_BASE=u;toast('Settings saved','s');}
 function invClient(){const e=document.getElementById('cemail').value;if(!e)return toast('Enter email','e');toast(`Invite sent to ${e}`,'s');}
 
 // ===== STAFF MANAGEMENT =====

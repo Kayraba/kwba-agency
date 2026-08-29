@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      # Dev-only toolchains (sqlite3, sharp) pull in advisories that never ship,
+      # so gate on what actually gets installed in production.
+      - run: npm audit --omit=dev --audit-level=high
