@@ -1,20 +1,30 @@
 /**
- * KWBA Agent V2 — Production-grade agent infrastructure on Gemini Flash.
+ * Agent V2 — the agency's Gemini agent endpoint, mounted alongside the older
+ * /stream-agent so the existing admin UI keeps working.
  *
- * Adds on top of the existing /stream-agent:
- *   1. SAFETY     — PII detection + output classification before save
- *   2. OBSERVABILITY — full telemetry (latency, tokens, cost, rating) per run
- *   3. MEMORY     — few-shot retrieval of past rated outputs for the same agent
- *   4. RAG        — pgvector embedding of briefs + past outputs, top-K retrieval
- *   5. TOOL USE   — Gemini function-calling: fetch_url, google_search,
- *                   lookup_companies_house, search_past_outputs
- *   6. AGENTIC    — validation loop with automatic retry on schema failures
+ * What it does beyond a plain generateContent call:
+ *   - Function calling with four tools (fetch_url, google_search,
+ *     lookup_companies_house, search_past_outputs), looped up to 4 rounds.
+ *   - Retrieval over past outputs: each saved output is embedded with
+ *     text-embedding-004 and ranked by cosine similarity, top 3 rated >=4
+ *     injected as few-shot examples.
+ *   - A per-agent output check (required sections, as regexes) with one retry
+ *     when sections are missing.
+ *   - Regex PII/banned-phrase scan before the text is returned.
+ *   - A row per run in agent_runs: latency, token counts, estimated cost.
  *
- * Designed as additive — mount alongside the legacy /stream-agent so existing
- * UI keeps working while the V2 endpoint becomes the new default.
+ * Two things this is NOT, despite the table names:
+ *   - It is not a vector database. Similarity is a JS loop over the 200 most
+ *     recent rows. pgvector gets enabled on Postgres but nothing queries it
+ *     with a vector operator, so at this corpus size it buys nothing. Rewrite
+ *     the query as `ORDER BY embedding <=> $1 LIMIT k` before the table grows.
+ *   - The output check is a regex section-presence test, not a quality eval.
+ *     It catches a truncated draft; it cannot tell a good strategy from a bad
+ *     one.
  */
 
 const fetch = require('node-fetch');
+const { safeFetch, BlockedUrlError } = require('./lib/safe-fetch');
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 const GEMINI_KEY     = process.env.GEMINI_API_KEY;
@@ -22,10 +32,14 @@ const GEMINI_MODEL   = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 const EMBED_MODEL    = 'text-embedding-004';
 const GEMINI_BASE    = 'https://generativelanguage.googleapis.com/v1beta';
 
-// Cost per 1K tokens for telemetry (Gemini 1.5 Flash, as of 2026)
-const COST_INPUT_PER_1K  = 0.000075;
-const COST_OUTPUT_PER_1K = 0.0003;
-const COST_EMBED_PER_1K  = 0.0000125;
+// Cost per 1K tokens, used only to turn token counts into a rough £/run figure
+// on the telemetry dashboard. These were copied from Gemini 1.5 Flash pricing
+// while GEMINI_MODEL defaults to 2.5-flash, so the numbers were wrong for the
+// model actually being called. Override them from the environment when pricing
+// changes rather than editing code, and treat the dashboard total as indicative
+// — Google's billing console is the source of truth.
+const COST_INPUT_PER_1K  = Number(process.env.COST_INPUT_PER_1K)  || 0.000075;
+const COST_OUTPUT_PER_1K = Number(process.env.COST_OUTPUT_PER_1K) || 0.0003;
 
 // ────────────────────────────────────────────────────────────────────────────
 // SCHEMA — additive tables, run on server boot
@@ -221,15 +235,14 @@ async function retrieveSimilar(db, isProduction, queryText, opts = {}){
     const limitClause = `LIMIT 200`;
     let sql = `SELECT id, source_type, source_id, content, content_summary, embedding, rating FROM agent_embeddings ${where} ORDER BY created_at DESC ${limitClause}`;
 
+    // SQLite has no ANY(), so filter agent_slug/rating in SQL only on Postgres
+    // and fall back to an unfiltered read plus a JS filter locally.
     let candidates;
     if (isProduction){
-      const r = await db.query(sql, args);
-      candidates = r.rows;
+      candidates = (await db.query(sql, args)).rows;
     } else {
-      // SQLite simpler path
-      const simpler = `SELECT id, source_type, source_id, content, content_summary, embedding, rating FROM agent_embeddings ORDER BY created_at DESC LIMIT 200`;
-      const r = await db.query(simpler);
-      candidates = (Array.isArray(r) ? r : r.rows || []).filter(row => {
+      const simpler = `SELECT id, source_type, source_id, content, content_summary, embedding, rating, agent_slug FROM agent_embeddings ORDER BY created_at DESC LIMIT 200`;
+      candidates = (await db.query(simpler)).rows.filter(row => {
         if (agentSlug && row.agent_slug && row.agent_slug !== agentSlug) return false;
         if (minRating > 0 && (row.rating || 0) < minRating) return false;
         return true;
@@ -270,11 +283,19 @@ const TOOLS = {
       }
     },
     handler: async ({ url }) => {
-      if (!/^https?:\/\//.test(url)) throw new Error('URL must start with http:// or https://');
-      const res = await fetch(url, {
-        headers: { 'User-Agent': 'KWBA-Agent/2.0 (compatible)' },
-        timeout: 15000,
-      });
+      // The model chooses this URL, and the brief it reasons over can come from
+      // an anonymous form — so this is the one tool call an outsider can steer.
+      // Same guard the site-check endpoints use.
+      let res;
+      try {
+        res = await safeFetch(url, {
+          headers: { 'User-Agent': 'KWBA-Agent/2.0 (compatible)' },
+          timeout: 15000,
+        });
+      } catch (e) {
+        if (e instanceof BlockedUrlError) return `Refused to fetch ${url}: ${e.message}`;
+        throw e;
+      }
       if (!res.ok) return `HTTP ${res.status} fetching ${url}`;
       const html = await res.text();
       // Strip HTML to readable text
@@ -472,8 +493,27 @@ async function callGeminiWithTools(systemPrompt, userPrompt, ctx, opts = {}){
     });
   }
 
-  // Hit max rounds — extract whatever final text we have
-  throw new Error(`Exceeded max tool-call rounds (${maxToolRounds}) without final response`);
+  // Out of tool budget. Ask once more with tools off so the model has to answer
+  // from what it already gathered — throwing here billed the caller for every
+  // round and then returned a 500 with nothing to show for it.
+  const finalRes = await fetch(`${GEMINI_BASE}/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: systemPrompt }] },
+      contents,
+      generationConfig: { temperature: 0.7, maxOutputTokens: 2400, topP: 0.95 }
+    })
+  });
+  if (!finalRes.ok) {
+    throw new Error(`Exceeded ${maxToolRounds} tool rounds and the wrap-up call failed: ${(await finalRes.text()).slice(0, 200)}`);
+  }
+  const finalData = await finalRes.json();
+  tokens.in  += finalData.usageMetadata?.promptTokenCount     || 0;
+  tokens.out += finalData.usageMetadata?.candidatesTokenCount || 0;
+  const finalText = (finalData.candidates?.[0]?.content?.parts || [])
+    .filter(pt => pt.text).map(pt => pt.text).join('');
+  return { text: finalText, tokens, toolsCalled, hitToolLimit: true };
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -538,11 +578,18 @@ function formatFewShotBlock(examples){
 // MAIN AGENT V2 ENDPOINT
 // ────────────────────────────────────────────────────────────────────────────
 function mountAgentV2(app, db, isProduction, authenticate){
-  // Initialise schema
   ensureSchema(db, isProduction);
 
+  // authenticate() only proves the token is valid — client-portal users get one
+  // too, with role 'client'. Every route here spends the agency's Gemini quota
+  // or exposes internal telemetry, so allow-list the internal roles as well.
+  // ('staff' is listed for when /create-staff stops handing out 'admin'.)
+  const STAFF_ROLES = new Set(['admin', 'staff']);
+  const staffOnly = (req, res, next) =>
+    STAFF_ROLES.has(req.user?.role) ? next() : res.status(403).json({ error: 'Staff access required' });
+
   // Main run endpoint
-  app.post('/agent-v2/run', authenticate, async (req, res) => {
+  app.post('/agent-v2/run', authenticate, staffOnly, async (req, res) => {
     const t0 = Date.now();
     const runId = 'run_' + Math.random().toString(36).slice(2, 12);
     const {
@@ -669,7 +716,7 @@ function mountAgentV2(app, db, isProduction, authenticate){
   });
 
   // Save approved output → triggers embedding for memory
-  app.post('/agent-v2/save-output', authenticate, async (req, res) => {
+  app.post('/agent-v2/save-output', authenticate, staffOnly, async (req, res) => {
     const { briefId, agentSlug, output, rating = 0 } = req.body || {};
     if (!briefId || !output) return res.status(400).json({ error: 'briefId and output required' });
     try {
@@ -678,7 +725,7 @@ function mountAgentV2(app, db, isProduction, authenticate){
         `INSERT INTO outputs (briefId, agent, output, rating) VALUES ($1, $2, $3, $4) RETURNING id`,
         [briefId, agentSlug, output, rating]
       );
-      const outputId = isProduction ? r.rows[0].id : r.lastID;
+      const outputId = r.rows[0].id;
 
       // Background embed (don't block response)
       storeEmbedding(db, isProduction, {
@@ -697,9 +744,8 @@ function mountAgentV2(app, db, isProduction, authenticate){
   });
 
   // Observability dashboard data
-  app.get('/agent-v2/telemetry', authenticate, async (req, res) => {
+  app.get('/agent-v2/telemetry', authenticate, staffOnly, async (req, res) => {
     try {
-      const since = req.query.since || "now() - interval '7 days'";
       const sql = isProduction
         ? `SELECT agent_slug,
                   COUNT(*) AS runs,
@@ -724,7 +770,7 @@ function mountAgentV2(app, db, isProduction, authenticate){
            GROUP BY agent_slug
            ORDER BY runs DESC`;
       const r = await db.query(sql);
-      const rows = isProduction ? r.rows : (Array.isArray(r) ? r : r.rows || []);
+      const rows = r.rows;
 
       // Aggregate totals
       const totals = rows.reduce((acc, row) => ({
@@ -741,10 +787,10 @@ function mountAgentV2(app, db, isProduction, authenticate){
   });
 
   // List recent safety flags
-  app.get('/agent-v2/safety-flags', authenticate, async (req, res) => {
+  app.get('/agent-v2/safety-flags', authenticate, staffOnly, async (req, res) => {
     try {
       const r = await db.query('SELECT * FROM agent_safety_flags ORDER BY created_at DESC LIMIT 50');
-      const rows = isProduction ? r.rows : (Array.isArray(r) ? r : r.rows || []);
+      const rows = r.rows;
       return res.json({ flags: rows });
     } catch(e){
       return res.status(500).json({ error: e.message });
@@ -752,7 +798,7 @@ function mountAgentV2(app, db, isProduction, authenticate){
   });
 
   // Tool availability check
-  app.get('/agent-v2/tools-status', authenticate, async (req, res) => {
+  app.get('/agent-v2/tools-status', authenticate, staffOnly, async (req, res) => {
     return res.json({
       tools: Object.keys(TOOLS),
       configured: {

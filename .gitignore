@@ -1,4 +1,13 @@
 node_modules/
 npm-debug.log*
+
+# Local dev database and uploaded files — neither belongs in the repo
+database.db
+uploads/
+
+# Secrets. .env.example is the committed template.
 .env
+.env.*
+!.env.example
+
 .DS_Store

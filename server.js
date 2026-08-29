@@ -13,12 +13,25 @@ const fetch = require("node-fetch");
 const nodemailer = require("nodemailer");
 const compression = require("compression");
 const { mountAgentV2 } = require("./agent_v2");
+const { safeFetch, BlockedUrlError } = require("./lib/safe-fetch");
 
 const app = express();
+
+// Render terminates TLS and appends the client IP to X-Forwarded-For. Without
+// this, req.ip is the proxy's address and the rate limiters below all key on
+// the same value; reading XFF by hand instead is worse, because the left-most
+// entry is whatever the caller sent. Trusting exactly one hop makes req.ip the
+// address Render observed, which is the only one a caller can't choose.
+app.set("trust proxy", 1);
+
 app.use(compression());
 // Stripe webhook signature verification needs the raw body — skip JSON parsing there
 app.use((req, res, next) => req.path === "/stripe-webhook" ? next() : express.json()(req, res, next));
-// CORS: open locally, locked to your Netlify URL in production
+// CORS: open locally, locked to the allow-list in production.
+// /public-audit used to set Access-Control-Allow-Origin:* on top of this, which
+// made an unauthenticated Gemini-backed endpoint callable from any site on the
+// internet. It now goes through this list like everything else — if the audit
+// page is hosted somewhere new, add its origin to PROSPECTOR_ORIGINS.
 app.use(cors({
   origin: (origin, callback) => {
     // Build allow-list from env vars (FRONTEND_URL, plus optional comma-separated PROSPECTOR_ORIGINS)
@@ -73,7 +86,7 @@ function makeLimiter(max, windowMs, label) {
     }
   }, 10 * 60 * 1000).unref();
   return (req, res, next) => {
-    const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+    const ip = req.ip || 'unknown';
     const now = Date.now();
     const arr = (hits.get(ip) || []).filter(t => now - t < windowMs);
     if (arr.length >= max) {
@@ -115,20 +128,40 @@ if (isProduction) {
     ssl: { rejectUnauthorized: false }
   });
 } else {
+  // The shim's job is to make local dev look exactly like Postgres to every
+  // caller: always resolve to { rows, rowCount }, never a bare array. Callers
+  // used to hedge with `isProduction ? r.rows : r`, which was wrong in dev —
+  // the shim already returned { rows } — so every one of those reads was
+  // undefined locally and the chatbot routes 404'd on a developer's machine.
+  //
+  // node-sqlite3 also has no RETURNING, which pg does, so that is emulated too.
   const sqliteDb = new sqlite3.Database("./database.db");
   db = {
-    query: (text, params) => {
+    query: (text, params = []) => {
       return new Promise((resolve, reject) => {
         const sql = text.replace(/\$(\d+)/g, "?");
         if (text.trim().toUpperCase().startsWith("SELECT")) {
           sqliteDb.all(sql, params, (err, rows) => {
             if (err) reject(err);
-            else resolve({ rows });
+            else resolve({ rows: rows || [], rowCount: (rows || []).length });
           });
         } else {
-          sqliteDb.run(sql, params, function(err) {
-            if (err) reject(err);
-            else resolve({ rows: [], lastID: this.lastID, rowCount: this.changes });
+          // node-sqlite3 has no RETURNING, so emulate it: strip the clause, run
+          // the statement, then read the inserted row back by rowid.
+          const returning = sql.match(/\bRETURNING\s+([\w\s,*]+?)\s*$/i);
+          const table = sql.match(/\bINSERT\s+(?:OR\s+\w+\s+)?INTO\s+["`]?(\w+)["`]?/i);
+          const stripped = returning ? sql.slice(0, returning.index) : sql;
+          sqliteDb.run(stripped, params, function(err) {
+            if (err) return reject(err);
+            const meta = { rowCount: this.changes, lastID: this.lastID };
+            if (!returning || !table || this.lastID == null) {
+              return resolve({ rows: [], ...meta });
+            }
+            sqliteDb.get(
+              `SELECT ${returning[1].trim()} FROM ${table[1]} WHERE rowid = ?`,
+              [this.lastID],
+              (e2, row) => resolve({ rows: e2 || !row ? [{ id: this.lastID }] : [row], ...meta })
+            );
           });
         }
       });
@@ -587,38 +620,70 @@ app.get("/analytics", authenticate, async (req, res) => {
   } catch (e) { res.status(500).send(e.message); }
 });
 
+
+// Both streaming endpoints proxy Gemini's SSE straight to the browser. Neither
+// used to check response.ok, so a 400 from Gemini was streamed to the visitor as
+// if it were a report; and both built their error frame by interpolating
+// e.message into a JSON string literal, which breaks the frame the moment the
+// message contains a quote.
+function sseError(res, message) {
+  if (!res.headersSent) res.setHeader("Content-Type", "text/event-stream");
+  res.end("data: " + JSON.stringify({ error: String(message).slice(0, 300) }) + "\n\n");
+}
+
+async function streamGemini(res, prompt, { onChunk } = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 60000);
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+        signal: controller.signal
+      }
+    );
+    if (!response.ok) {
+      // Don't forward Gemini's body — it can echo request details back.
+      console.error("Gemini stream error:", response.status, (await response.text()).slice(0, 300));
+      clearTimeout(timer);
+      return sseError(res, "AI temporarily unavailable. Please try again.");
+    }
+    await new Promise((resolve, reject) => {
+      response.body.on("data", chunk => { onChunk?.(chunk); res.write(chunk); });
+      response.body.on("end", resolve);
+      response.body.on("error", reject);
+      res.on("close", () => response.body.destroy());
+    });
+    clearTimeout(timer);
+    res.end();
+    return true;
+  } catch (e) {
+    clearTimeout(timer);
+    console.error("Gemini stream failed:", e.message);
+    sseError(res, e.name === "AbortError" ? "AI request timed out." : "AI request failed.");
+    return false;
+  }
+}
+
 // --- STREAMING AGENT PROXY ---
 app.post("/stream-agent", authenticate, async (req, res) => {
   const { prompt } = req.body;
-  const geminiKey = process.env.GEMINI_API_KEY;
+  if (!prompt || typeof prompt !== "string") return res.status(400).send("prompt required");
+  if (prompt.length > 32000) return res.status(400).send("prompt too large");
+  if (!process.env.GEMINI_API_KEY) return res.status(503).send("AI not configured");
 
-  if (!geminiKey) return res.status(500).send("Server missing Gemini Key");
-
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=${geminiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-    });
-
-    const reader = response.body;
-    reader.on('data', (chunk) => {
-      res.write(chunk);
-    });
-    reader.on('end', () => res.end());
-  } catch (e) {
-    res.end(`data: {"error": "${e.message}"}`);
-  }
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  await streamGemini(res, prompt);
 });
 
 // --- STANDARD ENDPOINTS ---
 
 app.post("/login", async (req, res) => {
-  const loginIp = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+  const loginIp = req.ip || 'unknown';
   const loginKey = 'login:' + loginIp;
   const now = Date.now();
   if (!global._loginLimits) global._loginLimits = new Map();
@@ -626,27 +691,42 @@ app.post("/login", async (req, res) => {
   if (attempts.length >= 10) return res.status(429).send("Too many login attempts. Try again in 15 minutes.");
   attempts.push(now);
   global._loginLimits.set(loginKey, attempts);
-  const { email, password } = req.body;
+  const { email, password } = req.body || {};
+  if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
+    return res.status(400).send("Email and password required");
+  }
   const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
   const user = result.rows[0];
   if (!user || !bcrypt.compareSync(password, user.password)) return res.status(401).send("Invalid");
+  // Only failed attempts should count against the limit, or a busy admin locks
+  // themselves out.
+  global._loginLimits.set(loginKey, attempts.slice(0, -1));
   const token = jwt.sign({ id: user.id, email: user.email, role: user.role, briefId: user.briefid || user.briefId }, JWT_SECRET, { expiresIn: "24h" });
   res.send({ token, role: user.role, briefId: user.briefid || user.briefId });
 });
 
 // PUBLIC INTAKE
 app.post("/public-brief", async (req, res) => {
+  // brief.html posts contactEmail/contactPhone. This used to validate cEmail and
+  // cPhone — names the form has never sent — so the check passed on every real
+  // submission and unvalidated text reached the admin dashboard. Accept both
+  // spellings so any older client keeps working.
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (req.body.cEmail && !emailRegex.test(req.body.cEmail)) {
+  const email = req.body.contactEmail || req.body.cEmail;
+  const phone = req.body.contactPhone || req.body.cPhone;
+  if (email && !emailRegex.test(String(email))) {
     return res.status(400).json({ error: 'Invalid email address' });
   }
-  if (req.body.cPhone && !/^[\d\s\+\-\(\)]{7,20}$/.test(req.body.cPhone)) {
+  if (phone && !/^[\d\s\+\-\(\)]{7,20}$/.test(String(phone))) {
     return res.status(400).json({ error: 'Invalid phone number' });
   }
   const data = JSON.stringify(req.body);
+  // The whole body is stored verbatim; without a cap an anonymous caller can
+  // write arbitrarily large rows.
+  if (data.length > 20000) return res.status(413).json({ error: 'Brief too large' });
   try {
     const result = await db.query("INSERT INTO briefs (data, status) VALUES ($1, 'new') RETURNING id", [data]);
-    const id = isProduction ? result.rows[0].id : result.lastID;
+    const id = result.rows[0].id;
     
     await logActivity("system@public", "submit_brief", "brief", id, `Public submission: ${req.body.bizName}`);
 
@@ -736,66 +816,77 @@ function checkPublicScanLimit(ip) {
   return true;
 }
 
-app.post("/public-site-scan", async (req, res) => {
-  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
-  if (!checkPublicScanLimit(ip)) return res.status(429).send("Scan limit reached — try again in an hour.");
-  let { url } = req.body;
-  if (!url || typeof url !== 'string' || url.length > 300) return res.status(400).send("url required");
-  url = url.trim();
-  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-  let host;
-  try { host = new URL(url).hostname; } catch { return res.status(400).send("Invalid URL"); }
-  if (/^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.)/i.test(host) || /\.(local|internal)$/i.test(host) ||
-      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) {
-    return res.status(400).send("Blocked host");
-  }
+
+// Shared by /public-site-scan and /api/site-check — both fetch a URL the caller
+// chose, so both need the same guard, the same byte cap and the same
+// http-fallback. It used to be copy-pasted; the copies had already drifted.
+const SITE_FETCH_CAP = 600 * 1024;
+const SITE_FETCH_TIMEOUT_MS = 9000;
+
+async function fetchSiteHtml(rawUrl) {
+  let url = rawUrl.trim();
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
   const started = Date.now();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), SITE_FETCH_TIMEOUT_MS);
+  const opts = {
+    signal: controller.signal,
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; KWBA-SiteCheck/1.0; +https://kwba-agency.onrender.com)" }
+  };
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 9000);
-    const fetchOpts = {
-      redirect: 'follow', signal: controller.signal,
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KWBA-SiteCheck/1.0; +https://kwba-agency.onrender.com)' }
-    };
     let resp;
     try {
-      resp = await fetch(url, fetchOpts);
+      resp = await safeFetch(url, opts);
     } catch (e) {
-      // Older small-business sites often have no HTTPS at all — retry plain http
-      // once. A working http-only site then correctly reports https:false.
-      if (url.startsWith('https://') && e.name !== 'AbortError') {
-        try { url = 'http://' + url.slice(8); resp = await fetch(url, fetchOpts); }
-        catch (e2) {
-          clearTimeout(timer);
-          return res.send({ ok: false, reachable: false, https: false, error: e2.name === 'AbortError' ? 'timeout' : 'unreachable', finalUrl: url });
-        }
-      } else {
-        clearTimeout(timer);
-        return res.send({ ok: false, reachable: false, https: url.startsWith('https://'), error: e.name === 'AbortError' ? 'timeout' : 'unreachable', finalUrl: url });
-      }
+      if (e instanceof BlockedUrlError) throw e;
+      // Dated small-business sites are often http-only. One retry, then give up:
+      // an http-only site then correctly reports https:false rather than "down".
+      if (!url.startsWith("https://") || e.name === "AbortError") throw e;
+      url = "http://" + url.slice(8);
+      resp = await safeFetch(url, opts);
     }
-    let received = 0; const chunks = []; const CAP = 600 * 1024;
+    let received = 0;
+    const chunks = [];
     try {
       for await (const value of resp.body) {
-        chunks.push(value); received += value.length;
-        if (received >= CAP) { resp.body.destroy(); break; }
+        chunks.push(value);
+        received += value.length;
+        if (received >= SITE_FETCH_CAP) { resp.body.destroy(); break; }
       }
-    } catch (e) { if (!chunks.length) throw e; }
+    } catch (e) { if (!chunks.length) throw e; /* keep partial content */ }
+    return {
+      html: Buffer.concat(chunks).toString("utf8"),
+      finalUrl: resp.resolvedUrl || url,
+      statusCode: resp.status,
+      pageBytes: received,
+      loadMs: Date.now() - started
+    };
+  } finally {
     clearTimeout(timer);
-    const html = Buffer.concat(chunks).toString('utf8');
-    const analysis = analyseSiteHtml(html, resp.url || url, {
-      statusCode: resp.status, pageBytes: received, loadMs: Date.now() - started
+  }
+}
+
+app.post("/public-site-scan", async (req, res) => {
+  const ip = req.ip || 'unknown';
+  if (!checkPublicScanLimit(ip)) return res.status(429).send("Scan limit reached — try again in an hour.");
+  const { url } = req.body;
+  if (!url || typeof url !== 'string' || url.length > 300) return res.status(400).send("url required");
+  try {
+    const page = await fetchSiteHtml(url);
+    const analysis = analyseSiteHtml(page.html, page.finalUrl, {
+      statusCode: page.statusCode, pageBytes: page.pageBytes, loadMs: page.loadMs
     });
     analysis.reachable = true;
-    delete analysis.emails; // don't echo harvested emails to anonymous visitors
+    delete analysis.emails; // don't echo harvested addresses to anonymous visitors
     res.send(analysis);
   } catch (e) {
-    res.send({ ok: false, reachable: false, error: 'scan-failed', finalUrl: url });
+    if (e instanceof BlockedUrlError) return res.status(400).send(e.message);
+    res.send({ ok: false, reachable: false, error: e.name === 'AbortError' ? 'timeout' : 'unreachable' });
   }
 });
 
 app.post("/public-audit", async (req, res) => {
-  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+  const ip = req.ip || 'unknown';
   if (!checkAuditRateLimit(ip)) {
     return res.status(429).send("Rate limit reached — please try again in an hour, or contact us at hello@kwba.co.uk for a full audit.");
   }
@@ -809,7 +900,7 @@ app.post("/public-audit", async (req, res) => {
   }
 
   const geminiKey = process.env.GEMINI_API_KEY;
-  if (!geminiKey) return res.status(500).send("Server missing Gemini Key");
+  if (!geminiKey) return res.status(503).send("AI not configured");
 
   // Optionally capture the lead's contact details for follow-up
   if (leadCapture && leadCapture.email) {
@@ -822,22 +913,10 @@ app.post("/public-audit", async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  res.setHeader('Access-Control-Allow-Origin', '*');
 
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?key=${geminiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-    });
-    const reader = response.body;
-    let fullStream = "";
-    reader.on('data', (chunk) => { fullStream += chunk.toString("utf8"); res.write(chunk); });
-    reader.on('end', () => { res.end(); deliverAuditEmails(fullStream, leadCapture); });
-    reader.on('error', (err) => res.end(`data: {"error": "${err.message}"}`));
-  } catch (e) {
-    res.end(`data: {"error": "${e.message}"}`);
-  }
+  let fullStream = "";
+  const ok = await streamGemini(res, prompt, { onChunk: c => { fullStream += c.toString("utf8"); } });
+  if (ok) deliverAuditEmails(fullStream, leadCapture);
 });
 
 app.get("/briefs", authenticate, async (req, res) => {
@@ -983,7 +1062,7 @@ app.get("/staff", authenticate, async (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).send("Admin access required");
   try {
     const result = await db.query("SELECT id, email, role FROM users WHERE role = 'admin' ORDER BY id ASC");
-    const rows = isProduction ? result.rows : result;
+    const rows = result.rows;
     res.send(rows);
   } catch(e) { res.status(500).send(e.message); }
 });
@@ -1019,7 +1098,7 @@ app.post("/api/places-search", authenticate, async (req, res) => {
   const { query, city, maxResults } = req.body;
   if (!query || typeof query !== 'string' || query.length < 2) return res.status(400).send("Query required");
   const placesKey = process.env.GOOGLE_PLACES_KEY;
-  if (!placesKey) return res.status(500).send("GOOGLE_PLACES_KEY not configured on server");
+  if (!placesKey) return res.status(503).send("Places search not configured");
   const limit = Math.min(parseInt(maxResults) || 50, 60);
   const searchText = city ? `${query} in ${city}, UK` : `${query} UK`;
   try {
@@ -1157,60 +1236,20 @@ function analyseSiteHtml(html, finalUrl, meta) {
 
 app.post("/api/site-check", authenticate, async (req, res) => {
   if (!checkSiteCheckLimit(req.user.id)) return res.status(429).send("Rate limit: 120 scans/hour. Wait a while.");
-  let { url } = req.body;
-  if (!url || typeof url !== 'string') return res.status(400).send("url required");
-  url = url.trim();
-  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-  let host;
-  try { host = new URL(url).hostname; } catch { return res.status(400).send("Invalid URL"); }
-  // SSRF guard: no localhost / private ranges / non-http schemes
-  if (/^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.)/i.test(host) || /\.(local|internal)$/i.test(host) ||
-      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host)) {
-    return res.status(400).send("Blocked host");
-  }
-  const started = Date.now();
+  const { url } = req.body;
+  if (!url || typeof url !== 'string' || url.length > 300) return res.status(400).send("url required");
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 9000);
-    const fetchOpts = {
-      redirect: 'follow', signal: controller.signal,
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; KWBA-Prospector/1.0; +https://kwba-agency.onrender.com)' }
-    };
-    let resp;
-    try {
-      resp = await fetch(url, fetchOpts);
-    } catch (e) {
-      // No-HTTPS sites are common among dated prospects — retry plain http once.
-      if (url.startsWith('https://') && e.name !== 'AbortError') {
-        try { url = 'http://' + url.slice(8); resp = await fetch(url, fetchOpts); }
-        catch (e2) {
-          clearTimeout(timer);
-          // A hard failure is itself a strong pitch signal (site down / unreachable).
-          return res.send({ ok: false, reachable: false, https: false, error: e2.name === 'AbortError' ? 'timeout' : 'unreachable', finalUrl: url });
-        }
-      } else {
-        clearTimeout(timer);
-        return res.send({ ok: false, reachable: false, https: url.startsWith('https://'), error: e.name === 'AbortError' ? 'timeout' : 'unreachable', finalUrl: url });
-      }
-    }
-    // Read at most ~600KB of HTML (node-fetch v2: body is a Node Readable stream)
-    let received = 0; const chunks = []; const CAP = 600 * 1024;
-    try {
-      for await (const value of resp.body) {
-        chunks.push(value); received += value.length;
-        if (received >= CAP) { resp.body.destroy(); break; }
-      }
-    } catch (e) { if (!chunks.length) throw e; /* keep partial content */ }
-    clearTimeout(timer);
-    const html = Buffer.concat(chunks).toString('utf8');
-    const analysis = analyseSiteHtml(html, resp.url || url, {
-      statusCode: resp.status, pageBytes: received, loadMs: Date.now() - started
+    const page = await fetchSiteHtml(url);
+    const analysis = analyseSiteHtml(page.html, page.finalUrl, {
+      statusCode: page.statusCode, pageBytes: page.pageBytes, loadMs: page.loadMs
     });
     analysis.reachable = true;
-    await logActivity(req.user.email, "site_check", "search", 0, `Scanned ${host}`);
+    await logActivity(req.user.email, "site_check", "search", 0, `Scanned ${new URL(page.finalUrl).hostname}`);
     res.send(analysis);
   } catch (e) {
-    res.send({ ok: false, reachable: false, error: e.message, finalUrl: url });
+    if (e instanceof BlockedUrlError) return res.status(400).send(e.message);
+    // A hard failure is itself a pitch signal (site down / unreachable).
+    res.send({ ok: false, reachable: false, error: e.name === 'AbortError' ? 'timeout' : 'unreachable' });
   }
 });
 
@@ -1229,7 +1268,7 @@ app.post("/api/outreach", authenticate, async (req, res) => {
       "INSERT INTO briefs (data, status) VALUES ($1, 'outreach') RETURNING id",
       [sequenceData]
     );
-    const id = isProduction ? result.rows[0].id : result.lastID;
+    const id = result.rows[0].id;
     await logActivity(req.user.email, "outreach_created", "brief", id, `Outreach sequence: ${prospect.name}`);
     res.send({ id, success: true });
   } catch (e) { res.status(500).send(e.message); }
@@ -1239,7 +1278,7 @@ app.post("/api/outreach", authenticate, async (req, res) => {
 app.get("/api/outreach", authenticate, async (req, res) => {
   try {
     const result = await db.query("SELECT id, data, created_at FROM briefs WHERE status = 'outreach' ORDER BY id DESC LIMIT 100");
-    const rows = isProduction ? result.rows : result;
+    const rows = result.rows;
     res.send(rows.map(r => ({ id: r.id, createdAt: r.created_at, ...JSON.parse(r.data) })));
   } catch (e) { res.status(500).send(e.message); }
 });
@@ -1249,7 +1288,7 @@ app.patch("/api/outreach/:id", authenticate, async (req, res) => {
   const { updates } = req.body;
   try {
     const result = await db.query("SELECT data FROM briefs WHERE id = $1 AND status = 'outreach'", [parseInt(req.params.id)]);
-    const rows = isProduction ? result.rows : result;
+    const rows = result.rows;
     if (!rows.length) return res.status(404).send("Not found");
     const current = JSON.parse(rows[0].data);
     const updated = { ...current, ...updates };
@@ -1285,7 +1324,7 @@ app.post("/api/kpis", authenticate, async (req, res) => {
       "INSERT INTO kpis (name, category, unit, target, direction, sort_order) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
       [String(name).trim(), category || 'growth', unit || 'number', Number(target) || 0, direction === 'down' ? 'down' : 'up', Number(sort_order) || 0]
     );
-    const id = isProduction ? result.rows[0].id : result.lastID;
+    const id = result.rows[0].id;
     await logActivity(req.user.email, "kpi_created", "kpi", id, name);
     res.send({ id, success: true });
   } catch (e) { res.status(500).send(e.message); }
@@ -1337,7 +1376,7 @@ app.post("/api/kpis/:id/entries", authenticate, async (req, res) => {
         "INSERT INTO kpi_entries (kpi_id, period, value, note) VALUES ($1, $2, $3, $4) RETURNING id",
         [kpiId, period, Number(value), note || null]
       );
-      const id = isProduction ? result.rows[0].id : result.lastID;
+      const id = result.rows[0].id;
       res.send({ id, created: true });
     }
   } catch (e) { res.status(500).send(e.message); }
@@ -1382,7 +1421,7 @@ app.post("/api/documents", authenticate, async (req, res) => {
       [String(title).trim(), client || null, doc_type || 'general', status || 'draft',
        tags || null, url || null, notes || null, owner || req.user.email, due_date || null]
     );
-    const id = isProduction ? result.rows[0].id : result.lastID;
+    const id = result.rows[0].id;
     await logActivity(req.user.email, "document_created", "document", id, title);
     res.send({ id, success: true });
   } catch (e) { res.status(500).send(e.message); }
@@ -1485,7 +1524,7 @@ function buildChatbotSystemPrompt(c) {
 // Helper to fetch a chatbot by slug
 async function getChatbotBySlug(slug) {
   const r = await db.query("SELECT * FROM chatbots WHERE slug = $1 AND status = 'active'", [slug]);
-  const rows = isProduction ? r.rows : r;
+  const rows = r.rows;
   return rows[0] || null;
 }
 
@@ -1512,9 +1551,17 @@ app.get("/api/chatbot/:slug", async (req, res) => {
 
 // PUBLIC DEMO — chat with the KWBA demo AI receptionist (no DB lookup needed)
 app.post("/api/demo-chat", aiLimiter, async (req, res) => {
-  const { messages, sessionId } = req.body;
+  const { messages } = req.body;
   if (!Array.isArray(messages) || messages.length === 0) return res.status(400).send("messages required");
   if (messages.length > 20) return res.status(400).send("Demo limited to 20 messages");
+  // The tenant chat route validated each message and this one didn't, so an
+  // absent or non-string .text reached Gemini as undefined and came back a 400.
+  for (const m of messages) {
+    if (!m || !['user', 'model'].includes(m.role) || typeof m.text !== 'string') {
+      return res.status(400).send("Invalid message format");
+    }
+    if (m.text.length > 2000) return res.status(400).send("Message too long");
+  }
 
   const geminiKey = process.env.GEMINI_API_KEY;
   if (!geminiKey) {
@@ -1584,7 +1631,7 @@ RULES:
 
 // PUBLIC — chat with the AI receptionist
 app.post("/api/chatbot/:slug/chat", aiLimiter, async (req, res) => {
-  const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+  const ip = req.ip || 'unknown';
   const { sessionId, messages } = req.body;
   if (!sessionId || typeof sessionId !== 'string') return res.status(400).send("sessionId required");
   if (!Array.isArray(messages) || messages.length === 0) return res.status(400).send("messages array required");
@@ -1605,7 +1652,7 @@ app.post("/api/chatbot/:slug/chat", aiLimiter, async (req, res) => {
   if (!chatbot) return res.status(404).send("Chatbot not found");
 
   const geminiKey = process.env.GEMINI_API_KEY;
-  if (!geminiKey) return res.status(500).send("AI not configured");
+  if (!geminiKey) return res.status(503).send("AI not configured");
 
   const systemPrompt = buildChatbotSystemPrompt(chatbot);
 
@@ -1658,7 +1705,7 @@ app.post("/api/chatbot/:slug/chat", aiLimiter, async (req, res) => {
         "SELECT id FROM chatbot_conversations WHERE chatbot_slug = $1 AND session_id = $2",
         [req.params.slug, sessionId]
       );
-      const exRows = isProduction ? existing.rows : existing;
+      const exRows = existing.rows;
       if (exRows.length) {
         await db.query(
           "UPDATE chatbot_conversations SET messages = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
@@ -1670,8 +1717,7 @@ app.post("/api/chatbot/:slug/chat", aiLimiter, async (req, res) => {
           [req.params.slug, sessionId, JSON.stringify(fullMessages), JSON.stringify({ ip, ua: req.headers['user-agent'] || '' })]
         );
         // Increment conversation counter on chatbot
-        if (isProduction) await db.query("UPDATE chatbots SET total_conversations = total_conversations + 1 WHERE slug = $1", [req.params.slug]);
-        else await db.query("UPDATE chatbots SET total_conversations = total_conversations + 1 WHERE slug = $1", [req.params.slug]);
+        await db.query("UPDATE chatbots SET total_conversations = total_conversations + 1 WHERE slug = $1", [req.params.slug]);
       }
     } catch (e) { /* logging is best-effort */ }
 
@@ -1688,7 +1734,21 @@ app.post("/api/chatbot/:slug/chat", aiLimiter, async (req, res) => {
 // or when the user fills a final form)
 app.post("/api/chatbot/:slug/lead", async (req, res) => {
   const { sessionId, lead } = req.body;
-  if (!sessionId || !lead) return res.status(400).send("sessionId and lead required");
+  if (!sessionId || typeof sessionId !== 'string' || !lead || typeof lead !== 'object') {
+    return res.status(400).send("sessionId and lead required");
+  }
+  // Anonymous, and every call emails the admin and writes two rows — so it needs
+  // its own limit. checkChatLimit is keyed on the session, which the caller
+  // picks; pair it with the IP so rotating sessionIds doesn't buy more calls.
+  if (!checkChatLimit('lead:' + req.params.slug + ':' + sessionId) ||
+      !checkChatLimit('leadip:' + (req.ip || 'unknown'))) {
+    return res.status(429).send("Too many submissions. Please wait a moment.");
+  }
+  for (const field of ['name', 'email', 'phone', 'message']) {
+    if (lead[field] != null && (typeof lead[field] !== 'string' || lead[field].length > 500)) {
+      return res.status(400).send(`Invalid ${field}`);
+    }
+  }
   const chatbot = await getChatbotBySlug(req.params.slug);
   if (!chatbot) return res.status(404).send("Chatbot not found");
 
@@ -1755,7 +1815,7 @@ app.get("/api/chatbots", authenticate, async (req, res) => {
       params = [req.user.id];
     }
     const r = await db.query(query, params);
-    const rows = isProduction ? r.rows : r;
+    const rows = r.rows;
     res.send(rows);
   } catch (e) { res.status(500).send(e.message); }
 });
@@ -1784,7 +1844,7 @@ app.post("/api/chatbots", authenticate, async (req, res) => {
   try {
     // Check slug availability
     const exists = await db.query("SELECT 1 FROM chatbots WHERE slug = $1", [slug]);
-    const exRows = isProduction ? exists.rows : exists;
+    const exRows = exists.rows;
     if (exRows.length) slug = baseSlug + '-' + Math.random().toString(36).slice(2, 8);
 
     const fields = ['slug','business_name','niche','city','phone','email','color','avatar',
@@ -1802,7 +1862,7 @@ app.post("/api/chatbots", authenticate, async (req, res) => {
       `INSERT INTO chatbots (${fields.join(',')}) VALUES (${placeholders}) RETURNING id, slug`,
       values
     );
-    const row = isProduction ? result.rows[0] : { id: result.lastID, slug };
+    const row = result.rows[0];
     await logActivity(req.user.email, 'chatbot_create', 'chatbot', row.id, b.business_name);
     res.send({ id: row.id, slug: row.slug, success: true });
   } catch (e) { res.status(500).send(e.message); }
@@ -1852,7 +1912,7 @@ app.get("/api/chatbots/:slug/conversations", authenticate, async (req, res) => {
       "SELECT id, session_id, messages, lead_captured, lead_data, visitor_meta, created_at, updated_at FROM chatbot_conversations WHERE chatbot_slug = $1 ORDER BY id DESC LIMIT 200",
       [req.params.slug]
     );
-    const rows = isProduction ? r.rows : r;
+    const rows = r.rows;
     res.send(rows);
   } catch (e) { res.status(500).send(e.message); }
 });
