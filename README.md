@@ -1,46 +1,44 @@
 # KWBA Agency Platform
 
-A Node/Express backend and a static front end for a small UK web-design agency:
-the public marketing site, an internal lead-prospecting tool, a multi-tenant AI
-receptionist sold to clients, and the admin dashboard the team runs the business
-from. One service, one database, no build step.
+The backend and front end for my web design agency. It's a Node/Express server
+plus a set of static pages covering four things: the marketing site, an internal
+tool for finding leads, an AI receptionist chatbot I sell to clients, and the
+admin dashboard I run the business from.
 
 Live at https://kwba-agency.onrender.com
 
 ## Why I built it
 
-I was running the agency and doing the same three things by hand: finding local
-businesses with weak web presence, writing the first-draft pitch for each one,
-and answering enquiries that arrived out of hours. Each of those is a small
-piece of software, so I wrote them — and then kept them in one codebase because
-they share the same login, the same database and the same Gemini key.
+I was doing the same three jobs by hand every week: finding local businesses
+with bad or missing websites, writing a first-draft pitch for each one, and
+answering enquiries that came in after hours. Each of those is a small program,
+so I wrote them. They ended up in one codebase because they share a login, a
+database and the same Gemini API key.
 
-It is also where I learned most of what I know about running a server in
-production: rate limiting that survives contact with a proxy, why a database
-abstraction has to return the same shape everywhere, and how much of "AI
-engineering" is really cost control and input validation.
+It's also where I learned most of what I know about running a server that other
+people actually use. A lot of what's in here I got wrong the first time.
 
 ## What it does
 
 - **Prospector** — searches Google Places for businesses in a category and area,
-  then fetches each one's website server-side and scores its web presence (TLS,
-  mobile viewport, page weight, analytics, forms, schema, social links).
-- **AI receptionist** — a per-client chatbot. Each tenant's configuration
-  (services, pricing, hours, what they will not do) is compiled into a system
-  prompt; the widget is a single embeddable script tag.
-- **Lead audit funnel** — a visitor enters their URL on the homepage, gets a real
-  scan of their site, and can request an AI-written audit that is streamed back
-  and emailed to them.
-- **Admin dashboard** — briefs, pipeline, invoices, KPIs and a document tracker.
-- **Agent runner** (`/agent-v2`) — the drafting agent, with tool calling,
-  retrieval over past outputs, and per-run token/cost telemetry.
+  then fetches each one's website and scores it (HTTPS, mobile viewport, page
+  size, analytics, contact forms, schema, social links).
+- **AI receptionist** — a chatbot per client. Their services, pricing, hours and
+  what they won't do get turned into a system prompt. Clients embed it with one
+  script tag.
+- **Audit funnel** — a visitor puts their URL in on the homepage, gets a real
+  scan of their site, and can ask for an AI-written audit that streams back and
+  gets emailed to them.
+- **Admin dashboard** — briefs, pipeline, invoices, KPIs, document tracking.
+- **Agent runner** (`/agent-v2`) — the drafting agent, with tool calling and
+  token/cost logging per run.
 
 ## Tech stack
 
-Node 22, Express 5, PostgreSQL (SQLite locally), JWT + bcrypt, Google Gemini
-2.5 Flash, Google Places API, Cloudinary, Nodemailer. The front end is plain
-HTML, CSS and JavaScript — 23 pages, no framework and no bundler. Tests use
-Node's built-in `node:test`. Deployed on Render from `render.yaml`.
+Node 22, Express 5, PostgreSQL in production and SQLite locally, JWT and bcrypt
+for auth, Gemini 2.5 Flash, Google Places, Cloudinary, Nodemailer. The front end
+is plain HTML, CSS and JavaScript — 23 pages, no framework, no build step. Tests
+use Node's built-in test runner. Hosted on Render.
 
 ## Architecture
 
@@ -48,161 +46,164 @@ Node's built-in `node:test`. Deployed on Render from `render.yaml`.
 public/            static pages + the embeddable widget, served by Express
   assets/          shared CSS/JS
 server.js          50 routes: auth, briefs, prospector, chatbots, KPIs, docs
-agent_v2.js        5 routes: the tool-calling agent + its telemetry
-lib/safe-fetch.js  outbound URL guard shared by everything that fetches a URL
-test/              node:test unit + integration tests
+agent_v2.js        5 routes: the tool-calling agent + telemetry
+lib/safe-fetch.js  URL guard, used anywhere the server fetches a URL
+test/              unit + integration tests
 ```
 
-One Express process serves the API and the static files, so there is no CORS
-problem in production and nothing to deploy separately. `public/` is the only
-directory exposed to the web.
+One Express process serves both the API and the static files. That means no
+CORS setup in production and only one thing to deploy. `public/` is the only
+folder exposed to the web.
 
-The database is Postgres on Render and SQLite locally. `server.js` picks based
-on whether `DATABASE_URL` is set, and the SQLite path is a shim that translates
-`$1` placeholders to `?` and emulates `RETURNING` by reading the row back by
-rowid. Sixteen tables, created on boot with `CREATE TABLE IF NOT EXISTS` plus a
-short list of `ALTER TABLE` migrations.
+For the database, `server.js` uses Postgres if `DATABASE_URL` is set and SQLite
+if it isn't. The SQLite side is a small wrapper that swaps `$1` placeholders for
+`?` and fakes `RETURNING` by reading the row back by rowid. 16 tables, created
+on boot with `CREATE TABLE IF NOT EXISTS`, plus a couple of `ALTER TABLE` lines
+for columns I added later.
 
-## Key engineering decisions
+## Decisions I made and why
 
-**One server instead of separate services.** At this size the split would cost
-more than it buys: a second deployment, cross-origin config, and a second cold
-start on Render's free tier. `STRUCTURE.md` maps which file belongs to which
-product, which is the part that actually needed solving.
+**One server, not several.** Splitting this up would mean a second deploy, CORS
+config between them and another cold start on Render's free tier, and I'd get
+almost nothing back at this size. What actually needed solving was knowing which
+file does what, which is what `STRUCTURE.md` is for.
 
-**No front-end framework.** The pages are mostly forms and tables that are
-loaded once. React would add a build step and a bundle to every page for
-behaviour that `fetch` and template literals already cover. The cost of this
-choice is real and visible: `admin.html` is large, and rendering goes through
-`innerHTML` with a manual escape helper, which is exactly the kind of thing a
-framework would have made safe by default.
+**No front-end framework.** The pages are mostly forms and tables that load
+once. React would mean a build step to maintain and a bundle on every page. The
+downside is real though — `admin.html` is about 5,000 lines and I render
+everything with `innerHTML` and a manual escape function, which is the kind of
+thing React would have handled for me.
 
-**The database shim returns pg's shape everywhere.** It previously resolved to
-`{ rows }` while call sites hedged with `isProduction ? result.rows : result` —
-so in local development those reads were `undefined` and every chatbot route
-404'd on my own machine. The fix was to make the shim's contract identical in
-both backends and delete all fifteen hedges. An abstraction that behaves
-differently per environment is not an abstraction.
+**Making the SQLite wrapper return the same shape as Postgres.** This one was a
+bug I'd been living with. The wrapper resolved to `{ rows }`, same as `pg`, but
+I had 15 call sites written as `isProduction ? result.rows : result` — so
+locally those came back undefined and every chatbot route 404'd on my own
+machine. It worked in production so I never chased it properly, I just worked
+around it wherever it bit me. Fixing it meant changing the wrapper once instead
+of 15 call sites.
 
-**Rate limiting keys on `req.ip` with `trust proxy` set.** The limiters used to
-read the left-most entry of `X-Forwarded-For`, which is whatever the caller
-sent — so every limit on the service, including the ones protecting the Gemini
-key, could be bypassed with one header. Render appends the real client IP, so
-trusting exactly one hop makes `req.ip` the value a caller cannot choose.
+**Rate limiting on `req.ip` with `trust proxy` set.** I was reading the first
+entry of `X-Forwarded-For` to get the client IP. That entry is whatever the
+caller sends, so anyone could reset their own rate limit with one header —
+including on the endpoints that cost me money. Render appends the real IP rather
+than replacing the header, so `trust proxy` tells Express how far to look and
+`req.ip` gives the right value.
 
-**One outbound URL guard, in one file.** Three places fetch a URL somebody else
-chose. Two had a hostname regex; the agent's `fetch_url` tool had nothing.
-`lib/safe-fetch.js` resolves the hostname and checks the resulting addresses,
-re-checks on every redirect hop, and refuses non-HTTP schemes.
+**One URL guard in one file.** Three places fetch a URL that someone else
+picked. Two had the same hostname regex copy-pasted between them, and the
+agent's `fetch_url` tool had nothing at all. `lib/safe-fetch.js` resolves the
+hostname and checks the IPs it comes back with, checks again on every redirect,
+and refuses anything that isn't http or https.
 
 ## AI
 
-**Model.** Gemini 2.5 Flash for all generation, `text-embedding-004` for
-retrieval. Flash because these are short, high-volume, latency-visible calls
-where quality per pound matters more than peak capability.
+**Model.** Gemini 2.5 Flash for everything, `text-embedding-004` for
+embeddings. Flash because these are short calls where the user is waiting, and
+the cost per call matters more to me than getting the best possible output.
 
-**Flow.** The chatbot compiles a tenant's row into a system prompt, sends the
-conversation as `system_instruction` plus `contents`, and reads one reply. The
-audit endpoint streams `streamGenerateContent` straight to the browser so the
-visitor sees text immediately, buffers it server-side, and emails the finished
-report.
+**How it works.** The chatbot builds a system prompt from the client's row in
+the database, sends the conversation as `system_instruction` plus `contents`,
+and returns one reply. The audit endpoint streams `streamGenerateContent`
+straight through to the browser so text appears immediately, keeps a copy
+server-side, and emails the finished report.
 
-**Structured output.** The receptionist signals a captured lead by ending its
-reply with `[LEAD_CAPTURED]`, which the server strips before returning. This is
-a sentinel, not schema-constrained decoding: it works, but it is guessable from
-the response and the model can forget it. Gemini's structured-output mode is the
-right fix and is in Future improvements.
+**Structured output.** The receptionist tells me it's captured a lead by ending
+its reply with `[LEAD_CAPTURED]`, which I strip before sending the reply on.
+It works but it isn't great — the model sometimes forgets, and someone could
+guess the string. Gemini has a structured output mode that would do this
+properly and I haven't moved to it yet.
 
 **Grounding.** The agent has four tools (`fetch_url`, `google_search`,
-`lookup_companies_house`, `search_past_outputs`), looped for up to four rounds.
-Past outputs rated 4+ are embedded and the closest three are injected as
-few-shot examples.
+`lookup_companies_house`, `search_past_outputs`) and loops up to four times.
+Outputs I rated 4 or 5 get embedded, and the closest three go into the prompt as
+examples.
 
-**Cost and abuse control.** Every AI route is rate limited, message count and
-length are capped, `maxOutputTokens` is set, and each agent run records token
-counts and an estimated cost. The estimate is indicative — the pricing constants
-are environment-overridable and Google's billing console is the source of truth.
+**Cost control.** Every AI route is rate limited, message count and length are
+capped, `maxOutputTokens` is set, and each agent run writes its token counts and
+an estimated cost to the database. The cost figure is rough — the price
+constants are env vars and the real number is in Google's billing console.
 
-**Limits I know about.** The "vector store" is a JS cosine loop over the 200 most
-recent rows; pgvector is enabled but nothing queries it with a vector operator,
-which is fine at this corpus size and wrong later. The output check is a regex
-test for required sections — it catches a truncated draft, not a bad argument.
-There is no retry with backoff on Gemini 429/503 yet. Conversation history is
-sent by the client, so a caller can forge the assistant's turns; nothing
-downstream trusts it, but a server-side transcript would be better.
+**Things I know aren't right yet.** The similarity search is a JavaScript loop
+over the 200 most recent rows. I turn on pgvector but never actually query it
+with a vector operator, so it isn't doing anything — at this size the loop is
+fine, but I'd need to fix that before the table gets big. The output check is
+just regexes looking for required section headings, so it spots a cut-off draft
+and nothing about whether the writing is any good. There's no retry when Gemini
+returns a 429. And the conversation history comes from the client, so someone
+could fake what the bot said earlier — nothing important depends on it, but
+keeping it server-side would be better.
 
-## Challenges
+## Problems I ran into
 
-The one that took longest was rate limiting that actually limits. I had five
-in-memory limiters and believed the AI endpoints were protected, until I looked
-at how the IP was derived and realised the key came from a request header. That
-is the kind of bug that reads as working code in every test you think to write.
+Rate limiting took the longest, mostly because I thought it was done. I had five
+limiters and assumed the AI endpoints were covered. It wasn't until I looked at
+where the IP came from that I realised the key was a header the caller sets. It
+looked like working code and every test I'd have thought to write would have
+passed.
 
-The SQLite/Postgres shim was the same class of problem in a different place. It
-worked in production, so the mismatch showed up only as chatbot routes that
-"didn't work locally" — which I had worked around per call site instead of
-fixing once at the boundary.
+The SQLite and Postgres mismatch was the same sort of thing somewhere else.
+Production was fine, so all I ever saw was "the chatbot doesn't work locally",
+and I patched around it each time instead of fixing the wrapper.
 
-The public site scanner also has to survive the real web: sites that are HTTPS
-in DNS but only answer on HTTP, pages that never finish loading, and responses
-large enough to exhaust memory. It caps at 600KB, times out at nine seconds, and
-falls back to HTTP once — and a hard failure is recorded as a signal rather than
-an error, because a prospect whose site is down is a prospect worth calling.
+The site scanner has to deal with the actual web, which is messier than I
+expected: sites that are HTTPS in DNS but only answer on HTTP, pages that never
+finish loading, and responses big enough to be a problem. It stops at 600KB,
+gives up after nine seconds, and retries once over HTTP. A site that's
+completely down gets recorded as a signal rather than an error, because that's
+a business worth ringing.
 
 ## What I learned
 
-- Where a value comes from matters more than what it looks like. A client-set
-  header, a client-set session ID and a client-set system prompt all look like
-  ordinary variables at the call site.
-- Duplicated logic drifts silently. The two copies of the site-fetch code had
-  already diverged, and the third place that needed the guard never got it.
-- Tests are worth most on the seams. The unit tests here cover pure functions,
-  but the bugs worth catching lived in the boundary between two database
-  backends — so the integration tests boot the real server against a temporary
-  SQLite file.
-- Writing down what a system does *not* do is more useful than describing what
-  it does. Naming a table `agent_embeddings` does not make it a vector database.
+- Where a value comes from matters more than what it looks like. A header the
+  client sets, a session ID the client picks and a system prompt the client
+  sends all look like normal variables when you're reading the code.
+- Copy-pasted code drifts. My two copies of the site-fetch logic had already
+  gone out of sync, and the third place that needed the same guard never got it.
+- Tests are worth the most at the joins between things. The unit tests here
+  cover simple functions, but the bugs that mattered were at the boundary
+  between two databases, so the integration tests start the real server against
+  a temporary SQLite file.
+- Writing down what something doesn't do is more useful than listing what it
+  does, and it's less embarrassing than being asked about it later.
 
-## Running locally
+## Running it locally
 
-Requires Node 18+ (developed on 22).
+Node 18 or newer (I'm on 22).
 
 ```bash
 npm install
-cp .env.example .env      # GEMINI_API_KEY is the only one needed for the AI routes
+cp .env.example .env      # GEMINI_API_KEY is the only one the AI routes need
 npm run dev
 ```
 
-Then open http://localhost:3000. With no `DATABASE_URL` the server creates
-`database.db` (SQLite) in the working directory and seeds an admin user from
-`ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+Open http://localhost:3000. With no `DATABASE_URL` it makes a `database.db`
+SQLite file in the working directory and creates an admin user from
+`ADMIN_EMAIL` and `ADMIN_PASSWORD`.
 
-Without `GEMINI_API_KEY` everything still runs; the demo chat returns canned
+Without `GEMINI_API_KEY` everything still runs — the demo chat gives canned
 replies and the other AI routes return 503. The server logs which optional
-variables are missing on boot.
+variables are missing when it starts.
 
 ```bash
-npm test                  # 32 tests, no external services required
+npm test                  # 32 tests, nothing external needed
 npm audit --omit=dev      # what actually ships
 ```
 
-## Deployment
+## Deploying
 
-Render, from `render.yaml`: one web service plus a Postgres instance. Pushing to
-`main` deploys. `JWT_SECRET` is generated by Render and the server refuses to
-boot in production without it; `GEMINI_API_KEY`, `GOOGLE_PLACES_KEY`,
-`ADMIN_PASSWORD` and the SMTP and Cloudinary credentials are set in the
-dashboard.
+Render, from `render.yaml` — one web service and a Postgres database. Pushing to
+`main` deploys it. Render generates `JWT_SECRET` and the server won't start in
+production without one. `GEMINI_API_KEY`, `GOOGLE_PLACES_KEY`, `ADMIN_PASSWORD`
+and the SMTP and Cloudinary settings go in the dashboard.
 
-## Future improvements
+## Things I'd do next
 
-- Replace the `[LEAD_CAPTURED]` sentinel with Gemini's structured output mode.
-- Retry with exponential backoff on Gemini 429/503; right now one 429 is one
-  failed request.
-- Query pgvector with `ORDER BY embedding <=> $1 LIMIT k` instead of ranking in
-  JavaScript, before the corpus outgrows a 200-row scan.
-- Move rate-limit state to Postgres or Redis. It is per-process, so it resets on
-  every deploy and would not hold across a second instance.
-- Split `admin.html` into modules and render through `textContent` rather than
-  `innerHTML` with a manual escape helper.
-- Server-side conversation state for the chatbot, so history is not client-supplied.
+- Use Gemini's structured output instead of the `[LEAD_CAPTURED]` string.
+- Retry with backoff on 429 and 503. At the moment one rate-limit response is
+  just a failed request for the user.
+- Query pgvector properly (`ORDER BY embedding <=> $1 LIMIT k`) instead of
+  ranking in JavaScript, before 200 rows stops being enough.
+- Move the rate limit counters out of process memory. They reset on every deploy
+  and wouldn't work at all if I ran two instances.
+- Break up `admin.html` and stop rendering through `innerHTML`.
+- Keep the chatbot conversation on the server instead of trusting the client.
