@@ -163,13 +163,13 @@ If you ever want to extract one product (e.g. sell the Lead Platform to other ag
 
 ---
 
-## Not part of the Render deployment — `pwos/`
+## Not in this repository — PWOS
 
-`pwos/` is a separate application: the **Personal Wealth Operating System**, a
-single-user finance dashboard built on Next.js, Supabase and Postgres. It has
-its own `package.json`, its own lockfile and its own deployment on Vercel, and
-it shares nothing with the Express server above.
+The **Personal Wealth Operating System**, a single-user finance dashboard, was
+built here in a `pwos/` subdirectory and now lives in its own repository at
+`Kayraba/pwos`. It is a Next.js app on Supabase and Vercel and shares no code,
+no dependencies and no deployment with the Express server above.
 
-The Render build only ever looks at the repository root, so nothing in `pwos/`
-affects the agency deployment. See `pwos/README.md` for how to run and deploy
-it, and `pwos/docs/adr/` for the decisions behind it.
+Its history moved with it, so `git log` in the new repository reaches back to
+the first commit. Nothing here depends on it, and the Render build never looked
+at it.
