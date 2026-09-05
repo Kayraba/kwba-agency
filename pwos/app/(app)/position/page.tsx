@@ -7,26 +7,27 @@ import { Card, CardHeader } from '@/components/ui/Card'
 import { Meter } from '@/components/ui/Meter'
 import { Money } from '@/components/ui/Money'
 import { EmptyState } from '@/components/ui/States'
-import { pickDefaultAccount, sumAccounts } from '@/features/accounts/derive'
+import { pickDefaultAccount } from '@/features/accounts/derive'
 import { listAccounts } from '@/features/accounts/service'
-import { headroom, overdraftUsed } from '@/features/analytics/calc'
-import { getProfile } from '@/features/profile/service'
 import { listCategoriesByRecentUse } from '@/features/categories/service'
+import { AffordabilityChecker } from '@/features/position/components/AffordabilityChecker'
+import { ForecastPanel } from '@/features/position/components/ForecastPanel'
+import { getPositionView } from '@/features/position/service'
+import { getProfile } from '@/features/profile/service'
 import { QuickAdd } from '@/features/transactions/components/QuickAdd'
-import { monthTotals } from '@/features/transactions/service'
 import { requireUser } from '@/lib/auth'
 import { formatMonth, monthOf, today } from '@/lib/dates'
-import { ratio } from '@/lib/money'
+import { formatMoney } from '@/lib/money'
 
 export const metadata: Metadata = { title: 'Position' }
 
 /**
  * Where you stand, right now.
  *
- * Phase 1 shows only what the ledger can prove: the balance, the overdraft
- * headroom, and this month's flow. The affordability check, the burn rate and
- * the clearance projection need recurring rules and a budget, which are phase 2.
- * Showing them now would mean showing a number with nothing behind it.
+ * Answers the three questions from the brief in the order they get asked: can I
+ * spend this, did the month go the way I planned, and what is coming. Every
+ * calculated figure is marked as calculated and can say what produced it; every
+ * one that the data cannot support says so instead of guessing.
  */
 export default async function PositionPage() {
   const user = await requireUser()
@@ -34,15 +35,12 @@ export default async function PositionPage() {
   const now = today(profile.timezone)
   const month = monthOf(now)
 
-  const [accounts, thisMonth, categoriesOut, categoriesIn] = await Promise.all([
+  const [view, accounts, categoriesOut, categoriesIn] = await Promise.all([
+    getPositionView(user.id, now),
     listAccounts(user.id),
-    monthTotals(user.id, month),
     listCategoriesByRecentUse(user.id, 'out'),
     listCategoriesByRecentUse(user.id, 'in'),
   ])
-
-  const position = sumAccounts(accounts)
-  const defaultAccount = pickDefaultAccount(accounts)
 
   if (accounts.length === 0) {
     return (
@@ -61,101 +59,178 @@ export default async function PositionPage() {
     )
   }
 
-  const used = overdraftUsed(position.balanceMinor)
-  const available = headroom(position.balanceMinor, position.overdraftLimitMinor)
-  const usedRatio =
-    position.overdraftLimitMinor > 0 ? ratio(used, position.overdraftLimitMinor) : null
+  const { summary } = view
+  const defaultAccount = pickDefaultAccount(accounts)
 
   return (
     <>
-      <AppHeader title="Position" subtitle={`${formatMonth(month)} so far`} />
+      <AppHeader title="Position" subtitle={formatMonth(month)} />
 
       <div className="space-y-4 px-4">
+        {/* ---------------------------------------------------------- hero */}
         <Card className="p-5">
           <p className="text-xs font-medium tracking-wide text-ink-muted uppercase">
-            Across {accounts.length} account{accounts.length === 1 ? '' : 's'}
+            Across {view.accountCount} account{view.accountCount === 1 ? '' : 's'}
           </p>
           <p className="mt-1">
             <Money
-              minor={position.balanceMinor}
+              minor={summary.balanceMinor}
               calculated
               source="Every account's opening balance plus every transaction against it"
               className="text-4xl font-semibold"
             />
           </p>
 
-          {position.overdraftLimitMinor > 0 ? (
-            <div className="mt-5 space-y-3">
+          {summary.overdraftLimitMinor > 0 ? (
+            <div className="mt-5 space-y-2">
               <Meter
-                value={usedRatio}
-                tone={usedRatio !== null && usedRatio > 0.75 ? 'negative' : 'warn'}
+                value={summary.overdraftRatio}
+                tone={
+                  summary.overdraftRatio !== null && summary.overdraftRatio > 0.75
+                    ? 'negative'
+                    : 'warn'
+                }
                 label="Overdraft used"
                 detail={
                   <>
-                    <Money minor={used} tone="neutral" compactZeros /> of{' '}
-                    <Money minor={position.overdraftLimitMinor} tone="neutral" compactZeros />
+                    <Money minor={summary.overdraftUsedMinor} tone="neutral" compactZeros /> of{' '}
+                    <Money minor={summary.overdraftLimitMinor} tone="neutral" compactZeros />
                   </>
                 }
               />
               <p className="text-sm text-ink-muted">
-                Headroom before the limit:{' '}
+                Headroom:{' '}
                 <Money
-                  minor={available}
-                  tone={available > 0 ? 'positive' : 'negative'}
+                  minor={summary.headroomMinor}
+                  tone={summary.headroomMinor > 0 ? 'positive' : 'negative'}
                   calculated
                   source="Balance plus the arranged overdraft limit"
                 />
+                {summary.runwayDays !== null ? (
+                  <>
+                    {' · '}
+                    <span
+                      className="calculated tabular"
+                      title={`Headroom divided by ${formatMoney(
+                        Math.round(summary.burnPerDay ?? 0),
+                      )} a day, your average over the last ${view.burnWindowDays} days`}
+                    >
+                      {summary.runwayDays} {summary.runwayDays === 1 ? 'day' : 'days'}
+                    </span>{' '}
+                    at your current rate
+                  </>
+                ) : null}
               </p>
             </div>
           ) : null}
         </Card>
 
-        <Card>
-          <CardHeader
-            title={`${formatMonth(month)} so far`}
-            hint="Recorded transactions only. Nothing here is a forecast."
-          />
-          <dl className="grid grid-cols-3 gap-3 p-4">
-            <div>
-              <dt className="text-xs text-ink-muted">In</dt>
-              <dd className="mt-0.5">
-                <Money minor={thisMonth.inMinor} tone="positive" compactZeros />
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs text-ink-muted">Out</dt>
-              <dd className="mt-0.5">
-                <Money minor={thisMonth.outMinor} tone="negative" compactZeros />
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs text-ink-muted">Net</dt>
-              <dd className="mt-0.5">
-                <Money
-                  minor={thisMonth.inMinor - thisMonth.outMinor}
-                  signed
-                  compactZeros
-                  calculated
-                  source="This month's income minus this month's spending"
-                />
-              </dd>
-            </div>
-          </dl>
-          {thisMonth.fixedOutMinor > 0 ? (
-            <p className="px-4 pb-4 text-xs text-ink-muted">
-              Of that, <Money minor={thisMonth.fixedOutMinor} tone="neutral" compactZeros /> went on
-              fixed costs.
-            </p>
-          ) : null}
+        {/* ------------------------------------------------- affordability */}
+        <Card className="p-4">
+          <AffordabilityChecker summary={summary} />
         </Card>
 
-        <Card className="p-4">
-          <p className="text-sm text-ink-muted">
-            Burn rate, runway, the affordability check and a clearance date need recurring rules and
-            a monthly budget behind them. Those arrive in the next phase — until then this screen
-            shows only what the ledger can prove.
-          </p>
+        {/* ------------------------------------------------------ the plan */}
+        <Card>
+          <CardHeader
+            title="The month, as planned"
+            hint="From your recurring rules and this month's budgets — not from what has happened yet."
+            action={
+              <Link
+                href="/money/recurring"
+                className="text-sm text-accent underline underline-offset-4"
+              >
+                Edit
+              </Link>
+            }
+          />
+
+          {!view.hasCommitments && !view.hasBudget ? (
+            <div className="px-4 pt-2 pb-4">
+              <p className="text-sm text-ink-muted">
+                There is no plan behind this yet. Add your wages and your rent as recurring rules,
+                then set a budget for the categories you actually choose to spend on. Until then
+                there is no surplus to work out, and this screen will not invent one.
+              </p>
+              <div className="mt-3 flex gap-2">
+                <Link href="/money/recurring">
+                  <Button variant="secondary">Recurring rules</Button>
+                </Link>
+                <Link href="/money/budgets">
+                  <Button variant="secondary">Budgets</Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <>
+              <dl className="divide-y divide-border border-t border-border">
+                <FlowRow label="Income" minor={summary.incomeMinor} tone="positive" />
+                <FlowRow label="Fixed costs" minor={-summary.fixedCostsMinor} />
+                <FlowRow label="Subscriptions" minor={-summary.subscriptionsMinor} />
+                <FlowRow label="Day-to-day budget" minor={-summary.variableBudgetMinor} />
+                <div className="flex items-baseline justify-between gap-4 px-4 py-3">
+                  <dt className="text-sm font-semibold text-ink">Surplus</dt>
+                  <dd>
+                    <Money
+                      minor={summary.surplusMinor}
+                      signed
+                      calculated
+                      source="Income less fixed costs, subscriptions and your day-to-day budget"
+                      className="text-lg font-semibold"
+                    />
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="px-4 pt-3 pb-4">
+                {summary.clearanceMonth ? (
+                  <p className="text-sm text-ink-muted">
+                    At that rate the overdraft clears in{' '}
+                    <span className="calculated font-medium text-ink" title="Overdraft used divided by the monthly surplus, rounded up">
+                      {formatMonth(summary.clearanceMonth)}
+                    </span>{' '}
+                    — {summary.monthsToClear}{' '}
+                    {summary.monthsToClear === 1 ? 'month' : 'months'} away.
+                  </p>
+                ) : summary.clearanceBlockedBy === 'nothing-to-clear' ? (
+                  <p className="text-sm text-positive">
+                    Nothing to clear — you are not using the overdraft.
+                  </p>
+                ) : (
+                  <p className="text-sm text-negative">
+                    No clearance date: the plan does not leave a surplus, so there is nothing to
+                    put towards the overdraft. A date worked out from a negative surplus would be
+                    wrong in the direction that feels good, so there isn't one.
+                  </p>
+                )}
+              </div>
+            </>
+          )}
         </Card>
+
+        {/* ------------------------------------------------------ forecast */}
+        {view.forecast.length > 0 ? (
+          <Card>
+            <CardHeader
+              title="Coming up"
+              hint={
+                view.forecastTotals.dueCount > 0
+                  ? `${view.forecastTotals.dueCount} payment${
+                      view.forecastTotals.dueCount === 1 ? '' : 's'
+                    } past due and not logged.`
+                  : 'This month and next, from your recurring rules.'
+              }
+            />
+            <div className="mt-2 border-t border-border">
+              <ForecastPanel forecast={view.forecast} today={now} />
+            </div>
+          </Card>
+        ) : null}
+
+        <p className="pb-2 text-center text-xs text-ink-faint">
+          Dotted underlines mark figures PWOS worked out. Everything else is something you
+          recorded. Nothing here is financial advice.
+        </p>
       </div>
 
       {defaultAccount ? (
@@ -172,5 +247,24 @@ export default async function PositionPage() {
         />
       ) : null}
     </>
+  )
+}
+
+function FlowRow({
+  label,
+  minor,
+  tone,
+}: {
+  label: string
+  minor: number
+  tone?: 'positive' | 'negative'
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 px-4 py-2.5">
+      <dt className="text-sm text-ink-muted">{label}</dt>
+      <dd>
+        <Money minor={minor} tone={tone ?? 'auto'} compactZeros />
+      </dd>
+    </div>
   )
 }

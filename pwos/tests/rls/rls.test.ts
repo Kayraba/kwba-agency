@@ -198,11 +198,56 @@ describe.skipIf(!configured)('row level security', () => {
     expect(data).toHaveLength(1)
   })
 
+  it('refuses to log the same recurring occurrence twice', async () => {
+    // The unique index from migration 0002 is what makes confirming a forecast
+    // idempotent. Without it, a double tap logs the rent twice.
+    const { data: rule } = await alice.client
+      .from('recurring_rules')
+      .select('id, account_id')
+      .eq('user_id', alice.id)
+      .single()
+
+    const occurrence = {
+      user_id: alice.id,
+      account_id: rule!.account_id,
+      direction: 'out',
+      amount_minor: 55_000,
+      occurred_on: '2026-04-01',
+      source: 'recurring',
+      recurring_rule_id: rule!.id,
+    }
+
+    const { error: first } = await alice.client.from('transactions').insert(occurrence)
+    expect(first).toBeNull()
+
+    const { error: second } = await alice.client.from('transactions').insert(occurrence)
+    expect(second?.code).toBe('23505')
+
+    // A different date from the same rule is fine.
+    const { error: other } = await alice.client
+      .from('transactions')
+      .insert({ ...occurrence, occurred_on: '2026-05-01' })
+    expect(other).toBeNull()
+  })
+
+  it('will not let a category be a subscription without being fixed', async () => {
+    const { error } = await alice.client.from('categories').insert({
+      user_id: alice.id,
+      name: 'Impossible',
+      direction: 'out',
+      is_fixed: false,
+      is_subscription: true,
+    })
+    // 23514: check constraint violation.
+    expect(error?.code).toBe('23514')
+  })
+
   it('keeps the ledger append-only even for the owner', async () => {
     const { data: row } = await alice.client
       .from('transactions')
       .select('id, amount_minor')
       .eq('user_id', alice.id)
+      .is('recurring_rule_id', null)
       .single()
 
     const { error } = await alice.client

@@ -9,26 +9,43 @@ and stops there.
 
 ## What works today
 
+Phases 0 to 2 are built.
+
 - Magic-link sign in, restricted to one email address, checked on every request.
 - A protected mobile shell with bottom navigation, dark and light themes, and a
   numeric keypad wherever numbers are typed.
 - Accounts: create, edit, archive, delete, with opening balance and overdraft
   limit. Balances are derived from the ledger, never stored.
-- Categories: seeded defaults on first sign-in, plus full management, with a
-  `fixed` flag that keeps committed costs out of the day-to-day budget.
+- Categories: seeded defaults on first sign-in, plus full management, with
+  `fixed` and `subscription` flags.
 - Quick add: open, type, tap a category, log. Three taps, under five seconds.
 - The ledger: grouped by month with running totals, filtered by month and
   category, void-and-correct instead of edit.
-- Position: balance, overdraft headroom and this month's flow — recorded facts
-  only. Burn rate, affordability and clearance dates arrive with Phase 2.
+- Recurring rules, weekly to yearly, that forecast without writing anything.
+  A due payment is one tap from the ledger, and confirming it twice is a no-op.
+- Monthly budgets per category, edited inline, with spend against target and a
+  one-tap copy from last month.
+- Position: balance and overdraft headroom; an affordability check that answers
+  in the browser with the headroom and runway you would be left with; the month
+  as planned — income, fixed costs, subscriptions, day-to-day budget, surplus;
+  a clearance date when the surplus supports one and a plain explanation when it
+  does not; and what is still coming this month and next.
+
+Not built yet: the goal ladder (Phase 3) and the investment module (Phase 4).
+Those screens say which phase builds them rather than pretending to be empty
+states.
 
 ## Getting it running
 
 ### 1. Supabase
 
-Create a project, then in the SQL editor run `supabase/migrations/0001_init.sql`
-in full. It creates every table, the derived views, the append-only trigger and
-RLS on everything.
+Create a project, then in the SQL editor run the migrations in order:
+
+1. `supabase/migrations/0001_init.sql` — every table, the derived views, the
+   append-only trigger and RLS on everything.
+2. `supabase/migrations/0002_recurring_link.sql` — links confirmed payments back
+   to the rule that predicted them, and separates subscriptions from other fixed
+   costs. Safe to run on a database that already has data in it.
 
 In **Authentication → Providers → Email**, turn on email sign-in and turn *off*
 "Confirm email" only if you want the first magic link to sign you straight in.

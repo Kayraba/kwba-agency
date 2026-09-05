@@ -10,6 +10,8 @@ export const metadata: Metadata = { title: 'More' }
 
 const LINKS = [
   { href: '/money/accounts', label: 'Accounts', hint: 'Opening balances and overdraft limits' },
+  { href: '/money/recurring', label: 'Recurring', hint: 'Wages, rent and anything else on a schedule' },
+  { href: '/money/budgets', label: 'Budgets', hint: 'What you meant to spend, month by month' },
   { href: '/money/categories', label: 'Categories', hint: 'The chips you tap when logging' },
 ] as const
 

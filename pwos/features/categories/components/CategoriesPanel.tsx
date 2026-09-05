@@ -85,7 +85,11 @@ function CategoryRowItem({
       <div className="flex items-center justify-between gap-3">
         <span className="flex min-w-0 items-center gap-2">
           <span className="truncate text-sm text-ink">{category.name}</span>
-          {category.is_fixed ? <Tag>Fixed</Tag> : null}
+          {category.is_subscription ? (
+            <Tag tone="warn">Subscription</Tag>
+          ) : category.is_fixed ? (
+            <Tag>Fixed</Tag>
+          ) : null}
         </span>
         <span className="flex shrink-0 gap-1">
           <Button variant="ghost" onClick={onEdit}>
@@ -175,8 +179,24 @@ function CategoryForm({
         <span>
           <span className="block text-sm font-medium text-ink">This is a fixed cost</span>
           <span className="mt-0.5 block text-xs text-ink-muted">
-            Rent, subscriptions, phone — money that leaves whether you think about it or not. Fixed
+            Rent, phone, gym — money that leaves whether you think about it or not. Fixed
             categories are kept out of the day-to-day budget.
+          </span>
+        </span>
+      </label>
+
+      <label className="flex items-start gap-3 rounded-xl border border-border bg-surface p-3">
+        <input
+          type="checkbox"
+          name="is_subscription"
+          defaultChecked={category?.is_subscription ?? false}
+          className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--color-accent)]"
+        />
+        <span>
+          <span className="block text-sm font-medium text-ink">…and it is a subscription</span>
+          <span className="mt-0.5 block text-xs text-ink-muted">
+            A fixed cost you could cancel this afternoon. Subscriptions get their own line on the
+            Position screen for exactly that reason. Ticking this ticks fixed too.
           </span>
         </span>
       </label>

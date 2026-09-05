@@ -13,6 +13,8 @@ function readForm(formData: FormData) {
     name: formData.get('name'),
     direction: formData.get('direction'),
     is_fixed: formData.get('is_fixed') === 'on' || formData.get('is_fixed') === 'true',
+    is_subscription:
+      formData.get('is_subscription') === 'on' || formData.get('is_subscription') === 'true',
     colour: formData.get('colour') ?? '',
   })
 }

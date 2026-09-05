@@ -58,6 +58,23 @@ export function addMonths(month: IsoMonth, months: number): IsoMonth {
   return `${String(year).padStart(4, '0')}-${String(monthIndex + 1).padStart(2, '0')}`
 }
 
+/** 0 = Sunday through 6 = Saturday, matching the day_of_week column's check constraint. */
+export function dayOfWeek(date: IsoDate): number {
+  const [y, m, d] = date.split('-').map(Number) as [number, number, number]
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay()
+}
+
+/** Set the day of a month, clamped to that month's length. 31 February becomes the 28th or 29th. */
+export function dayInMonth(month: IsoMonth, day: number): IsoDate {
+  const [y, m] = month.split('-').map(Number) as [number, number]
+  const clamped = Math.min(Math.max(day, 1), daysInMonth(y, m))
+  return `${month}-${String(clamped).padStart(2, '0')}`
+}
+
+export function dayOfMonth(date: IsoDate): number {
+  return Number(date.slice(8, 10))
+}
+
 export function daysBetween(from: IsoDate, to: IsoDate): number {
   const a = Date.parse(`${from}T00:00:00Z`)
   const b = Date.parse(`${to}T00:00:00Z`)

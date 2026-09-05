@@ -179,6 +179,33 @@ export async function correctTransaction(
   return replacement
 }
 
+/**
+ * Total outgoing between two dates, for the burn rate.
+ *
+ * Counted in the database rather than pulled into memory: the trailing window is
+ * ninety days, and there is no reason to ship ninety days of rows to add up one
+ * column. Voided rows are excluded.
+ */
+export async function outTotalBetween(
+  userId: string,
+  from: string,
+  to: string,
+): Promise<number> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('amount_minor')
+    .eq('user_id', userId)
+    .eq('direction', 'out')
+    .eq('is_void', false)
+    .gte('occurred_on', from)
+    .lte('occurred_on', to)
+    .limit(5000)
+
+  if (error) throw new Error(`Could not total your spending: ${error.message}`)
+  return (data ?? []).reduce((total, row) => total + row.amount_minor, 0)
+}
+
 /** Totals for a month, straight from the ledger. Used by the Position and Money screens. */
 export async function monthTotals(
   userId: string,

@@ -73,10 +73,10 @@ export default async function MoneyPage({
         subtitle="Every transaction, newest first."
         action={
           <Link
-            href="/money/accounts"
+            href="/money/budgets"
             className="text-sm text-accent underline underline-offset-4"
           >
-            Accounts
+            Budgets
           </Link>
         }
       />

@@ -27,3 +27,9 @@ and that split is the only place the rule lives.
 The simpler alternative, a single `committedCostsMinor`, was rejected because
 losing the subscriptions line loses the one committed cost that is actually
 easy to cancel.
+
+## Superseded in part
+
+ADR 10 settles where the two figures actually come from — the recurring rules,
+split by a new `categories.is_subscription` flag — which is the "one place the
+rule lives" this ADR left open.

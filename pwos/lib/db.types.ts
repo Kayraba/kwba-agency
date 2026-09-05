@@ -64,6 +64,8 @@ export interface CategoryRow {
   direction: FlowDirection
   parent_id: string | null
   is_fixed: boolean
+  /** A fixed cost you could cancel. Implies is_fixed. Added in 0002. */
+  is_subscription: boolean
   colour: string | null
   created_at: string
 }
@@ -83,6 +85,36 @@ export interface TransactionRow {
   external_id: string | null
   import_id: string | null
   corrects_id: string | null
+  /** Set when this row was confirmed from a recurring forecast. Added in 0002. */
+  recurring_rule_id: string | null
   is_void: boolean
+  created_at: string
+}
+
+export interface RecurringRuleRow {
+  id: string
+  user_id: string
+  account_id: string
+  category_id: string | null
+  label: string
+  direction: FlowDirection
+  amount_minor: number
+  frequency: RecurFreq
+  day_of_month: number | null
+  day_of_week: number | null
+  starts_on: string
+  ends_on: string | null
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface BudgetRow {
+  id: string
+  user_id: string
+  category_id: string | null
+  period_start: string
+  period_end: string
+  target_minor: number
   created_at: string
 }
