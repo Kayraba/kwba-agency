@@ -1,0 +1,136 @@
+@import 'tailwindcss';
+
+/*
+  Design tokens.
+
+  Three kinds of number appear in this app and they must never look alike:
+
+    fact       something the user recorded. Plain ink.
+    calculated something PWOS worked out from facts. Tabular, with a dotted
+               underline and a source you can hover or tap.
+    generated  something a language model wrote. Boxed, labelled, tinted.
+
+  The rule is in CLAUDE.md; the styling that enforces it is at the bottom of
+  this file.
+*/
+
+@theme {
+  --color-surface: oklch(99% 0.003 265);
+  --color-surface-sunken: oklch(96.5% 0.005 265);
+  --color-surface-raised: oklch(100% 0 0);
+  --color-border: oklch(90% 0.008 265);
+  --color-border-strong: oklch(80% 0.012 265);
+
+  --color-ink: oklch(22% 0.015 265);
+  --color-ink-muted: oklch(52% 0.014 265);
+  --color-ink-faint: oklch(66% 0.012 265);
+
+  --color-accent: oklch(52% 0.16 258);
+  --color-accent-ink: oklch(98% 0.01 258);
+  --color-accent-soft: oklch(95% 0.03 258);
+
+  --color-positive: oklch(48% 0.12 155);
+  --color-positive-soft: oklch(94% 0.04 155);
+  --color-negative: oklch(52% 0.17 25);
+  --color-negative-soft: oklch(95% 0.04 25);
+  --color-warn: oklch(62% 0.14 75);
+  --color-warn-soft: oklch(95% 0.05 75);
+
+  --color-generated: oklch(50% 0.12 300);
+  --color-generated-soft: oklch(96% 0.03 300);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-numeric: ui-monospace, 'SF Mono', 'Menlo', 'Consolas', monospace;
+
+  --radius-card: 0.875rem;
+
+  /* Height of the fixed bottom navigation, so content can clear it. */
+  --spacing-nav: 4.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-surface: oklch(19% 0.012 265);
+    --color-surface-sunken: oklch(15% 0.012 265);
+    --color-surface-raised: oklch(23% 0.014 265);
+    --color-border: oklch(30% 0.014 265);
+    --color-border-strong: oklch(40% 0.016 265);
+
+    --color-ink: oklch(96% 0.005 265);
+    --color-ink-muted: oklch(72% 0.012 265);
+    --color-ink-faint: oklch(56% 0.012 265);
+
+    --color-accent: oklch(72% 0.14 258);
+    --color-accent-ink: oklch(18% 0.02 258);
+    --color-accent-soft: oklch(28% 0.05 258);
+
+    --color-positive: oklch(78% 0.15 155);
+    --color-positive-soft: oklch(26% 0.05 155);
+    --color-negative: oklch(72% 0.16 25);
+    --color-negative-soft: oklch(27% 0.06 25);
+    --color-warn: oklch(80% 0.13 75);
+    --color-warn-soft: oklch(28% 0.05 75);
+
+    --color-generated: oklch(78% 0.11 300);
+    --color-generated-soft: oklch(27% 0.05 300);
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-surface-sunken);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* Safe area for the home indicator on iOS, plus room for the bottom nav. */
+    padding-bottom: env(safe-area-inset-bottom);
+    overscroll-behavior-y: none;
+  }
+
+  /* Money and any other figure that must line up in a column. */
+  .tabular {
+    font-family: var(--font-numeric);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* A number PWOS worked out rather than one the user recorded. */
+  .calculated {
+    border-bottom: 1px dotted var(--color-ink-faint);
+    cursor: help;
+  }
+
+  /* Anything a language model produced. Never styled like the rest of the app. */
+  .generated {
+    background-color: var(--color-generated-soft);
+    border: 1px solid var(--color-generated);
+    border-radius: var(--radius-card);
+  }
+
+  /* Touch targets: 44px minimum, everywhere, no exceptions. */
+  button,
+  a[role='button'],
+  [data-tap] {
+    min-height: 2.75rem;
+    touch-action: manipulation;
+  }
+
+  input[inputmode='decimal'],
+  input[type='number'] {
+    font-family: var(--font-numeric);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

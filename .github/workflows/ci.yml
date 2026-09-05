@@ -19,3 +19,27 @@ jobs:
       # Dev-only toolchains (sqlite3, sharp) pull in advisories that never ship,
       # so gate on what actually gets installed in production.
       - run: npm audit --omit=dev --audit-level=high
+
+  pwos:
+    # PWOS is a separate Next.js app in pwos/ with its own lockfile and tooling.
+    # It shares nothing with the agency server, so it gets its own job.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pwos
+    env:
+      # The build needs these to exist; it never connects to anything.
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: build-time-placeholder
+      PWOS_ALLOWED_EMAIL: ci@example.com
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: pwos/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build

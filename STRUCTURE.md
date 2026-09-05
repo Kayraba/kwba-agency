@@ -160,3 +160,16 @@ This is **one Render service**. You do NOT need three separate deployments.
 3. All four products go live at `kwba-agency.onrender.com` in one deploy
 
 If you ever want to extract one product (e.g. sell the Lead Platform to other agencies as standalone SaaS), see the `extracted-zips/` folder for ready-to-deploy starter packs of each product. **You don't need them right now** — they're just there for future flexibility.
+
+---
+
+## Not part of the Render deployment — `pwos/`
+
+`pwos/` is a separate application: the **Personal Wealth Operating System**, a
+single-user finance dashboard built on Next.js, Supabase and Postgres. It has
+its own `package.json`, its own lockfile and its own deployment on Vercel, and
+it shares nothing with the Express server above.
+
+The Render build only ever looks at the repository root, so nothing in `pwos/`
+affects the agency deployment. See `pwos/README.md` for how to run and deploy
+it, and `pwos/docs/adr/` for the decisions behind it.
