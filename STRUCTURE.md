@@ -12,7 +12,9 @@ The public-facing site that prospects visit. Sells your services, explains packa
 
 | File | What it is |
 |---|---|
-| `index.html` | Homepage — hero, three core services (Web Design, Marketing, AI Chatbot), social proof, CTA |
+| `index.html` | Lead Engine homepage — one offer, illustrative workflow demo, enquiry calculator, pilot pricing and demo request form |
+| `contact.html` | Dedicated Lead Engine demo request page |
+| `assets/lead-engine.css`, `assets/lead-engine.js` | Shared Lead Engine presentation and interactions; see `LEAD_ENGINE.md` |
 | `marketing.html` | Marketing services page with niche-specific packages (8 niches × 3 tiers) |
 | `package-explainer.html` | Slideshow that walks through the three retainer tiers |
 | `brief.html` | Generic brief intake form for new prospects |

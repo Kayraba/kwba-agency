@@ -1,5 +1,9 @@
 # KWBA Agency Platform
 
+The public website now focuses on **KWBA Lead Engine** for UK trades and service
+businesses. See [LEAD_ENGINE.md](LEAD_ENGINE.md) for the demo request flow,
+analytics hooks, sample demo, calculator and pilot setup notes.
+
 The backend and front end for my web design agency. It's a Node/Express server
 plus a set of static pages covering four things: the marketing site, an internal
 tool for finding leads, an AI receptionist chatbot I sell to clients, and the
