@@ -1,6 +1,67 @@
 (function () {
   "use strict";
 
+  var motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var entranceObserver;
+  function initMotion() {
+    if (entranceObserver) entranceObserver.disconnect();
+    document.documentElement.classList.remove("motion-ready");
+    if (motionPreference.matches || !("IntersectionObserver" in window)) {
+      document.getAnimations().forEach(function (animation) {
+        animation.cancel();
+      });
+      return;
+    }
+    var elements = document.querySelectorAll(
+      ".hero-copy > *, .preview, .section-heading, .problem-grid > article, " +
+        ".steps > li, .split-heading, .demo-panel, .calculator-layout > div, " +
+        ".calculator, .measurement-row > div, .pricing-section > *, " +
+        ".faq-section > *, .about-row > *, .booking-section > *",
+    );
+    entranceObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          entranceObserver.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -20px 0px" },
+    );
+    elements.forEach(function (element) {
+      element.classList.add("motion-reveal");
+      var index = Array.prototype.indexOf.call(
+        element.parentNode.children,
+        element,
+      );
+      element.style.setProperty(
+        "--entrance-delay",
+        Math.min(index * 65, 195) + "ms",
+      );
+      entranceObserver.observe(element);
+    });
+    document.documentElement.classList.add("motion-ready");
+  }
+  initMotion();
+  motionPreference.addEventListener("change", initMotion);
+  document.addEventListener("focusin", function (event) {
+    var entrance = event.target.closest(".motion-reveal");
+    if (entrance) entrance.classList.add("is-visible");
+  });
+  function animateUpdate(element) {
+    if (motionPreference.matches || !element.animate) return;
+    element.getAnimations().forEach(function (animation) {
+      animation.cancel();
+    });
+    element.animate(
+      [
+        { opacity: 0.25, transform: "translateY(8px)" },
+        { opacity: 1, transform: "translateY(0)" },
+      ],
+      { duration: 360, easing: "cubic-bezier(.22,1,.36,1)" },
+    );
+  }
+
   // Provider-neutral events. No form fields, enquiry text or personal data.
   // Listen to kwba:analytics or provide window.kwbaAnalytics(event).
   function track(name, properties) {
@@ -167,6 +228,7 @@
             ? "Run sample again ↻"
             : "Next: " + stages[step + 1][0].toLowerCase() + " →";
       reset.hidden = step === 0;
+      animateUpdate(output);
     }
     function restart() {
       step = 0;
@@ -217,6 +279,7 @@
         number.format(jobs) +
         " potential jobs.";
       track("roi_calculated");
+      animateUpdate(document.querySelector(".roi-result"));
     });
 
   var form = document.getElementById("demo-request");

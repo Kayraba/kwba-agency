@@ -18,6 +18,13 @@ pages keep their existing URLs. The homepage no longer promotes platform builds,
 web design or multiple services. The public pages use system fonts and local
 assets, with no new browser libraries or build step.
 
+Header and footer use the existing `lockup-horizontal-cream.svg` KWBA logo.
+Section entrances are staggered once using IntersectionObserver; demo and
+calculator updates use short Web Animations transitions. Hover feedback uses
+transforms. Native scrolling is preserved. Reduced-motion preferences disable
+the entrances and update animations, including changes to that preference while
+the page is open. Content remains visible without JavaScript or observer support.
+
 ## Request handling
 
 The form posts JSON to the existing `/public-brief` endpoint. It sends both
